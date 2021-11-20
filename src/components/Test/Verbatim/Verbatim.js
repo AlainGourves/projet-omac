@@ -1,5 +1,4 @@
 import './verbatim.scss';
-import { useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
@@ -9,7 +8,7 @@ function Verbatim(props) {
     const { id } = useParams();
     const verbatim = props.verbatim; // données des verbatim
 
-    const { register, handleSubmit, reset } = useForm({
+    const { register, handleSubmit } = useForm({
         defaultValues: {
             response: ''
         }
