@@ -7,13 +7,27 @@ import { useForm } from 'react-hook-form';
 function Home() {
     const [redirect, setRedirect] = useState(null);
 
-    const { reset, register, handleSubmit } = useForm({
+    const { reset, register, handleSubmit, watch } = useForm({
         defaultValues: {
             'age': 0,
             'gender': 'M',
             'etablissement': ''
         }
     })
+
+    const watchGender = watch('gender')
+
+    useEffect(() => {
+        let bgCol;
+        if (watchGender === 'M') {
+            bgCol = 'blue';
+        }else if(watchGender === 'F') {
+            bgCol = 'pink'
+        }else{
+            bgCol = 'gray'
+        }
+        document.documentElement.style.setProperty('--bg-carte', `var(--bg-${bgCol})`);
+    }, [watchGender])
     
     useEffect(()=>{
         if(localStorage.getItem('user') && localStorage.getItem('user') !== null) {
