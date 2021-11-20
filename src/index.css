@@ -10,4 +10,5 @@
     border-radius: .25rem;
     background-color: var(--bg-carte, deepskyblue);
     box-shadow: 0 0 1em rgba(0, 0, 0, .45);
+    transition: background-color .125s linear;
 }
