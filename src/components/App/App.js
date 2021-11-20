@@ -16,7 +16,7 @@ function App() {
                     <Test />
                 </Route>
                 
-                <Route exact path='/'>
+                <Route path='/'>
                     <Home />
                 </Route>
             </Switch>

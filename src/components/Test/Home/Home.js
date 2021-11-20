@@ -1,14 +1,17 @@
 import './home.scss';
 import { Link } from 'react-router-dom';
 
-function Home() {
+function Home(props) {
 
     return (
-        <div className="row text-center">
-            <h1>Test accueil</h1>
-            <Link to='/test/quiz'>
-                <button type='button' className="btn btn-primary">Commencer</button>
-            </Link>
+        <div className="carte">
+            <h1 className="text-center">{props.title}</h1>
+            <p className="mb-3">{props.description}</p>
+            <div className="row text-center">
+                <Link to='/test/quiz/0'>
+                    <button type='button' className="btn btn-primary">Commencer</button>
+                </Link>
+            </div>
         </div>
     );
 }

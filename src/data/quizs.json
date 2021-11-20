@@ -1,0 +1,138 @@
+{
+  "type": "quiz",
+  "records": [
+    {
+      "date": 1636704271106,
+      "title": "Les couleurs",
+      "description": "Place ces couleurs selon leur proximité.",
+      "ordering": "alpha",
+      "isTrash": true,
+      "trashText": "Met dans la corbeille quand tu ne sais pas.",
+      "items": [
+        {
+          "id": 0,
+          "label": "Blanc"
+        },
+        {
+          "id": 1,
+          "label": "Bleu"
+        },
+        {
+          "id": 2,
+          "label": "Jaune"
+        },
+        {
+          "id": 3,
+          "label": "Mauve"
+        },
+        {
+          "id": 4,
+          "label": "Orange"
+        },
+        {
+          "id": 5,
+          "label": "Rouge"
+        },
+        {
+          "id": 6,
+          "label": "Vert"
+        }
+      ],
+      "id": 5
+    },
+    {
+      "date": 1636704320157,
+      "title": "Les septs nains",
+      "description": "Place les nains comme tu le sens.",
+      "ordering": "alpha",
+      "isTrash": true,
+      "trashText": "Met dans la corbeille quand tu ne sais pas.",
+      "items": [
+        {
+          "id": 0,
+          "label": "Atchoum"
+        },
+        {
+          "id": 1,
+          "label": "Dormeur"
+        },
+        {
+          "id": 2,
+          "label": "Grincheux"
+        },
+        {
+          "id": 3,
+          "label": "Joyeux"
+        },
+        {
+          "id": 4,
+          "label": "Prof"
+        },
+        {
+          "id": 5,
+          "label": "Simplet"
+        },
+        {
+          "id": 6,
+          "label": "Timid"
+        }
+      ],
+      "id": 6
+    },
+    {
+      "date": 1636650887464,
+      "title": "Entiers positifs",
+      "description": "Ici des trucs à mettre",
+      "ordering": "random",
+      "isTrash": false,
+      "trashText": "",
+      "items": [
+        {
+          "id": 0,
+          "label": "cinq"
+        },
+        {
+          "id": 1,
+          "label": "deux"
+        },
+        {
+          "id": 2,
+          "label": "dix"
+        },
+        {
+          "id": 3,
+          "label": "huit"
+        },
+        {
+          "id": 4,
+          "label": "neuf"
+        },
+        {
+          "id": 5,
+          "label": "quatre"
+        },
+        {
+          "id": 6,
+          "label": "sept"
+        },
+        {
+          "id": 7,
+          "label": "six"
+        },
+        {
+          "id": 8,
+          "label": "trois"
+        },
+        {
+          "id": 9,
+          "label": "un"
+        },
+        {
+          "id": 10,
+          "label": "zéro"
+        }
+      ],
+      "id": 20
+    }
+  ]
+}
