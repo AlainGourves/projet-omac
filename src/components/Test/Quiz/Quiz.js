@@ -22,12 +22,12 @@ function Quiz(props) {
     let nextStep;
     if (parseInt(id) !== quizs.length - 1) {
         // quiz[id] n'est pas la dernière valeur du array
-        nextStep = '/test/quiz/' + (parseInt(id) + 1);
+        nextStep = '/quiz/' + (parseInt(id) + 1);
     } else {
         if (props.isVerbatim) {
-            nextStep = '/test/verbatim/0';
+            nextStep = '/verbatim/0';
         } else {
-            nextStep = '/test/fin'
+            nextStep = '/fin'
         }
     }
 

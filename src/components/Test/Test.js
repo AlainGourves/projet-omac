@@ -4,6 +4,7 @@ import {
     Route,
 } from 'react-router-dom';
 import Home from './Home/Home';
+import User from './User/User';
 import Quiz from './Quiz/Quiz';
 import Verbatim from './Verbatim/Verbatim';
 import Greetings from './Greetings/Greetings';
@@ -30,7 +31,7 @@ function Test() {
 
     return (
         <Switch>
-                <Route path='/test/quiz/:id'>
+                <Route path='/quiz/:id'>
                     {/* `id` correspond à l'index du quiz dans le array quizsIds */}
                     <Quiz
                         quizs={quizs}
@@ -39,18 +40,22 @@ function Test() {
                     />
                 </Route>
 
-                <Route path='/test/verbatim/:id'>
+                <Route path='/verbatim/:id'>
                     <Verbatim
                         verbatim={verbatim}
                         getVerbatimResponse={getVerbatimResponse}
                     />
                 </Route>
 
-                <Route path='/test/fin'>
+                <Route path='/fin'>
                     <Greetings />
                 </Route>
 
-                <Route exact path='/test'>
+                <Route path='/user'>
+                    <User />
+                </Route>
+
+                <Route exact path='/'>
                     <Home 
                         title={test.home.title}
                         description={test.home.description} />

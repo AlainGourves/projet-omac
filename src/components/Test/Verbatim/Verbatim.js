@@ -18,9 +18,9 @@ function Verbatim(props) {
     let nextStep;
     if (parseInt(id) !== verbatim.length - 1) {
         // verbatim[id] n'est pas la dernière valeur du array
-        nextStep = '/test/verbatim/' + (parseInt(id) + 1);
+        nextStep = '/verbatim/' + (parseInt(id) + 1);
     } else {
-        nextStep = '/test/fin'
+        nextStep = '/fin'
     }
 
     const onSubmit = (values, ev) => {

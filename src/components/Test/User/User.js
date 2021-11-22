@@ -1,4 +1,4 @@
-import './home.scss';
+import './user.scss';
 import { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -47,7 +47,7 @@ function Home() {
             'etablissement': vals.etablissement
         }
         localStorage.setItem('user', JSON.stringify(obj));
-        setRedirect('/test');
+        setRedirect('/quiz/0');
     }
 
     if (redirect) {
