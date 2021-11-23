@@ -2,11 +2,12 @@ import './user.scss';
 import { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { supabase } from '../../../supabaseClient'
 
 
 function Home() {
     const [redirect, setRedirect] = useState(null);
-    
+
     const { reset, register, handleSubmit, watch, setValue } = useForm({
         defaultValues: {
             'initials': '',
@@ -14,18 +15,18 @@ function Home() {
             'birthDate': '',
             'age': 0,
             'gender': 'M',
-            'etablissement': ''
+            'institution': ''
         }
     })
-    
+
     const watchBirthDate = watch('birthDate');
     useEffect(() => {
         const d = watchBirthDate.split('-');
         // Calcul de l'âge
         const d1 = new Date(); //aujourd'hui
-        const d2 = new Date(d[0], d[1]-1, d[2]); // Y,M,D (month counter is zero based)
+        const d2 = new Date(d[0], d[1] - 1, d[2]); // Y,M,D (month counter is zero based)
         const age = d1.getFullYear() - d2.getFullYear();
-        if(!Number.isNaN(age) && age < 100) {
+        if (!Number.isNaN(age) && age < 100) {
             setValue('age', age)
         }
     }, [watchBirthDate, setValue]);
@@ -51,26 +52,33 @@ function Home() {
                 'birthDate': JSON.parse(localStorage.getItem('user')).birthDate,
                 'age': JSON.parse(localStorage.getItem('user')).age,
                 'gender': JSON.parse(localStorage.getItem('user')).gender,
-                'etablissement': JSON.parse(localStorage.getItem('user')).etablissement
+                'institution': JSON.parse(localStorage.getItem('user')).institution
             }
             reset(defaultValues)
         }
     }, [reset])
 
-    const onSubmit = (vals) => {
+    const onSubmit = async (vals) => {
         // Création de `uniqueId` : initiales + (année, mois, jour collés)
         const d = vals.birthDate.split('-').join('');
         const uniqueId = vals.initials.toUpperCase() + d;
-        console.log(uniqueId)
         const obj = {
             'uniqueId': uniqueId,
             'birthDate': vals.birthDate,
             'age': vals.age,
             'gender': vals.gender,
-            'etablissement': vals.etablissement
+            'institution': vals.institution
+        }
+        const {data,error} = await supabase
+            .from('clients')
+            .insert(obj, { returning: 'minimal' });
+        if(error) {
+            console.warn(error)
+        }else{
+            console.log(data)
         }
         localStorage.setItem('user', JSON.stringify(obj));
-        setRedirect('/quiz/0');
+        // setRedirect('/quiz/0');
     }
 
     if (redirect) {
@@ -125,12 +133,12 @@ function Home() {
                     </div>
 
                     <div className="row align-items-center mb-3">
-                        <label className="form-label col-md-4 text-end" htmlFor="etablissement">Ton établissement:</label>
+                        <label className="form-label col-md-4 text-end" htmlFor="institution">Ton établissement:</label>
                         <div className="col-md-8">
                             <input
-                                {...register("etablissement")}
+                                {...register("institution")}
                                 type='text'
-                                name="etablissement"
+                                name="institution"
                                 placeholder="Nom de l'établissement"
                                 className="form-control" />
                         </div>
