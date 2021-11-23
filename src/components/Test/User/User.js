@@ -78,7 +78,7 @@ function Home() {
             console.log(data)
         }
         localStorage.setItem('user', JSON.stringify(obj));
-        // setRedirect('/quiz/0');
+        setRedirect('/quiz/0');
     }
 
     if (redirect) {
