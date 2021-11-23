@@ -58,11 +58,9 @@ function Home() {
     }, [reset])
 
     const onSubmit = (vals) => {
-        // Création de `uniqueId` : initiales + (année x mois x jour) en hexadécimal
-        const d = vals.birthDate.split('-').reduce((prev, next) => {
-            return parseInt(prev) * parseInt(next)
-        }).toString(16);
-        const uniqueId = vals.initials.toUpperCase() + d.toUpperCase();
+        // Création de `uniqueId` : initiales + (année, mois, jour collés)
+        const d = vals.birthDate.split('-').join('');
+        const uniqueId = vals.initials.toUpperCase() + d;
         console.log(uniqueId)
         const obj = {
             'uniqueId': uniqueId,
