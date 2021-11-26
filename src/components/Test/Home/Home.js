@@ -8,7 +8,7 @@ function Home(props) {
             <h1 className="text-center">{props.title}</h1>
             <p className="mb-3">{props.description}</p>
             <div className="row text-center">
-                <Link to='/user'>
+                <Link to='/test/user'>
                     <button type='button' className="btn btn-primary">Commencer</button>
                 </Link>
             </div>
