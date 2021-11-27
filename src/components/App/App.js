@@ -5,6 +5,7 @@ import PrivateRoute from '../PrivateRoute/PrivateRoute';
 import Login from '../Login/Login';
 import SignUp from '../SignUp/SignUp';
 import Test from '../Test/Test';
+import Page404 from '../Page404/Page404';
 
 function App() {
  
@@ -16,6 +17,7 @@ function App() {
                     <Route path="/connexion" component={Login} />
                     <PrivateRoute exact path="/" component={Test} />
                     <PrivateRoute path="/test" component={Test} />
+                    <Route path='*' component={Page404} />
                 </Switch>
             </div>
         </AuthProvider>
