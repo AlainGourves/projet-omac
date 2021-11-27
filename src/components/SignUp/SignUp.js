@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+// import { useHistory, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../../contexts/Auth';
+// import { useAuth } from '../../contexts/Auth';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Eye, EyeOff } from 'react-feather';
@@ -12,9 +13,9 @@ const SignUp = function () {
     const [eyeIcon, setEyeIcon] = useState(true); // true -> Eye, false -> EyeOff
 
     // Get connexion function from the Auth context
-    const { signUp } = useAuth();
+    // const { signUp } = useAuth();
 
-    const history = useHistory();
+    // const history = useHistory();
 
     const schema = yup.object().shape({
         firstName: yup.string().required("Merci de renseigner votre prénom."),
