@@ -6,3 +6,15 @@
 .container {
     background-color: #fff;
 }
+
+.eye {
+    background-color: var(--bs-gray-100);
+    svg {
+        user-select: none;
+        stroke: var(--bs-primary)
+    }
+
+    :hover{
+        cursor: pointer;
+    }
+}

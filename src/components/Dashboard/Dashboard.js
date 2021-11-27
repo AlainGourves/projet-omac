@@ -11,7 +11,7 @@ const Dashboard = function () {
         // Ends session
         await signOut()
         // Redirect to Login page
-        history.push('/login');
+        history.push('/connexion');
     }
 
     return (

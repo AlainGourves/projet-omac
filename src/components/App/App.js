@@ -12,8 +12,8 @@ function App() {
         <AuthProvider>
             <div className="container min-vh-100 d-flex justify-content-center align-items-center">
                 <Switch>
-                    <Route path="/signup" component={SignUp} />
-                    <Route path="/login" component={Login} />
+                    <Route path="/inscription" component={SignUp} />
+                    <Route path="/connexion" component={Login} />
                     <PrivateRoute exact path="/" component={Test} />
                     <PrivateRoute path="/test" component={Test} />
                 </Switch>

@@ -1,0 +1,8 @@
+$clr: var(--bs-danger); // var(--bs-danger) rebeccapurple
+
+.alert-warning{
+    color: $clr;
+    border-color: $clr !important;
+    font-size: .75em;
+    padding: .5em;
+}
