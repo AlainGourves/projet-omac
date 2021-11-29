@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-// import { useHistory, Link } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-// import { useAuth } from '../../contexts/Auth';
+import { useAuth } from '../../contexts/Auth';
+import { supabase } from '../../supabaseClient';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Eye, EyeOff } from 'react-feather';
@@ -13,19 +13,19 @@ const SignUp = function () {
     const [eyeIcon, setEyeIcon] = useState(true); // true -> Eye, false -> EyeOff
 
     // Get connexion function from the Auth context
-    // const { signUp } = useAuth();
+    const { signUp } = useAuth();
 
-    // const history = useHistory();
+    const history = useHistory();
 
     const schema = yup.object().shape({
         firstName: yup.string().required("Merci de renseigner votre prénom."),
         lastName: yup.string().required("Merci de renseigner votre nom."),
-        email: yup.string().email("Vérifier l'adresse mail, elle ne semble correcte.").required("Merci de renseigner votre adresse mail."),
+        email: yup.string().email("Vérifier l'adresse mail, elle ne semble pas correcte.").required("Merci de renseigner votre adresse mail."),
         password: yup.string().min(8, "Le mot de passe doit compter au moins 8 caractères.").required("Merci de choisir un mot de passe."),
         confPassword: yup.string()
-                        .min(8, "Le mot de passe doit compter au moins 8 caractères.")
-                        .required("Merci de confirmer votre mot de passe.")
-                        .equals([yup.ref('password')], "Les deux mots de passe ne sont pas identiques."),
+            .min(8, "Le mot de passe doit compter au moins 8 caractères.")
+            .required("Merci de confirmer votre mot de passe.")
+            .equals([yup.ref('password')], "Les deux mots de passe ne sont pas identiques."),
     });
 
     const { register, handleSubmit, formState: { errors } } = useForm({
@@ -40,21 +40,40 @@ const SignUp = function () {
     });
 
     const onError = (errors) => {
-        console.log("erreur", errors);
+        // objet de Yup qui contient les champs fautifs, ex: {confPassword: { message: "[message d'erreur du resolver]", ...}}
+        console.log("erreur onSubmit(): ", errors);
     }
 
-    const onSubmit = (values) => {
-        console.log("submit", values)
-        // ev.preventDefault();
+    const onSubmit = async (values) => {
+        // console.log("submit", values)
         // Get input values
-        // const email = values.email;
-        // const password = passwordRef.current.value;
-        // // Calls signIn function from the context
-        // const { error } = await signUp({ email, password });
+        const firstName = values.firstName;
+        const lastName = values.lastName;
+        const email = values.email;
+        const password = values.password;
+        // const confPassword = values.confPassword;
+        // Calls signIn function from the context
+        const { user, error } = await signUp({ email, password });
 
-        // if (error) return setError(error);
-        // // Redirect
-        // history.push('/')
+        if (error) {
+            // traitement de l'erreur
+            console.log("Erreur signUp(): ", error);
+        } else {
+            // Enregistrement dans `public.users`
+            // récupèe l'id généré dans `auth.users`
+            const userData = {
+                id: user.id,
+                email: user.email,
+                prenom: firstName,
+                nom: lastName,
+                is_admin: false
+            }
+            const { error } = await supabase.from('users').insert([userData])
+            if (!error) {
+                // Redirect
+                history.push('/')
+            }
+        }
     }
 
     const showPassword = () => {
