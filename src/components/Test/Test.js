@@ -1,5 +1,4 @@
 import './test.scss';
-import { useEffect } from 'react';
 import {
     Switch,
     Route,
@@ -12,35 +11,11 @@ import Greetings from './Greetings/Greetings';
 import Dashboard from '../Dashboard/Dashboard';
 import test from '../../data/test.json';
 import quizsData from '../../data/quizs.json';
-import { useAuth } from '../../contexts/Auth'
-import { supabase } from '../../supabaseClient';
+// import { useAuth } from '../../contexts/Auth'
+// import { supabase } from '../../supabaseClient';
 
 function Test() {
-    const { user } = useAuth();
-
-    useEffect(() => {
-        const getUser = async (user) => {
-            // Récupère les infos dans `public.users`
-            try {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select()
-                    .eq('id', user.id)
-                    .single()
-
-                if (error) {
-                    throw error;
-                }
-
-                if (data) {
-                    console.log("resultat:", data)
-                }
-            } catch (error) {
-                console.warn("Erreur !", error)
-            }
-        }
-        getUser(user);
-    }, [user]);
+    // const { user } = useAuth();
 
     // Données du test
     const quizsIds = test.quizsIds;
