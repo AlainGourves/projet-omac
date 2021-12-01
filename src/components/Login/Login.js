@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../../contexts/Auth';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import AlertMesg from '../AlertMesg/AlertMesg';
+import AlertMesg from '../Utils/AlertMesg/AlertMesg';
 import { Eye, EyeOff } from 'react-feather';
 
 const Login = function () {
