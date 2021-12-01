@@ -1,6 +1,7 @@
 import './quiz.scss';
 import { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
+import { useModal } from '../../../contexts/ModalContext';
 
 function Quiz(props) {
     const { id } = useParams();
@@ -9,12 +10,34 @@ function Quiz(props) {
     // Récupère les infos du quiz :
     const quiz = quizs[id];
 
+    const [modal, setModal] = useModal();
+
+    const history = useHistory();
+
+    const askConfirm = () => {
+        setModal({
+            show: true,
+            title: 'Titre du modal',
+            message: 'Est-ce que ça marche ?',
+            btnCancel: 'Annuler',
+            btnOk: 'Continuer',
+            fn: () => {
+                console.log("mais oui !")
+                setModal({
+                    ...modal,
+                    show: false
+                })
+                history.push(nextStep);
+            }
+        });
+    }
+
     useEffect(() => {
         const startTime = Date.now();
-        
+
         return () => {
             const endTime = Date.now();
-            props.getElapsedTime(id, (endTime - startTime)/1000);
+            props.getElapsedTime(id, (endTime - startTime) / 1000);
         }
     });
 
@@ -32,15 +55,22 @@ function Quiz(props) {
     }
 
     return (
-        <div className="carte row text-center">
-            <h1>Quiz {quiz.id}</h1>
-            <h2>{quiz.title}</h2>
-            <p>{quiz.description}</p>
+        <>
+            <div className="carte row text-center">
+                <h1>Quiz {quiz.id}</h1>
+                <h2>{quiz.title}</h2>
+                <p>{quiz.description}</p>
 
-            <Link to={nextStep}>
-                <button type='button' className="btn btn-primary">Continuer</button>
-            </Link>
-        </div>
+                {/* <Link to={nextStep}> */}
+                    <button
+                        type='button'
+                        // onClick={() => history.push(nextStep)}
+                        onClick={askConfirm}
+                        className="btn btn-primary"
+                    >Continuer</button>
+                {/* </Link> */}
+            </div>
+        </>
     );
 }
 

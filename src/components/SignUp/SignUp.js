@@ -6,7 +6,7 @@ import { supabase } from '../../supabaseClient';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Eye, EyeOff } from 'react-feather';
-import AlertMesg from '../AlertMesg/AlertMesg';
+import AlertMesg from '../Utils/AlertMesg/AlertMesg';
 
 const SignUp = function () {
 
