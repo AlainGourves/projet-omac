@@ -8,7 +8,6 @@ import User from './User/User';
 import Quiz from './Quiz/Quiz';
 import Verbatim from './Verbatim/Verbatim';
 import Greetings from './Greetings/Greetings';
-import Dashboard from '../Dashboard/Dashboard';
 import test from '../../data/test.json';
 import quizsData from '../../data/quizs.json';
 // import { useAuth } from '../../contexts/Auth'
@@ -36,7 +35,6 @@ function Test() {
 
     return (
         <>
-            <Dashboard />
             <Switch>
                 <Route path='/test/quiz/:id'>
                     {/* `id` correspond à l'index du quiz dans le array quizsIds */}

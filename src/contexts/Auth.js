@@ -9,12 +9,15 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState();
+    // token de la session, pour pouvoir l'envoyer au backend
+    const [sessionToken, setSessionToken] = useState('');
     // loading will make sure the child components are not rendered before we know the current authentificatoin state of the user
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // Call session() : check the current state of the user and update the user object
         const session = supabase.auth.session();
+        setSessionToken(session?.access_token ?? null);
 
         setUser(session?.user ?? null); // fixe le user s'il y a une session, sinon null
         setLoading(false);
@@ -39,6 +42,7 @@ export function AuthProvider({ children }) {
         signIn: (data) => supabase.auth.signIn(data),
         signOut: () => supabase.auth.signOut(),
         user,
+        sessionToken,
     }
 
     return (
