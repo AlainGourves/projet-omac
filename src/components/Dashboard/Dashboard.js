@@ -1,3 +1,4 @@
+import './dashboard.scss';
 import { useHistory } from "react-router";
 import { useAuth } from "../../contexts/Auth";
 

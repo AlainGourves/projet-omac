@@ -3,6 +3,12 @@ import './admin.scss';
 // import axios from 'axios';
 // import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../contexts/Auth';
+import { Switch, Route } from 'react-router-dom';
+import AdminMenu from './AdminMenu/AdminMenu';
+import Home from './Home/Home';
+// import Quiz from './Quiz/Quiz';
+// import ExportResults from './ExportResults/ExportResults';
+// import EditTest from './EditTest/EditTest';
 
 const Admin = function (props) {
     const { user } = useAuth();
@@ -25,9 +31,35 @@ const Admin = function (props) {
 
 
     return (
-        <>
-            <h1>Admin interface</h1>
-        </>
+        <div className="container-xl min-vh-100 admin">
+
+            <AdminMenu />
+
+            <main className="constainer-xl">
+                <Switch>
+                    {/* <Route exact path="/admin/quiz">
+                        <Quiz />
+                    </Route>
+                    <Route path="/admin/quiz/:id">
+                        <Quiz />
+                    </Route>
+
+                    <Route exact path="/admin/edit-test">
+                        <EditTest />
+                    </Route>
+                    <Route path="/admin/edit-test/:id">
+                        <EditTest />
+                    </Route>
+
+                    <Route path="/admin/export">
+                        <ExportResults />
+                    </Route> */}
+                    <Route path="/">
+                        <Home />
+                    </Route>
+                </Switch>
+            </main>
+        </div>
     )
 
 }

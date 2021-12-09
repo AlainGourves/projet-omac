@@ -1,12 +1,13 @@
 import './login.scss';
 import { useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../contexts/Auth';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import AlertMesg from '../Utils/AlertMesg/AlertMesg';
 import { Eye, EyeOff } from 'react-feather';
+import { supabase } from '../../supabaseClient';
 
 const Login = function () {
     const [error, setError] = useState(null);
@@ -36,12 +37,41 @@ const Login = function () {
         const email = values.email;
         const password = values.password;
         // Calls signIn function from the context
-        const { error } = await signIn({ email, password });
+        const { user, error } = await signIn({ email, password });
 
         if (error) {
             console.log("Erreur signIn(): ", error);
             setError("Les informations fournies ne sont pas reconnues, vérifiez votre saisie.");
         } else {
+            let isAdmin, prenom, nom;
+            const getUser = async (user) => {
+                try {
+                    const { data, error } = await supabase
+                        .from('users')
+                        .select()
+                        .eq('id', user.id)
+                        .single()
+    
+                    if (error) {
+                        throw error;
+                    }
+    
+                    if (data) {
+                        isAdmin = data.is_admin;
+                        if (isAdmin) {
+                            prenom = data.prenom;
+                            nom = data.nom;
+                        }
+                        (isAdmin)  ? console.log("je suis un admin") : console.log("je ne suis pas un admin")
+                        if (prenom && nom) console.log(`je suis ${prenom} ${nom}`)
+                    }
+                } catch (error) {
+                    console.warn("Erreur getUser: ", error)
+                }
+            }
+
+            console.log("from login", user)
+            getUser(user);
             history.push('/');
         }
     }
@@ -90,7 +120,6 @@ const Login = function () {
 
             <div className="d-flex flex-column justify-content-center align-items-center">
                 <button className="btn btn-primary mb-2" type="submit">Connexion</button>
-                <p>Pas encore de compte ? <Link to="/inscription">Inscrivez-vous</Link></p>
             </div>
 
         </form>

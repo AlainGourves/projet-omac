@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import {
     BrowserRouter as Router
 } from 'react-router-dom';
-import './index.css';
+import './index.scss';
 import { AuthProvider } from './contexts/Auth';
 import App from './components/App/App';
 

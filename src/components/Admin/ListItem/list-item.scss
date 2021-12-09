@@ -1,0 +1,21 @@
+.list-group-item {
+    width: 100%;
+    padding-left: .5rem;
+    user-select: none;
+
+    &.dragged {
+        background-color: deepskyblue;
+    }
+
+    & span {
+        color: var(--bs-gray-600);
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        &.grab:hover {
+            cursor: grab;
+        }
+    }
+}

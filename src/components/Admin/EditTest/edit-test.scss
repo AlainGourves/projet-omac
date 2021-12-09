@@ -1,0 +1,23 @@
+$bs-primary: #0d6efd;
+
+.badge{
+    margin-right: .5em;
+}
+
+.arrow {
+    display: grid;
+    place-content: center;
+    user-select: none;
+}
+
+.ul-quizs  ul {
+    width: 100%;
+    min-height: 10em;
+    max-height: 12em;
+    padding: .25em;
+    overflow: clip auto;
+    background-color: lighten($bs-primary, 60%);
+    border-radius: .25em;
+    border: 1px solid rgba(0,0,0,.25);
+    box-shadow: 0 0 0.25em rgba(0,0,0,.25) inset;
+}

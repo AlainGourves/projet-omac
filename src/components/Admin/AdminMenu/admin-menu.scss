@@ -1,0 +1,11 @@
+.quit {
+    border: 1px solid #fff;
+    border-radius: .25em;
+    & a {
+        color: #fff;
+    }
+    
+    &:hover {
+        background-color: var(--bs-orange);
+    }
+}

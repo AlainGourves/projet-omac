@@ -41,7 +41,8 @@ function App() {
                 console.warn("Erreur getUser: ", error)
             }
         }
-        getUser(user);
+
+        if (user) getUser(user);
     }, [user]);
 
     return (

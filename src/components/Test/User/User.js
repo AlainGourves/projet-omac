@@ -69,13 +69,12 @@ function Home() {
             'gender': vals.gender,
             'institution': vals.institution
         }
-        const {data,error} = await supabase
+        const { error } = await supabase
             .from('clients')
             .insert(obj, { returning: 'minimal' });
-        if(error) {
+            // returning: 'minimal' -> Supabase ne renvoit pas les infos enregistrées
+        if (error) {
             console.warn(error)
-        }else{
-            console.log(data)
         }
         localStorage.setItem('user', JSON.stringify(obj));
         setRedirect('/test/quiz/0');

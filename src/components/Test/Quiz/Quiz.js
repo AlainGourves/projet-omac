@@ -61,14 +61,12 @@ function Quiz(props) {
                 <h2>{quiz.title}</h2>
                 <p>{quiz.description}</p>
 
-                {/* <Link to={nextStep}> */}
-                    <button
-                        type='button'
-                        // onClick={() => history.push(nextStep)}
-                        onClick={askConfirm}
-                        className="btn btn-primary"
-                    >Continuer</button>
-                {/* </Link> */}
+                <button
+                    type='button'
+                    // onClick={() => history.push(nextStep)}
+                    onClick={askConfirm}
+                    className="btn btn-primary"
+                >Continuer</button>
             </div>
         </>
     );
