@@ -7,9 +7,9 @@ import { ChevronDown, ChevronUp, Edit, Trash } from 'react-feather';
 
 function Home() {
     const [allTests, setAllTests] = useState([]);
-    const [testsOrder, setTestsOrder] = useState('created_at');
-    const [dateAscending, setDateAscending] = useState(false);
-    const [nameAscending, setNameAscending] = useState(true);
+    const [testsOrderBy, setTestsOrderBy] = useState('created_at');
+    const [testsOrderByDateAsc, setTestsOrderByDateAsc] = useState(false);
+    const [testsOrderByNameAsc, setTestsOrderByNameAsc] = useState(true);
     const [currentTest, setCurrentTest] = useState(0); // ID du test actif
 
     // options for formatting dates
@@ -27,7 +27,7 @@ function Home() {
             const { data, error } = await supabase
                 .from('tests')
                 .select('id, created_at, is_current, name')
-                .order(testsOrder, { ascending: (testsOrder === 'name') ? nameAscending : dateAscending });
+                .order(testsOrderBy, { ascending: (testsOrderBy === 'name') ? testsOrderByNameAsc : testsOrderByDateAsc });
             if (data) {
                 // transforme les strings `created_at` en Date
                 // et récupère le test actif
@@ -48,64 +48,29 @@ function Home() {
         fetchTestsList();
     }, []);
 
+    // _________________ Fonctions de tri _______________
     // Tri des tests en fonction des états
     useEffect(() => {
-        console.log("order:", testsOrder, "date", (dateAscending ? 'ASC' : 'DESC'), "nom", (nameAscending ? 'ASC' : 'DESC'))
-        switch (testsOrder) {
+        console.log("order:", testsOrderBy, "date", (testsOrderByDateAsc ? 'ASC' : 'DESC'), "nom", (testsOrderByNameAsc ? 'ASC' : 'DESC'))
+        switch (testsOrderBy) {
             case 'created_at':
                 // tri par date
                 console.log("par date")
                 setAllTests(allTests.sort((a, b) => {
-                    return (dateAscending) ? a.created_at - b.created_at : b.created_at - a.created_at;
+                    return (testsOrderByDateAsc) ? a.created_at - b.created_at : b.created_at - a.created_at;
                 }));
                 break;
             case 'name':
                 // tri par nom
                 console.log("par nom")
                 setAllTests(allTests.sort((a, b) => {
-                    return (nameAscending) ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+                    return (testsOrderByNameAsc) ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
                 }))
                 break;
             default:
                 break;
         }
-    }, [allTests, testsOrder, dateAscending, nameAscending])
-
-    const deleteTest = (ev) => {
-        let id = parseInt(ev.target.closest('button').dataset.remove);
-        // TODO: demande de confirmation par un modal
-        removeTestFromDb(id);
-    }
-
-    const removeTestFromDb = async function (id) {
-        console.log("Supprimer le test ", id)
-        // TODO: avant de supprimer un test, il faudra supprimer tous les résultats et les verbatim qui y font référence
-        try {
-            await supabase
-                .from('tests')
-                .delete()
-                .match({ id });
-            fetchTestsList();
-        } catch (error) {
-            console.warn("Erreur suppression test:", error)
-        }
-    }
-
-    const orderByName = (ev) => {
-        if (testsOrder === 'created_at') {
-            setTestsOrder('name');
-            return;
-        }
-        setNameAscending(!nameAscending);
-    }
-
-    const orderByDate = (ev) => {
-        if (testsOrder === 'name') {
-            setTestsOrder('created_at');
-            return;
-        }
-        setDateAscending(!dateAscending)
-    }
+    }, [allTests, testsOrderBy, testsOrderByDateAsc, testsOrderByNameAsc])
 
     const changeCurrentTest = async (ev) => {
         let prevCurrent = currentTest;
@@ -131,7 +96,70 @@ function Home() {
         }
     }
 
-    // Export/Import JSON files
+    const orderByName = (ev) => {
+        if (testsOrderBy === 'created_at') {
+            setTestsOrderBy('name');
+            return;
+        }
+        setTestsOrderByNameAsc(!testsOrderByNameAsc);
+    }
+
+    const orderByDate = (ev) => {
+        if (testsOrderBy === 'name') {
+            setTestsOrderBy('created_at');
+            return;
+        }
+        setTestsOrderByDateAsc(!testsOrderByDateAsc)
+    }
+
+    // _________________ Fonctions BDD _______________
+    const addBulk = async function (arr, table) {
+        // Préparation du array
+        // 1) supprimer les id enregistrés (ils seront automatiquement remplacés à l'insertion)
+        // 2) mettre à jour la date à now()
+        arr.forEach(a => {
+            if (a.hasOwnProperty('id')) delete a.id;
+            // MàJ de la date
+            // if (a.hasOwnProperty('created_at')) delete a.created_at;
+            // Pour les tests : évite d'avoir des problèmes de doublon
+            if (a.hasOwnProperty('is_current')) delete a.is_current;
+        });
+        console.log("ajout en groupe de", arr)
+        try {
+            await supabase
+                .from(`${table}`)
+                .insert(arr, { returning: 'minimal' });
+        } catch (error) {
+            console.warn("Erreur insertion groupée :", error);
+        } finally {
+            if (table === 'tests') {
+                fetchTestsList();
+            }
+        }
+    }
+    const deleteTest = (ev) => {
+        let id = parseInt(ev.target.closest('button').dataset.remove);
+        // TODO: demande de confirmation par un modal
+        removeTestFromDb(id);
+    }
+
+    const removeTestFromDb = async function (id) {
+        console.log("Supprimer le test ", id)
+        // TODO: avant de supprimer un test, il faudra supprimer tous les résultats et les verbatim qui y font référence
+        try {
+            await supabase
+                .from('tests')
+                .delete()
+                .match({ id });
+            fetchTestsList();
+        } catch (error) {
+            console.warn("Erreur suppression test:", error)
+        }
+    }
+
+
+
+    // _________________ Fonctions Export/Import JSON _______________
     const exportJSON = async function (table) {
         // table to export ('tests' || 'quizs')
         console.log("export JSON de ", table)
@@ -168,28 +196,6 @@ function Home() {
         }
     }
 
-    const addBulk = async function (arr, table) {
-        // Préparation du array
-        // 1) supprimer les id enregistrés (ils seront automatiquement remplacés à l'insertion)
-        // 2) mettre à jour la date à now()
-        arr.forEach(a => {
-            if (a.hasOwnProperty('id')) delete a.id;
-            // MàJ de la date
-            // if (a.hasOwnProperty('created_at')) delete a.created_at;
-            // Pour les tests : évite d'avoir des problèmes de doublon
-            if (a.hasOwnProperty('is_current')) delete a.is_current;
-        });
-        console.log("ajout en groupe de", arr)
-        try {
-            await supabase
-                .from(`${table}`)
-                .insert(arr, { returning: 'minimal' });
-        } catch (error) {
-            console.warn("Erreur insertion groupée :", error);
-        } finally {
-            fetchTestsList();
-        }
-    }
 
     const importFile = function () {
         // Simule un click sur input[type=file] créé au passage pour obtenir le fichier à importer
@@ -244,6 +250,8 @@ function Home() {
         ev.preventDefault();
         exportJSON('tests');
     }
+
+    // _________________ Préparation rendu _______________
 
     let testsList = [];
     if (allTests.length) {
@@ -309,21 +317,21 @@ function Home() {
                         <th scope="col" className="col-1">Actif</th>
                         <th scope="col"
                             onClick={orderByName}
-                            className={`clickable ${(testsOrder === 'name') ? "table-info" : ''}`}
-                            title={nameAscending ? "Nom, par ordre croissant" : "Nom, par ordre décroissant"}
+                            className={`clickable ${(testsOrderBy === 'name') ? "table-info" : ''}`}
+                            title={testsOrderByNameAsc ? "Nom, par ordre croissant" : "Nom, par ordre décroissant"}
                         >
                             Nom
-                            {(testsOrder === 'name') && (nameAscending) && <ChevronDown />}
-                            {(testsOrder === 'name') && (!nameAscending) && <ChevronUp />}
+                            {(testsOrderBy === 'name') && (testsOrderByNameAsc) && <ChevronDown />}
+                            {(testsOrderBy === 'name') && (!testsOrderByNameAsc) && <ChevronUp />}
                         </th>
                         <th scope="col"
                             onClick={orderByDate}
-                            className={`clickable ${(testsOrder === 'created_at') ? 'table-info col-3' : 'col-3'}`}
-                            title={dateAscending ? "Date, par ordre croissant" : "Date, par ordre décroissant"}
+                            className={`clickable ${(testsOrderBy === 'created_at') ? 'table-info col-3' : 'col-3'}`}
+                            title={testsOrderByDateAsc ? "Date, par ordre croissant" : "Date, par ordre décroissant"}
                         >
                             Date
-                            {(testsOrder === 'created_at') && (dateAscending) && <ChevronDown />}
-                            {(testsOrder === 'created_at') && (!dateAscending) && <ChevronUp />}
+                            {(testsOrderBy === 'created_at') && (testsOrderByDateAsc) && <ChevronDown />}
+                            {(testsOrderBy === 'created_at') && (!testsOrderByDateAsc) && <ChevronUp />}
                         </th>
                         <th scope="col" className="col-1"></th>
                         <th scope="col" className="col-1"></th>

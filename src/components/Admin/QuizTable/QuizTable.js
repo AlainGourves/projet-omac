@@ -4,35 +4,36 @@ import { supabase } from '../../../supabaseClient';
 import { NavLink } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Edit, Trash } from 'react-feather';
 
-function QuizTable(props) {
+function QuizTable({ importJSON, exportJSON, dateOptions }) {
     const [allQuizs, setAllQuizs] = useState([]);
-    const [quizsOrder, setQuizsOrder] = useState('created_at');
-    const [dateAscending, setDateAscending] = useState(false);
-    const [titleAscending, setTitleAscending] = useState(true);
+    const [quizsOrderBy, setQuizsOrderBy] = useState('created_at');
+    const [quizsOrderByDateAsc, setQuizsOrderByDateAsc] = useState(false);
+    const [quizsOrderByTitleAsc, setQuizsOrderByTitleAsc] = useState(true);
 
-    const orderByName = (ev) => {
-        if (quizsOrder === 'created_at') {
-            setQuizsOrder('title');
+    const orderQuizsByTitle = (ev) => {
+        if (quizsOrderBy === 'created_at') {
+            setQuizsOrderBy('title');
             return;
         }
-        setTitleAscending(!titleAscending);
+        setQuizsOrderByTitleAsc(!quizsOrderByTitleAsc);
     }
 
-    const orderByDate = (ev) => {
-        if (quizsOrder === 'title') {
-            setQuizsOrder('created_at');
+    const orderQuizsByDate = (ev) => {
+        if (quizsOrderBy === 'title') {
+            setQuizsOrderBy('created_at');
             return;
         }
-        setDateAscending(!dateAscending)
+        setQuizsOrderByDateAsc(!quizsOrderByDateAsc)
     }
 
     // Récupère les infos sur les quizs
     const fetchQuizsList = async () => {
+        console.log("fetch")
         try {
             const { data } = await supabase
                 .from('quizs')
                 .select('id, created_at, title')
-                .order(quizsOrder, { ascending: (quizsOrder === 'title') ? titleAscending : dateAscending });
+                .order(quizsOrderBy, { ascending: (quizsOrderBy === 'title') ? quizsOrderByTitleAsc : quizsOrderByDateAsc });
             if (data) {
                 // transforme les strings `created_at` en Date
                 data.forEach((d) => {
@@ -51,26 +52,26 @@ function QuizTable(props) {
 
     // Tri des tests en fonction des états
     useEffect(() => {
-        console.log("order:", quizsOrder, "date", (dateAscending ? 'ASC' : 'DESC'), "nom", (titleAscending ? 'ASC' : 'DESC'))
-        switch (quizsOrder) {
+        console.log("order:", quizsOrderBy, "date", (quizsOrderByDateAsc ? 'ASC' : 'DESC'), "nom", (quizsOrderByTitleAsc ? 'ASC' : 'DESC'))
+        switch (quizsOrderBy) {
             case 'created_at':
                 // tri par date
                 console.log("par date")
                 setAllQuizs(allQuizs.sort((a, b) => {
-                    return (dateAscending) ? a.created_at - b.created_at : b.created_at - a.created_at;
+                    return (quizsOrderByDateAsc) ? a.created_at - b.created_at : b.created_at - a.created_at;
                 }));
                 break;
             case 'name':
                 // tri par nom
                 console.log("par titre")
                 setAllQuizs(allQuizs.sort((a, b) => {
-                    return (titleAscending) ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+                    return (quizsOrderByTitleAsc) ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
                 }))
                 break;
             default:
                 break;
         }
-    }, [allQuizs, quizsOrder, dateAscending, titleAscending])
+    }, [allQuizs, quizsOrderBy, quizsOrderByDateAsc, quizsOrderByTitleAsc])
 
 
 
@@ -96,64 +97,50 @@ function QuizTable(props) {
     }
 
     const exportQuizs = function () {
-        props.exportJSON('quizs');
+        exportJSON('quizs');
     }
 
     const importQuizs = function (ev) {
         ev.preventDefault();
-        props.importJSON('quizs');
+        importJSON('quizs');
         // TODO: rafraichir l'affichage
     }
 
-    let result = '';
+    let quizsList = [];
     if (allQuizs.length) {
-        // create a copy of the array
-        let quizsList = allQuizs.slice();
 
-        if ((quizsOrder === 'created_at' && dateAscending) || (quizsOrder === 'title' && titleAscending)) {
-            // reverse array
-            quizsList = quizsList.reverse();
-        }
-        result = (
-            <tbody>
-                {
-                    quizsList.map(({ id, title, date }) => (
-                        <tr key={id}>
-                            <td>{title}</td>
-                            <td>{new Intl.DateTimeFormat('fr-FR', props.dateOptions).format(date)}</td>
-                            <td>
-                                <NavLink
-                                    to={`/admin/quiz/${id}`}
-                                    data-edit={id}
-                                    className="icon"
-                                    title="Modifier ce quiz"
-                                >
-                                    <Edit />
-                                </NavLink>
-                            </td>
-                            <td>
-                                <button
-                                    className="icon"
-                                    type="button"
-                                    onClick={deleteQuiz}
-                                    data-remove={id}
-                                    title="Supprimer ce quiz"
-                                >
-                                    <Trash />
-                                </button>
-                            </td>
-                        </tr>
-                    ))
-                }
-            </tbody>
-        );
+        quizsList = allQuizs.map(({ id, title, date }) => (
+            <tr key={id}>
+                <td>{title}</td>
+                <td>{new Intl.DateTimeFormat('fr-FR', dateOptions).format(date)}</td>
+                <td>
+                    <NavLink
+                        to={`/admin/quiz/${id}`}
+                        data-edit={id}
+                        className="icon"
+                        title="Modifier ce quiz"
+                    >
+                        <Edit />
+                    </NavLink>
+                </td>
+                <td>
+                    <button
+                        className="icon"
+                        type="button"
+                        onClick={deleteQuiz}
+                        data-remove={id}
+                        title="Supprimer ce quiz"
+                    >
+                        <Trash />
+                    </button>
+                </td>
+            </tr>
+        ));
     } else {
-        result = (
-            <tbody>
-                <tr>
-                    <td colSpan="4" className="text-center text-info">Pas encore de quiz...</td>
-                </tr>
-            </tbody>
+        quizsList = (
+            <tr>
+                <td colSpan="4" className="text-center text-info">Pas encore de quiz...</td>
+            </tr>
         );
     }
 
@@ -167,28 +154,30 @@ function QuizTable(props) {
                 <thead className="table-light">
                     <tr>
                         <th scope="col"
-                            onClick={orderByName}
-                            className={`clickable ${(quizsOrder === 'title') ? 'table-info' : ''}`}
-                            title={titleAscending ? "Titre, par ordre croissant" : "Titre, par ordre décroissant"}
+                            onClick={orderQuizsByTitle}
+                            className={`clickable ${(quizsOrderBy === 'title') ? 'table-info' : ''}`}
+                            title={quizsOrderByTitleAsc ? "Titre, par ordre croissant" : "Titre, par ordre décroissant"}
                         >
                             Titre
-                            {(quizsOrder === 'title') && (titleAscending) && <ChevronDown />}
-                            {(quizsOrder === 'title') && (!titleAscending) && <ChevronUp />}
+                            {(quizsOrderBy === 'title') && (quizsOrderByTitleAsc) && <ChevronDown />}
+                            {(quizsOrderBy === 'title') && (!quizsOrderByTitleAsc) && <ChevronUp />}
                         </th>
                         <th scope="col"
-                            onClick={orderByDate}
-                            className={`clickable ${(quizsOrder === 'created_at') ? 'table-info col-3' : ' col-3'}`}
-                            title={dateAscending ? "Date, par ordre croissant" : "Date, par ordre décroissant"}
+                            onClick={orderQuizsByDate}
+                            className={`clickable ${(quizsOrderBy === 'created_at') ? 'table-info col-3' : ' col-3'}`}
+                            title={quizsOrderByDateAsc ? "Date, par ordre croissant" : "Date, par ordre décroissant"}
                         >
                             Date
-                            {(quizsOrder === 'created_at') && (dateAscending) && <ChevronDown />}
-                            {(quizsOrder === 'created_at') && (!dateAscending) && <ChevronUp />}
+                            {(quizsOrderBy === 'created_at') && (quizsOrderByDateAsc) && <ChevronDown />}
+                            {(quizsOrderBy === 'created_at') && (!quizsOrderByDateAsc) && <ChevronUp />}
                         </th>
                         <th scope="col" className="col-1"></th>
                         <th scope="col" className="col-1"></th>
                     </tr>
                 </thead>
-                {result}
+                <tbody>
+                    {quizsList}
+                </tbody>
             </table>
             <div className="d-flex justify-content-around">
                 <button
