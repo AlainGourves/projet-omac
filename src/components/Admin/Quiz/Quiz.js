@@ -1,5 +1,5 @@
 import './quiz.scss';
-// import db from '../../DB';
+import { supabase } from '../../../supabaseClient';
 import { useState, useEffect } from 'react';
 import { NavLink, useParams, Redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -15,69 +15,89 @@ function Quiz(props) {
         defaultValues: {
             'quizTitle': '',
             'quizDescription': '',
-            'ordering': 'alpha',
-            'isTrash': true,
-            'trashText': "Met dans la corbeille quand tu ne sais pas.",
+            'is_alpha': false,
+            'is_trash': false,
+            'trash_text': "Met dans la corbeille quand tu ne sais pas.",
             'itemsList': []
         }
     });
 
-    // useEffect(() => {
-    //     const getQuizById = async () => {
-    //         const quiz = await db.quizs.get(parseInt(id))
-    //             .catch(e => console.warn("erreur db", e));
-    //         if (quiz) {
-    //             setQuizId(quiz.id);
-    //             setValue('quizTitle', quiz.title);
-    //             setValue('quizDescription', quiz.description);
-    //             // Pour passer du array aux ligne du textarea :
-    //             const reducer = (prev, curr) => {
-    //                 if (curr.label !== prev) {
-    //                     return `${prev}\n${curr.label}`;
-    //                 } else {
-    //                     return prev
-    //                 }
-    //             }
-    //             const quizItems = quiz.items.reduce(reducer, quiz.items[0].label);
-    //             setValue('itemsList', quizItems.trim());
-    //             setValue('ordering', quiz.ordering);
-    //             setValue('isTrash', Boolean(quiz.isTrash));
-    //             if (quiz.isTrash) {
-    //                 setValue('trashText', quiz.trashText);
-    //             }
-    //         }
-    //     }
-    //     if (id) {
-    //         getQuizById();
-    //     }
-    // }, [id, setValue]);
+    useEffect(() => {
+        const getQuizById = async () => {
+            try {
+                const { data } = await supabase
+                    .from('quizs')
+                    .select()
+                    .eq('id', id)
+                    .single();
+                if (data) {
+                    setQuizId(data.id);
+                    setValue('quizTitle', data.title);
+                    setValue('quizDescription', data.description);
+                    // Pour passer du array aux lignes du textarea :
+                    const reducer = (prev, curr) => {
+                        if (curr.label !== prev) {
+                            return `${prev}\n${curr.label}`;
+                        } else {
+                            return prev
+                        }
+                    }
+                    const quizItems = data.items.reduce(reducer, data.items[0].label);
+                    setValue('itemsList', quizItems.trim());
+                    setValue('is_alpha', Boolean(data.is_alpha));
+                    setValue('is_trash', Boolean(data.is_trash));
+                    if (data.is_trash) {
+                        setValue('trash_text', data.trash_text);
+                    }
+                }
+            } catch (error) {
+                console.warn(error)
+            }
+        }
+        if (id) {
+            getQuizById();
+        }
+    }, [id, setValue]);
 
-    const watchTrash = watch("isTrash");
+    const watchTrash = watch("is_trash");
     const watchTitle = watch('quizTitle');
 
-    const saveQuiz = async function (quiz) {
-        // await db.quizs.add(quiz);
-        // TODO catch(e => )
+    const saveQuiz = async function (quiz, fn) {
+        try {
+            await supabase
+                .from('quizs')
+                .insert(quiz, { returning: 'minimal' })
+            // fonction à exécuter en cas de succès (redirection)
+            fn();
+        } catch (error) {
+            console.error("Erreur update du quiz:", error);
+        }
     }
 
-    const updateQuiz = async function (id, obj) {
-        // await db.quizs.update(id, obj);
-        // TODO catch(e => )
+    const updateQuiz = async function (id, obj, fn) {
+        try {
+            await supabase
+                .from('quizs')
+                .update(obj, { returning: 'minimal' })
+                .eq('id', id)
+            fn();
+        } catch (error) {
+            console.error("Erreur update du quiz:", error);
+        }
     }
 
     const onSubmit = (values) => {
         let quizTitle = `${values.quizTitle}`;
         let quizDescription = `${values.quizDescription}`;
-        let ordering = `${values.ordering}`;
-        let isTrash = Boolean(values.isTrash);
-        let trashText = (isTrash) ? `${values.trashText}` : '';
+        let is_alpha = Boolean(values.is_alpha);
+        let is_trash = Boolean(values.is_trash);
+        let trash_text = (is_trash) ? `${values.trash_text}` : '';
         const result = {
-            date: Date.now(),
             title: quizTitle,
             description: quizDescription,
-            ordering,
-            isTrash,
-            trashText,
+            is_alpha,
+            is_trash,
+            trash_text,
             items: []
         };
         let items = values.itemsList.trim().split('\n').sort();
@@ -86,13 +106,13 @@ function Quiz(props) {
         })
         if (quizId) {
             // Update d'un quiz existant
-            updateQuiz(quizId, result);
+            updateQuiz(quizId, result, () => setRedirect("/admin"));
             // success -> redirection vers l'accueil admin
-            setRedirect("/admin")
+
         } else {
             // Nouveau quiz
-            saveQuiz(result);
-            setRedirect("/admin")
+            saveQuiz(result, () => setRedirect("/admin"));
+
         }
     }
 
@@ -102,10 +122,20 @@ function Quiz(props) {
 
     const sorlList = () => {
         let items = getValues('itemsList');
-        items = items.trim()
+        items = items
             .split('\n')
-            .filter(item => item) // remove empty elements
+            .filter(item => item.trim()) // remove empty elements
             .sort()
+            .join('\n');
+        setValue('itemsList', items)
+    }
+
+    const capitalizeList = () => {
+        let items = getValues('itemsList');
+        items = items
+            .split('\n')
+            .filter(item => item.trim()) // remove empty elements
+            .map(([initial, ...rest]) => [initial.toUpperCase(), ...rest].join('')) // Capitalize
             .join('\n');
         setValue('itemsList', items)
     }
@@ -162,6 +192,11 @@ function Quiz(props) {
                         <div className="d-flex justify-content-end">
                             <button type="button"
                                 className="btn btn-outline-secondary btn-sm"
+                                onClick={capitalizeList}
+                            >
+                                Capitalize</button>
+                            <button type="button"
+                                className="btn btn-outline-secondary btn-sm"
                                 onClick={sorlList}
                             >
                                 Tri alpha</button>
@@ -169,26 +204,28 @@ function Quiz(props) {
                     </div>
 
                     <div className="col col-4">
-                            <h5>Ordre d'affichage :</h5>
+                        <h5>Ordre d'affichage :</h5>
                         <div role="group" className="form-check mb-3 border-bottom">
                             <label className="form-label d-block">
-                                <input type='radio' {...register("ordering", { required: true })} value='alpha' className="form-check-input" />
+                                <input type='radio' {...register("is_alpha", { required: true })} value='1' className="form-check-input" checked={Boolean('is_alpha')} />
                                 Alphabétique</label>
                             <label className="form-label d-block">
-                                <input type='radio' {...register("ordering", { required: true })} value='random' className="form-check-input" />
+                                <input type='radio' {...register("is_alpha", { required: true })} value='0' className="form-check-input" checked={Boolean('is_alpha')} />
                                 Aléatoire</label>
                         </div>
 
                         <div role="group">
                             <div className="form-check form-switch">
-                                <input className="form-check-input" type="checkbox" role="switch" {...register("isTrash")} />
-                                <label className="form-check-label" htmlFor="isTrash">Corbeille</label>
+                                <input className="form-check-input" type="checkbox" role="switch" {...register("is_trash")} />
+                                <label className="form-check-label" htmlFor="is_trash">Corbeille</label>
                             </div>
                             <div className="mb-3">
-                                <label className="form-label" htmlFor="trashText">Texte pour la corbeille :</label>
-                                <textarea {...register("trashText", {
-                                    disabled: !watchTrash
-                                })} className="form-control" />
+                                <label className="form-label" htmlFor="trash_text">Texte pour la corbeille :</label>
+                                <textarea {
+                                    ...register("trash_text", { disabled: !watchTrash })}
+                                    placeholder={watchTrash ? "Par ex. : \"Met dans la corbeille quand tu ne sais pas.\"" : undefined}
+                                    className="form-control"
+                                />
                             </div>
                         </div>
                     </div>

@@ -36,10 +36,10 @@ function QuizTable(props) {
     let quizsList = [];
     if (props.allQuizs.length) {
 
-        quizsList = props.allQuizs.map(({ id, title, date }) => (
+        quizsList = props.allQuizs.map(({ id, title, created_at }) => (
             <tr key={id}>
                 <td>{title}</td>
-                <td>{new Intl.DateTimeFormat('fr-FR', props.dateOptions).format(date)}</td>
+                <td>{new Intl.DateTimeFormat('fr-FR', props.dateOptions).format(created_at)}</td>
                 <td>
                     <NavLink
                         to={`/admin/quiz/${id}`}
