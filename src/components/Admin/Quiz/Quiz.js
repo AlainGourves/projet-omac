@@ -3,6 +3,9 @@ import { supabase } from '../../../supabaseClient';
 import { useState, useEffect } from 'react';
 import { NavLink, useParams, Redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import AlertMesg from '../../Utils/AlertMesg/AlertMesg';
 
 function Quiz(props) {
     // id passé en param, si c'est une modification
@@ -11,15 +14,30 @@ function Quiz(props) {
     // Pour rediriger sur /admin après enregistrement dans la base
     const [redirect, setRedirect] = useState(null);
 
-    const { register, handleSubmit, formState: { errors }, getValues, setValue, watch } = useForm({
+    // Pour la validation du formulaire
+    const schema = yup.object().shape({
+        quizTitle: yup.string().required("Merci de donner un titre au quiz."),
+        quizDescription: yup.string().required("Merci de donner les consignes du quiz."),
+        itemsList: yup.string().required("Merci de fournir les items du quiz."),
+        is_alpha: yup.boolean(),
+        is_trash: yup.boolean(),
+        trash_text: yup.string().when('is_trash', {
+            is: true,
+            then: yup.string().required("S'il y a une corbeille, fournir un texte d'explication de son usage.")
+        })
+    });
+
+    // itemsList: yup.array().of(yup.string()).required("Merci de fournir les items du quiz.")
+    const { register, handleSubmit, setError, formState: { errors }, getValues, setValue, watch } = useForm({
         defaultValues: {
             'quizTitle': '',
             'quizDescription': '',
             'is_alpha': false,
             'is_trash': false,
             'trash_text': "Met dans la corbeille quand tu ne sais pas.",
-            'itemsList': []
-        }
+            'itemsList': ''
+        },
+        resolver: yupResolver(schema),
     });
 
     useEffect(() => {
@@ -104,20 +122,31 @@ function Quiz(props) {
         items.forEach((val, idx) => {
             result.items.push({ 'id': idx, 'label': val });
         })
+        // Vérifier que items.length > 1
+        if (!items.length > 1) {
+            setError('itemsList', {
+                type: 'manual',
+                message: "Il n'y a qu'un item dans la liste."
+            }, { shouldFocus: true })
+            return;
+        }
+        // Vérifier qu'il n'y a pas de doublon
+        if (items.length !== [...new Set(items)].length) {
+            // `Set` stocke des valeurs uniques (https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Set)
+            setError('itemsList', {
+                type: 'manual',
+                message: "La liste contient des doublons."
+            }, { shouldFocus: true })
+            return;
+        }
         if (quizId) {
             // Update d'un quiz existant
-            updateQuiz(quizId, result, () => setRedirect("/admin"));
             // success -> redirection vers l'accueil admin
-
+            updateQuiz(quizId, result, () => setRedirect("/admin"));
         } else {
             // Nouveau quiz
             saveQuiz(result, () => setRedirect("/admin"));
-
         }
-    }
-
-    const onError = (errors, e) => {
-        console.log(errors, e);
     }
 
     const sorlList = () => {
@@ -140,17 +169,11 @@ function Quiz(props) {
         setValue('itemsList', items)
     }
 
-    // Error component
-    const errorMsg = "Le champ est obligatoire.";
-    const errorMessage = error => {
-        return <div className="error">{error}</div>;
-    }
-
     if (redirect) {
         return <Redirect to={redirect} />
     }
     return (
-        <form onSubmit={handleSubmit(onSubmit, onError)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
             <section className="config-list">
                 <h2>
                     {quizId ? `Modifier le quiz "${watchTitle}"` : "Créer un quiz"}
@@ -164,7 +187,9 @@ function Quiz(props) {
                             className="form-control"
                             placeholder="Titre du quiz"
                         />
-                        {errors.quizTitle && errorMessage(errorMsg)}
+                        {errors.quizTitle &&
+                            <AlertMesg message={errors.quizTitle?.message} />
+                        }
                     </div>
                 </div>
 
@@ -176,7 +201,9 @@ function Quiz(props) {
                             className="form-control"
                             placeholder="Consignes pour le quiz"
                         />
-                        {errors.quizDescription && errorMessage(errorMsg)}
+                        {errors.quizDescription &&
+                            <AlertMesg message={errors.quizDescription?.message} />
+                        }
                     </div>
                 </div>
 
@@ -189,6 +216,9 @@ function Quiz(props) {
                             className="form-control"
                             rows="10"
                         />
+                        {errors.itemsList &&
+                            <AlertMesg message={errors.itemsList?.message} />
+                        }
                         <div className="d-flex justify-content-end">
                             <button type="button"
                                 className="btn btn-outline-secondary btn-sm"
@@ -226,6 +256,9 @@ function Quiz(props) {
                                     placeholder={watchTrash ? "Par ex. : \"Met dans la corbeille quand tu ne sais pas.\"" : undefined}
                                     className="form-control"
                                 />
+                                {errors.trash_text &&
+                                    <AlertMesg message={errors.trash_text?.message} />
+                                }
                             </div>
                         </div>
                     </div>

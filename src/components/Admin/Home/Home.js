@@ -112,11 +112,11 @@ function Home() {
                     return (quizsOrderByDateAsc) ? a.created_at - b.created_at : b.created_at - a.created_at;
                 }));
                 break;
-            case 'name':
+            case 'title':
                 // tri par nom
                 console.log("par titre")
                 setAllQuizs(allQuizs.sort((a, b) => {
-                    return (quizsOrderByTitleAsc) ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+                    return (quizsOrderByTitleAsc) ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
                 }))
                 break;
             default:
@@ -346,7 +346,7 @@ function Home() {
                 orderQuizsByDate={orderQuizsByDate}
                 quizsOrderBy={quizsOrderBy}
                 quizsOrderByTitleAsc={quizsOrderByTitleAsc}
-                orderQuizsByDate={orderQuizsByDate}
+                quizsOrderByDateAsc={quizsOrderByDateAsc}
             />
         </div>
     );
