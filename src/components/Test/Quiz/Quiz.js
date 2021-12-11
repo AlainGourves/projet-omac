@@ -17,12 +17,12 @@ function Quiz(props) {
     const askConfirm = () => {
         setModal({
             show: true,
-            title: 'Titre du modal',
-            message: 'Est-ce que ça marche ?',
+            title: 'Confirmation',
+            message: 'Passé ce point, il ne sera plus possible de modifier vos réponses. Voulez-vous vraiment continuer ?',
             btnCancel: 'Annuler',
             btnOk: 'Continuer',
             fn: () => {
-                console.log("mais oui !")
+                // TODO: c'est là que le chronomètre doit s'arrêter
                 setModal({
                     ...modal,
                     show: false

@@ -9,18 +9,13 @@ function ListItem(props) {
         item: {
             id: props.id,
         },
-        // end: (item, monitor) => {
-        //     if (item && monitor.getDropResult()) {
-        //         console.log("end drag item:", item)
-        //     }
-        // },
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
         })
     }));
 
-    const removeDraggedItem = (idx) => {
-        props.updateDraggedItems(idx);
+    const removeItem = (idx) => {
+        props.removeFromDropped(idx);
     }
 
     return (
@@ -37,7 +32,7 @@ function ListItem(props) {
                 <button 
                     type="button"
                     className="btn"
-                    onClick={() => removeDraggedItem(props.id)}
+                    onClick={() => removeItem(props.id)}
                 >
                     <XCircle />
                 </button>

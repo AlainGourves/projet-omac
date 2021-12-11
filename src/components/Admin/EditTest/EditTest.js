@@ -1,6 +1,6 @@
 import './edit-test.scss';
 import { supabase } from '../../../supabaseClient';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { NavLink, useParams, Redirect } from 'react-router-dom';
 import { useForm, FormProvider, useFieldArray } from 'react-hook-form';
 import { DndProvider } from 'react-dnd';
@@ -17,6 +17,7 @@ function EditTest(props) {
     // id passé en param, si c'est une modification
     let { id } = useParams();
     const [testId, setTestId] = useState(0);
+    const [testName, setTestName] = useState('');
     // Pour rediriger sur /admin après enregistrement dans la base
     const [redirect, setRedirect] = useState(null);
     // Gestion du formulaire
@@ -47,66 +48,62 @@ function EditTest(props) {
     });
 
     // Gestion drag&drop
-    const [sourceItems, setSourceItems] = useState([]);
-    const [draggedItems, setDraggedItems] = useState([]);
+    const [allQuizs, setAllQuizs] = useState([]);
+
+    const getAllQuizs = useCallback(async () => {
+        // Récupère tous les quizs, classés du plus récent au plus ancien
+        try {
+            const { data } = await supabase
+                .from('quizs')
+                .select('id, title')
+                .order('created_at', { ascending: false });
+            if (data) {
+                // Ajoute une propriété isDragged (false par défaut)
+                setAllQuizs(data.map((q) => {
+                    return { 'isUsed': false, ...q }
+                }));
+            }
+        } catch (error) {
+            console.log("Erreur fetch quizs:", error);
+        }
+    }, [setAllQuizs]);
 
     useEffect(() => {
-        // Récupère tous les quizs, classés du plus récent au plus ancien
-        const getAllQuizs = async () => {
-            try {
-                const { data } = await supabase
-                    .from('quizs')
-                    .select('id, title')
-                    .order('created_at', { ascending: false });
-                if (data) {
-                    // créé une copie du array et ajoute une propriété isDragged (false par défaut)
-                    const draggableQuizs = data.map((q) => {
-                        return { 'isUsed': false, ...q }
-                    });
-                    setSourceItems(draggableQuizs)
-                }
-            } catch (error) {
-                console.log("Erreur fetch quizs:", error);
-            }
+        if (allQuizs.length === 0) {
+            getAllQuizs();
         }
-        getAllQuizs();
-    }, []);
+    }, [allQuizs, getAllQuizs]);
 
-    const updateSourceItems = (draggedId) => {
-        setSourceItems((arr) => {
-            const idx = arr.findIndex(obj => obj.id === draggedId);
-            if (idx !== -1 && !arr[idx].isUsed) {
-                const modifiedObj = Object.assign(arr[idx], { 'isUsed': true });
-                if (!draggedItems.find((el) => el.id === draggedId)) {
-                    // update draggedItems, en vérifiant que l'ID n'est pas déjà présent 
-                    setDraggedItems(draggedItems => [...draggedItems, modifiedObj])
-                }
-                const newArr = [
+    const removeFromDropped = (id) => {
+        // Remet isUsed: false pour l'objet correspondant
+        setAllQuizs((arr) => {
+            const idx = arr.findIndex(obj => obj.id === id);
+            if (idx !== -1 && arr[idx].isUsed) {
+                const modifiedObj = Object.assign(arr[idx], { 'isUsed': false });
+                return [
                     ...arr.slice(0, idx),
                     modifiedObj,
                     ...arr.slice(idx + 1)
-                ]
-                return newArr;
+                ];
             } else {
                 return arr;
             }
         })
     }
 
-    const updateDraggedItems = (theId) => {
-        // Enlève le quiz dont id=theId de draggedItems
-        setDraggedItems((arr) => arr.filter((obj) => obj.id !== theId))
-        // Dans sourceItems, met isUsed: flase pour l'objet correspondant
-        setSourceItems((arr) => {
-            const idx = arr.findIndex(obj => obj.id === theId);
-            if (idx !== -1 && arr[idx].isUsed) {
-                const modifiedObj = Object.assign(arr[idx], { 'isUsed': false });
-                const newArr = [
+    // Appelé quand un quiz est déposé dans la dropzone
+    const addToDropped = (id) => {
+        setAllQuizs((arr) => {
+            // cherche l'index correspondant dans allQuizs
+            const idx = arr.findIndex(obj => obj.id === id);
+            if (idx !== -1 && !arr[idx].isUsed) {
+                // Modifie la propriété `isUsed` à true
+                const modifiedObj = Object.assign(arr[idx], { 'isUsed': true });
+                return [
                     ...arr.slice(0, idx),
                     modifiedObj,
                     ...arr.slice(idx + 1)
-                ]
-                return newArr;
+                ];
             } else {
                 return arr;
             }
@@ -126,6 +123,7 @@ function EditTest(props) {
                     setTestId(data.id);
                     let theTest = {};
                     theTest.name = data.name;
+                    setTestName(theTest.name);
                     theTest.homeTitle = data.home.title;
                     theTest.homeDescription = data.home.description;
                     theTest.verbatim = [];
@@ -140,12 +138,11 @@ function EditTest(props) {
                     reset(theTest)
                     if (data.quizs_ids) {
                         const quizs_ids = data.quizs_ids;
-                        // quizs_ids.forEach((theId) => updateSourceItems(theId))
-                        setDraggedItems(quizs_ids.map((id) => {
+                        setAllQuizs((arr) => arr.map((item) => {
                             return {
-                                id,
-                                title: "Bob's your Uncle",
-                                isUsed: true,
+                                id: item.id,
+                                title: item.title,
+                                isUsed: (quizs_ids.includes(item.id))
                             }
                         }));
                     }
@@ -158,7 +155,7 @@ function EditTest(props) {
         if (id) {
             getTestById();
         }
-    }, [id, setDraggedItems, reset]);
+    }, [id, reset, setAllQuizs]) //allQuizs, setAllQuizs, reset]);
     // sourceItems -> pour que les quizs utlisés soient chargés en cas de modif
 
     const saveTest = async function (test, fn) {
@@ -191,7 +188,8 @@ function EditTest(props) {
             'title': `${values.homeTitle}`,
             'description': `${values.homeDescription}`
         }
-        let quizs_ids = draggedItems.map(item => item.id);
+        // Array des ID de allQuizs dont `isUsed` est true
+        let quizs_ids = allQuizs.filter(item => item.isUsed).map(item => item.id);
         // validation : le array doit contenir au moins un item
         if (quizs_ids.length < 1) {
             setError('quizs_ids', {
@@ -242,7 +240,7 @@ function EditTest(props) {
     }
     return (
         <section>
-            <h1>{testId ? "Modifier le" : "Créer un"} test {testId ? `${testId}` : ''}</h1>
+            <h1>{testId ? "Modifier le" : "Créer un"} test {testId && <em>{testName}</em>}</h1>
             <FormProvider {...methods} >
                 {/* pass all methods into the context */}
                 <form onSubmit={methods.handleSubmit(onSubmit)}>
@@ -313,9 +311,9 @@ function EditTest(props) {
                             <div className="row mb-3">
                                 <div className="col-md-5 ul-quizs">
                                     <QuizDropZone
-                                        items={draggedItems}
-                                        updateSourceItems={updateSourceItems}
-                                        updateDraggedItems={updateDraggedItems}
+                                        quizs={allQuizs}
+                                        addToDropped={addToDropped}
+                                        removeFromDropped={removeFromDropped}
                                     />
                                     {errors.quizs_ids &&
                                         <AlertMesg message={errors.quizs_ids?.message} />
@@ -325,7 +323,10 @@ function EditTest(props) {
                                     <ArrowLeft className="fs-1 text-primary" />
                                 </div>
                                 <div className="col-md-5 ul-quizs">
-                                    <QuizList items={sourceItems.filter((q) => !q.isUsed)} />
+                                    <QuizList
+                                        quizs={allQuizs}
+                                    // items={sourceItems.filter((q) => !q.isUsed)}
+                                    />
                                 </div>
                             </div>
                         </DndProvider>
@@ -383,7 +384,6 @@ function EditTest(props) {
                 </form>
             </FormProvider>
         </section>
-
     )
 }
 

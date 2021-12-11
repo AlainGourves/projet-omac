@@ -13,7 +13,7 @@ const QuizDropZone = function (props) {
     }));
 
     function updateLists(obj) {
-        props.updateSourceItems(obj.id)
+        props.addToDropped(obj.id)
     }
 
     return (
@@ -21,14 +21,14 @@ const QuizDropZone = function (props) {
             ref={dropRef}
             className={isOver ? "dropzone over" : "dropzone"}
         >
-            {(props.items.length > 0) &&
-                props.items.map(({ id, title, isUsed }) => (
-                    <ListItem 
+            {(props.quizs.length > 0) &&
+                props.quizs.map(({ id, title, isUsed }) => (
+                    isUsed && <ListItem 
                         key={id}
                         id={id}
                         title={title}
                         isUsed={isUsed}
-                        updateDraggedItems={props.updateDraggedItems}
+                        removeFromDropped={props.removeFromDropped}
                     />
                 ))
             }

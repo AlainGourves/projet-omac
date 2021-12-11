@@ -10,7 +10,6 @@ import Verbatim from './Verbatim/Verbatim';
 import Greetings from './Greetings/Greetings';
 import test from '../../data/test.json';
 import quizsData from '../../data/quizs.json';
-// import { useAuth } from '../../contexts/Auth'
 // import { supabase } from '../../supabaseClient';
 
 function Test() {
@@ -60,7 +59,7 @@ function Test() {
                     <User />
                 </Route>
 
-                <Route exact path='/'>
+                <Route exact path='/test'>
                     <Home
                         title={test.home.title}
                         description={test.home.description} />

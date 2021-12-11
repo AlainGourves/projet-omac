@@ -1,6 +1,6 @@
 import './home.scss';
 import { supabase } from '../../../supabaseClient';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import TestTable from '../TestTable/TestTable';
 import QuizTable from '../QuizTable/QuizTable';
 
@@ -27,7 +27,7 @@ function Home() {
     }
 
     // Récupère les infos sur les tests
-    const fetchTestsList = async () => {
+    const fetchTestsList = useCallback(async () => {
         try {
             const { data, error } = await supabase
                 .from('tests')
@@ -47,11 +47,11 @@ function Home() {
         } catch (error) {
             console.log("failed to fetch all tests:", error);
         }
-    }
+    }, [testsOrderBy, testsOrderByNameAsc, testsOrderByDateAsc])
 
     useEffect(() => {
         fetchTestsList();
-    }, []);
+    }, [fetchTestsList]);
 
     // Récupère les infos sur les quizs
     const fetchQuizsList = async () => {

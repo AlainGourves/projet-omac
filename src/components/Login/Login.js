@@ -72,7 +72,7 @@ const Login = function () {
 
             console.log("from login", user)
             getUser(user);
-            history.push('/');
+            history.push('/test');
         }
     }
     const onError = (errors) => {
