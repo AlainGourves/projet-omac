@@ -8,7 +8,7 @@ import AdminMenu from './AdminMenu/AdminMenu';
 import Home from './Home/Home';
 import Quiz from './Quiz/Quiz';
 import ExportResults from './ExportResults/ExportResults';
-// import EditTest from './EditTest/EditTest';
+import EditTest from './EditTest/EditTest';
 
 const Admin = function (props) {
     // const { user } = useAuth();
@@ -43,15 +43,12 @@ const Admin = function (props) {
                     <Route path="/admin/quiz/:id">
                         <Quiz />
                     </Route>
-                    {/*
                     <Route exact path="/admin/edit-test">
                         <EditTest />
                     </Route>
                     <Route path="/admin/edit-test/:id">
                         <EditTest />
                     </Route>
-                    */}
-
                     <Route path="/admin/export">
                         <ExportResults />
                     </Route> 

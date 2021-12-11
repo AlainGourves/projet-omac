@@ -3,12 +3,8 @@
     padding-left: .5rem;
     user-select: none;
 
-    &.dragged {
-        background-color: deepskyblue;
-    }
-
-    & span {
-        color: var(--bs-gray-600);
+    & svg {
+        color: var(--bs-primary);
 
         &:hover {
             cursor: pointer;

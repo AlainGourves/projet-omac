@@ -1,5 +1,7 @@
 import './list-item.scss';
 import { useDrag } from "react-dnd";
+import { XCircle, MoreVertical } from 'react-feather';
+
 
 function ListItem(props) {
     const [{ isDragging }, dragRef] = useDrag(() => ({
@@ -28,9 +30,7 @@ function ListItem(props) {
             className={isDragging ? "list-group-item d-flex disabled" : "list-group-item d-flex"}
         >
             {!props.isUsed &&
-                <span className="material-icons grab">
-                    drag_indicator
-                </span>
+                <MoreVertical className='grab' />
             }
             {props.title}
             {props.isUsed &&
@@ -39,9 +39,7 @@ function ListItem(props) {
                     className="btn"
                     onClick={() => removeDraggedItem(props.id)}
                 >
-                    <span className="material-icons">
-                        clear
-                    </span>
+                    <XCircle />
                 </button>
             }
         </li>
