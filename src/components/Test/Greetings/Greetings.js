@@ -2,7 +2,7 @@ import './greetings.scss';
 import { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
-function Greetings() {
+function Greetings({ greetings }) {
     const [redirect, setRedirect] = useState(null);
 
 
@@ -19,7 +19,7 @@ function Greetings() {
     }
     return (
         <div className="carte row text-center">
-            <h1>Merci !</h1>
+            <h1>{greetings}</h1>
             <form onSubmit={onSubmit}>
                 <button type='submit' className="btn btn-primary">Fin</button>
             </form>

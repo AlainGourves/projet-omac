@@ -26,8 +26,8 @@ function Quiz(props) {
             then: yup.string().required("S'il y a une corbeille, fournir un texte d'explication de son usage.")
         })
     });
+    // TODO: itemsList: yup.array().of(yup.string()).required("Merci de fournir les items du quiz.")
 
-    // itemsList: yup.array().of(yup.string()).required("Merci de fournir les items du quiz.")
     const { register, handleSubmit, setError, formState: { errors }, getValues, setValue, watch } = useForm({
         defaultValues: {
             'quizTitle': '',

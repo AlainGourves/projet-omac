@@ -87,13 +87,10 @@ function Home() {
 
     const onSubmit = async (vals) => {
         // Création de `uniqueId` : initiales + (année, mois, jour collés)
-        console.log(vals)
-        // const d = vals.birthDate.split('-').join('');
         const uniqueId = vals.initials.toUpperCase() 
                             + vals.birthDate.getFullYear() 
                             + (vals.birthDate.getMonth() + 1).toString().padStart(2, '0')
                             + (vals.birthDate.getDate()).toString().padStart(2, '0');
-        console.log("id: ", uniqueId)
         const obj = {
             'uniqueId': uniqueId,
             'birthDate': vals.birthDate,

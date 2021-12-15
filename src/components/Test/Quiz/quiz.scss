@@ -1,0 +1,122 @@
+// Include Bootstrap to load mixins
+@import 'bootstrap/scss/bootstrap';
+$clr-label: deeppink;
+
+.rose {
+    background-color: deeppink;
+    min-height: 40vh;
+}
+
+.listItems {
+    @include media-breakpoint-up(sm) {
+        columns: 3;
+    }
+
+    @include media-breakpoint-up(lg) {
+        columns: 1;
+    }
+}
+
+.quizMap__wrap {
+    position: relative;
+    min-height: 100%;
+    display: flex;
+}
+
+$l: 25px;
+.quizMap {
+    position: relative;
+    flex: 1;
+    background-color: deepskyblue;
+    background-image: repeating-linear-gradient(to right,
+        transparent,
+        transparent #{$l - 1},
+        #fff $l),
+    repeating-linear-gradient(to bottom,
+        transparent,
+        transparent #{$l - 1},
+        #fff $l);
+    transition: background-color .125s ease-in-out,
+                box-shadow .125s ease-in-out;
+
+    &.over {
+        box-shadow: 0 0 0 .25em yellowgreen;
+    }
+
+    & p {
+        position:absolute;
+        width: 100%;
+        height: auto;
+        bottom: 0;
+        color: rgba(#fff,.75);
+        padding: .25em;
+        font-weight: 700;
+        font-size: 2rem;
+        line-height: 1.2;
+        text-align: center;
+    }
+}
+
+$mapItem-width: 6em;
+.mapItem {
+    position: absolute;
+    width: $mapItem-width;
+    min-width: $mapItem-width;
+    flex-wrap: nowrap;
+
+    &>span {
+        // le span est nécessaire pour pouvoir tronquer le texte ! cf.
+        // https://css-tricks.com/flexbox-truncated-text/
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    &:hover {
+        z-index: 100;
+        box-shadow: .25em .25em .25em rgba(0,0,0,.25);
+        // width: max($mapItem-width, max-content);
+        width: max-content;
+    }
+
+    // border: 1px solid rgba(#fff, 50%);
+    // width: max-content;
+    border-radius: .25em;
+    margin: 0.25em auto 0.25em 0;
+    padding: 0.125em .75em 0.125em 0;
+    user-select: none;
+    background-color: $clr-label;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    & svg.mark {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        bottom: 0;
+        left: #{$mapItem-width / 2};
+        transform: translate(-50%, 50%);
+        padding: 0;
+        background-color: transparent;
+        fill: $clr-label;
+        color: rgba(#fff, 75%);
+    }
+
+    & svg.dragHandle {
+        overflow: visible;
+
+        margin: auto .25em auto .125em;
+        transition: background-color 250ms ease-in-out;
+        color: rgba(0, 0, 0, .5);
+    }
+
+    &:hover {
+        cursor: grab;
+
+        & svg.dragHandle {
+            background-color: rgba(#fff, 25%);
+            border-radius: .25em;
+        }
+    }
+}

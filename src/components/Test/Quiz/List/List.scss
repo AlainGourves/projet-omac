@@ -1,0 +1,33 @@
+.quiz-items-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0
+}
+
+.quiz-item__label {
+    // border: 1px solid rgba(#fff, 50%);
+    width: max-content;
+    border-radius: .25em;
+    margin: 0.25em auto 0.25em 0;
+    padding: 0.125em .75em 0.125em 0;
+    user-select: none;
+    background-color: rgba(#fff, 25%);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    & svg {
+        margin: auto .25em auto .125em;
+        transition: background-color 250ms ease-in-out;
+        color: rgba(0, 0, 0, .5);
+    }
+
+    &:hover {
+        cursor: grab;
+
+        & svg {
+            background-color: rgba(#fff, 25%);
+            border-radius: .25em;
+        }
+    }
+}

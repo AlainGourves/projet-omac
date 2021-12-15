@@ -47,7 +47,7 @@ function App() {
 
     return (
         <ModalProvider>
-            <div className="container min-vh-100 d-flex justify-content-center align-items-center">
+            <div className="container-md min-vh-100 d-flex flex-column justify-content-center align-items-center">
                 {isAdmin && <Dashboard prenom={prenom} nom={nom} />}
                 <Switch>
                     {/* <Route path="/inscription" component={SignUp} /> */}
