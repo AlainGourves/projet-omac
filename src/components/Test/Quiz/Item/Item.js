@@ -33,7 +33,7 @@ function Item(props) {
             </div> */}
             <div
                 ref={dragRef}
-                className="quiz-item__label"
+                className={`quiz-item__label ${isDragging ? 'over':''}`}
                 data-id={props.infos.id}
             >
                 <MoreVertical />{props.infos.label}

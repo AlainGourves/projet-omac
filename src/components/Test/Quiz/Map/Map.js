@@ -1,18 +1,18 @@
 import './map.scss';
-import { useRef } from 'react';
+import { forwardRef } from 'react';
 import { useDrop } from 'react-dnd';
 import DroppedItem from '../DroppedItem/DroppedItem';
 
-const Map = ({ answers, addAnswer }) => {
+const Map = forwardRef(({ answers, addAnswer }, mapRef) => {
 
-    const mapRef = useRef(); // référence au DIV qui englobe Map pour pouvoir récupérer ses dimensions
+    // const mapRef = useRef(); // référence au DIV qui englobe Map pour pouvoir récupérer ses dimensions
 
     const [{ isOver, canDrop }, dropRef] = useDrop(() => ({
         accept: "listItem",
         drop: (item, monitor) => {
             let dropped = monitor.getItem();
             let pos = monitor.getClientOffset(); // last recorded { x, y } client offset of the pointer
-            console.log(mapRef.current.getBoundingClientRect())
+            // console.log(mapRef.current.getBoundingClientRect())
             addAnswer({
                 ...dropped,
                 ...pos,
@@ -25,35 +25,36 @@ const Map = ({ answers, addAnswer }) => {
         }),
     }));
 
-    function myFunc(ev) {
-        const rect = ev.target.getBoundingClientRect();
-        console.log("xMouse:", ev.clientX, "yMouse:", ev.clientY);
-        console.log("x:", ev.clientX - rect.x, "y:", ev.clientY - rect.y);
-    }
+    // function myFunc(ev) {
+    //     const rect = ev.target.getBoundingClientRect();
+    //     console.log("xMouse:", ev.clientX, "yMouse:", ev.clientY);
+    //     console.log("x:", ev.clientX - rect.x, "y:", ev.clientY - rect.y);
+    // }
 
     return (
         <div ref={mapRef} className='quizMap__wrap'>
             <div
                 className={(isOver) ? 'quizMap over' : 'quizMap'}
                 ref={dropRef}
-                onClick={myFunc}
+                // onClick={myFunc}
                 style={{
                     backgroundColor: isOver ? 'purple' : ''
                 }}
             >
-                {answers.map((ans) => (
+                {answers.map((ans, idx) => (
                     <DroppedItem
                         key={ans.id}
                         id={ans.id}
                         label={ans.label}
                         x={ans.x}
                         y={ans.y}
+                        z={idx}
                     />)
                 )}
                 <p>{canDrop ? 'Prêt' : 'Déposer ici'}</p>
             </div>
         </div>
     );
-}
+})
 
 export default Map;

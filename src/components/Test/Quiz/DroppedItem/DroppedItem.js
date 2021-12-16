@@ -1,13 +1,14 @@
 import { MoreVertical, XCircle } from "react-feather";
 
-const DroppedItem = ({id, label, x, y}) => {
+const DroppedItem = ({id, label, x, y, z}) => {
 
     return (
         <div
             key={id}
             data-label={label}
+            data-id={id}
             className='mapItem'
-            style={{left: `${x}px`, top: `${y}px`,}}
+            style={{left: `${x}%`, top: `${y}%`, zIndex: `${z +10}`, }}
         >
             <MoreVertical className='dragHandle' />
             <span>{label}</span>

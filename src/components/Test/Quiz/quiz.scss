@@ -54,6 +54,7 @@ $l: 25px;
         font-size: 2rem;
         line-height: 1.2;
         text-align: center;
+        z-index: 1;
     }
 }
 
@@ -73,16 +74,15 @@ $mapItem-width: 6em;
     }
 
     &:hover {
-        z-index: 100;
+        z-index: 999 !important;
         box-shadow: .25em .25em .25em rgba(0,0,0,.25);
         // width: max($mapItem-width, max-content);
         width: max-content;
     }
 
     // border: 1px solid rgba(#fff, 50%);
-    // width: max-content;
     border-radius: .25em;
-    margin: 0.25em auto 0.25em 0;
+    margin: 0;
     padding: 0.125em .75em 0.125em 0;
     user-select: none;
     background-color: $clr-label;

@@ -1,5 +1,5 @@
 import './quiz.scss';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useModal } from '../../../contexts/ModalContext';
 import { DndProvider } from 'react-dnd';
@@ -10,16 +10,50 @@ import Map from './Map/Map';
 function Quiz({ quizs, getElapsedTime, ...props }) {
     const { id } = useParams();
 
-    // Récupère les infos du quiz :
-    const quiz = quizs[id];
+    // Stocke les infos du quiz :
+    const [quiz, setQuiz] = useState(null);
+
+    useEffect(()=>{
+        const shuffleArray = (arr) => {
+            // Fisher–Yates shuffle (plus efficace que d'utiliser simplement la fonction random())
+            // ref : https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                // Array destructuring
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        if (quizs[id]) {
+            // randomize la liste si besoin
+            let items = (!quizs[id].is_alpha) ? shuffleArray(quizs[id].items.slice()) : quizs[id].items
+            setQuiz({
+                ...quizs[id],
+                items
+            })
+        }
+    }, [id, quizs]);
 
     const [modal, setModal] = useModal();
 
     const history = useHistory();
 
+    // référence au DIV qui englobe Map pour pouvoir récupérer ses dimensions
+    const mapRef = useRef();
+
     // réponses
     const [answers, setAnswers] = useState([]);
-    const addAnswer = (obj) => setAnswers(answers => [...answers, obj]);
+    const addAnswer = (obj) => {
+        if (mapRef.current) {
+            const rect = mapRef.current.getBoundingClientRect();
+            // calcul de la position dans Map en pourcentage
+            // TODO: récupérer width/2 & height de .mapItem pour les mettre à la place des valeurs en dur 48 & 28
+            obj.x = (obj.x - rect.x - 48)/rect.width*100;
+            obj.y = (obj.y - rect.y - 28)/rect.height*100;
+            setAnswers(answers => [...answers, obj])
+        }
+    };
 
     // Routage :
     let nextStep;
@@ -62,6 +96,12 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
         }
     }, [getElapsedTime, id]);
 
+    if (!quiz) {
+        return (
+            <h1>Chargement...</h1>
+        )
+    }
+
     return (
 
         <div className='container-md rose'>
@@ -72,9 +112,10 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
             <main className='row mb-3'>
                 <DndProvider backend={HTML5Backend}>
                     <div className='quizMap__container col-lg-9'>
-                        <Map 
+                        <Map
                             answers={answers}
                             addAnswer={addAnswer}
+                            ref={mapRef}
                         />
                     </div>
                     <div className='listItems col'>
