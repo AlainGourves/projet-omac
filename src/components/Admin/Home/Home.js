@@ -54,8 +54,7 @@ function Home() {
     }, [fetchTestsList]);
 
     // Récupère les infos sur les quizs
-    const fetchQuizsList = async () => {
-        console.log("fetch")
+    const fetchQuizsList = useCallback(async () => {
         try {
             const { data } = await supabase
                 .from('quizs')
@@ -71,11 +70,11 @@ function Home() {
         } catch (error) {
             console.log("failed to fetch all quizs:", error);
         }
-    }
+    }, [quizsOrderBy, quizsOrderByDateAsc, quizsOrderByTitleAsc])
 
     useEffect(() => {
         fetchQuizsList();
-    }, []);
+    }, [fetchQuizsList]);
 
     // _________________ Fonctions de tri _______________
     // Tri des tests en fonction des états
