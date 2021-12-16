@@ -1,3 +1,5 @@
+$clr-label: hsl(105, 60%, 65%);
+
 .quiz-items-list {
     list-style-type: none;
     margin: 0;
@@ -11,12 +13,14 @@
     margin: 0.25em auto 0.25em 0;
     padding: 0.125em .75em 0.125em 0;
     user-select: none;
-    background-color: rgba(#fff, 25%);
+    background-color: $clr-label;
     display: flex;
     justify-content: flex-start;
     align-items: center;
 
     & svg {
+        width: 1.5em;
+        height: 1.5em;
         margin: auto .25em auto .125em;
         transition: background-color 250ms ease-in-out;
         color: rgba(0, 0, 0, .5);

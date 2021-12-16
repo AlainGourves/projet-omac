@@ -321,37 +321,41 @@ function Home() {
 
     return (
         <div>
-            <h1>Acceuil Admin</h1>
-            <h2>Tests</h2>
-            <p>Sélectionner le test à activer, en modifier un ou en créer un nouveau.</p>
-            <TestTable
-                allTests={allTests}
-                currentTest={currentTest}
-                changeCurrentTest={changeCurrentTest}
-                removeTestFromDb={removeTestFromDb}
-                dateOptions={dateOptions}
-                exportJSON={exportJSON}
-                importJSON={importJSON}
-                orderTestsByName={orderTestsByName}
-                orderTestsByDate={orderTestsByDate}
-                testsOrderBy={testsOrderBy}
-                testsOrderByDateAsc={testsOrderByDateAsc}
-                testsOrderByNameAsc={testsOrderByNameAsc}
-            />
+            <h1 className='mb-5'>Gestion des tests et quizs</h1>
+            <section className='mb-5'>
+                <h2>Tests</h2>
+                <p>Sélectionner le test à activer, en modifier un ou en créer un nouveau.</p>
+                <TestTable
+                    allTests={allTests}
+                    currentTest={currentTest}
+                    changeCurrentTest={changeCurrentTest}
+                    removeTestFromDb={removeTestFromDb}
+                    dateOptions={dateOptions}
+                    exportJSON={exportJSON}
+                    importJSON={importJSON}
+                    orderTestsByName={orderTestsByName}
+                    orderTestsByDate={orderTestsByDate}
+                    testsOrderBy={testsOrderBy}
+                    testsOrderByDateAsc={testsOrderByDateAsc}
+                    testsOrderByNameAsc={testsOrderByNameAsc}
+                />
+            </section>
 
-            <h2>Quizs</h2>
-            <QuizTable
-                allQuizs={allQuizs}
-                removeQuizFromDb={removeQuizFromDb}
-                dateOptions={dateOptions}
-                exportJSON={exportJSON}
-                importJSON={importJSON}
-                orderQuizsByTitle={orderQuizsByTitle}
-                orderQuizsByDate={orderQuizsByDate}
-                quizsOrderBy={quizsOrderBy}
-                quizsOrderByTitleAsc={quizsOrderByTitleAsc}
-                quizsOrderByDateAsc={quizsOrderByDateAsc}
-            />
+            <section>
+                <h2>Quizs</h2>
+                <QuizTable
+                    allQuizs={allQuizs}
+                    removeQuizFromDb={removeQuizFromDb}
+                    dateOptions={dateOptions}
+                    exportJSON={exportJSON}
+                    importJSON={importJSON}
+                    orderQuizsByTitle={orderQuizsByTitle}
+                    orderQuizsByDate={orderQuizsByDate}
+                    quizsOrderBy={quizsOrderBy}
+                    quizsOrderByTitleAsc={quizsOrderByTitleAsc}
+                    quizsOrderByDateAsc={quizsOrderByDateAsc}
+                />
+            </section>
         </div>
     );
 }

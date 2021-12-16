@@ -210,7 +210,8 @@ function Quiz(props) {
                 <h3>Liste</h3>
                 <div className="row">
                     <div className="col col-7">
-                        <p>Un item par ligne, l'ordre de saisie ne compte pas.</p>
+                        <p>Un item par ligne.<br />
+                            L'ordre de saisie ne compte pas, la liste est stockée par ordre alphabétique et l'affichage final se fait en fonction du choix ci-contre.</p>
                         <textarea
                             {...register("itemsList", { required: true })}
                             className="form-control"
@@ -219,9 +220,9 @@ function Quiz(props) {
                         {errors.itemsList &&
                             <AlertMesg message={errors.itemsList?.message} />
                         }
-                        <div className="d-flex justify-content-end">
+                        <div className="d-flex justify-content-end mt-1">
                             <button type="button"
-                                className="btn btn-outline-secondary btn-sm"
+                                className="btn btn-outline-secondary btn-sm me-1"
                                 onClick={capitalizeList}
                             >
                                 Capitalize</button>
@@ -231,6 +232,9 @@ function Quiz(props) {
                             >
                                 Tri alpha</button>
                         </div>
+                        <div className="alert alert-warning mt-1">
+                                "Aide à la saisie", pour trier les items ou mettre en Cap la première lettre de chaque ligne. Possible d'ajouter d'autres fonctions au besoin.
+                            </div>
                     </div>
 
                     <div className="col col-4">
@@ -259,6 +263,9 @@ function Quiz(props) {
                                 {errors.trash_text &&
                                     <AlertMesg message={errors.trash_text?.message} />
                                 }
+                            </div>
+                            <div className="alert alert-warning">
+                                Voir si cette histoire de corbeille peut être utile. De toute façon, c'est désactivé par défaut.
                             </div>
                         </div>
                     </div>

@@ -12,7 +12,6 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
 
     // Stocke les infos du quiz :
     const [quiz, setQuiz] = useState(null);
-
     useEffect(()=>{
         const shuffleArray = (arr) => {
             // Fisher–Yates shuffle (plus efficace que d'utiliser simplement la fonction random())
@@ -27,7 +26,9 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
 
         if (quizs[id]) {
             // randomize la liste si besoin
-            let items = (!quizs[id].is_alpha) ? shuffleArray(quizs[id].items.slice()) : quizs[id].items
+            let items = (!quizs[id].is_alpha) ? shuffleArray(quizs[id].items.slice()) : quizs[id].items;
+            // Ajoute une propriété pour savoir si l'item est draggable (true par défaut)
+            items.forEach(item => item.isDraggable = true)
             setQuiz({
                 ...quizs[id],
                 items
@@ -46,6 +47,18 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
     const [answers, setAnswers] = useState([]);
     const addAnswer = (obj) => {
         if (mapRef.current) {
+            // Changer la propriété isDraggable de l'item correspondant dans la liste
+            let id = obj.id;
+            setQuiz((arr) => {
+                // trouver l'indice dans quiz.items
+                const idx = arr.items.findIndex(el => el.id === id);
+                let newItems = arr.items.slice(); // copie de l'array
+                newItems[idx].isDraggable = false;
+                return {
+                    ...arr,
+                    items: newItems
+                }
+            })
             const rect = mapRef.current.getBoundingClientRect();
             // calcul de la position dans Map en pourcentage
             // TODO: récupérer width/2 & height de .mapItem pour les mettre à la place des valeurs en dur 48 & 28
@@ -103,14 +116,14 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
 
     return (
 
-        <div className='container-md rose'>
+        <div className='container-md'>
             <header className='row text-center my-3'>
                 <h1>{quiz.title}</h1>
                 <p>{quiz.description}</p>
             </header>
             <main className='row mb-3'>
                 <DndProvider backend={HTML5Backend}>
-                    <div className='quizMap__container col-lg-9'>
+                    <div className='quizMap__container col-lg-9 min-vh-75'>
                         <Map
                             answers={answers}
                             addAnswer={addAnswer}

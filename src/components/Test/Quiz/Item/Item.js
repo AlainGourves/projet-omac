@@ -9,6 +9,7 @@ function Item(props) {
         item: {
             id: props.infos.id,
             label: props.infos.label,
+            isDraggable: props.infos.isDraggable,
         },
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
@@ -19,22 +20,11 @@ function Item(props) {
         <li
             className="quiz-item"
             key={props.infos.id}
-            
-            
         >
-            {/* <div
-                className="item__token"
-                ref={dragRef}
-                style={{
-                    color: isDragging ? "green !important" : "",
-                }}
-            >
-                
-            </div> */}
             <div
                 ref={dragRef}
                 className={`quiz-item__label ${isDragging ? 'over':''}`}
-                data-id={props.infos.id}
+                // data-id={props.infos.id}
             >
                 <MoreVertical />{props.infos.label}
             </div>

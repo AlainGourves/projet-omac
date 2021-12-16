@@ -4,7 +4,8 @@ function ExportResults() {
 
     return (
         <section>
-            <p>Config et export des résultats</p>
+            <h2>Export des résultats</h2>
+            <p>Affichage des tests enregistrés pour sélectionner les résultats à exporter en fichier CSV</p>
         </section>
     );
 }

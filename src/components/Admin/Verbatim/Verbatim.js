@@ -19,6 +19,7 @@ function Verbatim(props) {
                         onClick={() => {
                             props.removeVerbatim(props.count)
                         }}
+                        title="Supprimer ce verbatim"
                     >
                         <XCircle />
                     </button>

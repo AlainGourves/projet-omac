@@ -1,4 +1,3 @@
-import './map.scss';
 import { forwardRef } from 'react';
 import { useDrop } from 'react-dnd';
 import DroppedItem from '../DroppedItem/DroppedItem';
@@ -29,9 +28,6 @@ const Map = forwardRef(({ answers, addAnswer }, mapRef) => {
             <div
                 className={(isOver) ? 'quizMap over' : 'quizMap'}
                 ref={dropRef}
-                style={{
-                    backgroundColor: isOver ? 'purple' : ''
-                }}
             >
                 {answers.map((ans, idx) => (
                     <DroppedItem

@@ -1,12 +1,10 @@
 @use "sass:math";
+@use "sass:color";
 // Include Bootstrap to load mixins
 @import 'bootstrap/scss/bootstrap';
-$clr-label: deeppink;
-
-.rose {
-    background-color: deeppink;
-    min-height: 40vh;
-}
+$clr-map: deepskyblue;
+$clr-label: hsl(105, 60%, 65%);
+$mapItem-width: 6em;
 
 .listItems {
     @include media-breakpoint-up(sm) {
@@ -18,17 +16,23 @@ $clr-label: deeppink;
     }
 }
 
+.quizMap__container {
+    min-height: 75vh;
+    padding: 2em #{math.div($mapItem-width,2)} 0 #{math.div($mapItem-width,2)};
+}
+
 .quizMap__wrap {
     position: relative;
     min-height: 100%;
     display: flex;
 }
 
-$l: 25px;
 .quizMap {
     position: relative;
     flex: 1;
-    background-color: deepskyblue;
+    background-color: $clr-map;
+    // Cadrillage
+    $l: 25px;
     background-image: repeating-linear-gradient(to right,
         transparent,
         transparent #{$l - 1},
@@ -38,18 +42,19 @@ $l: 25px;
         transparent #{$l - 1},
         #fff $l);
     transition: background-color .125s ease-in-out,
-                box-shadow .125s ease-in-out;
+        box-shadow .125s ease-in-out;
 
     &.over {
         box-shadow: 0 0 0 .25em yellowgreen;
+        background-color: color.scale($clr-map, $lightness: 25%);
     }
 
     & p {
-        position:absolute;
+        position: absolute;
         width: 100%;
         height: auto;
         bottom: 0;
-        color: rgba(#fff,.75);
+        color: rgba(#fff, .75);
         padding: .25em;
         font-weight: 700;
         font-size: 2rem;
@@ -59,12 +64,19 @@ $l: 25px;
     }
 }
 
-$mapItem-width: 6em;
 .mapItem {
     position: absolute;
     width: $mapItem-width;
-    min-width: $mapItem-width;
+    min-width: $mapItem-width; // nécessaire pour que le max-xontent du :hover ne soit pas plus petit
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
     flex-wrap: nowrap;
+    border-radius: .25em;
+    margin: 0;
+    padding: 0.125em .75em 0.125em 0;
+    user-select: none;
+    background-color: $clr-label;
 
     &>span {
         // le span est nécessaire pour pouvoir tronquer le texte ! cf.
@@ -76,25 +88,22 @@ $mapItem-width: 6em;
 
     &:hover {
         z-index: 999 !important;
-        box-shadow: .25em .25em .25em rgba(0,0,0,.25);
+        box-shadow: .25em .25em .25em rgba(0, 0, 0, .25);
         // width: max($mapItem-width, max-content);
         width: max-content;
+        cursor: grab;
+
+        & svg.dragHandle {
+            background-color: rgba(#fff, 25%);
+            border-radius: .25em;
+        }
     }
 
-    // border: 1px solid rgba(#fff, 50%);
-    border-radius: .25em;
-    margin: 0;
-    padding: 0.125em .75em 0.125em 0;
-    user-select: none;
-    background-color: $clr-label;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-
+    // Icone qui marque l'origine
     & svg.mark {
         position: absolute;
-        width: 18px;
-        height: 18px;
+        width: 1em;
+        height: 1em;
         bottom: 0;
         left: math.div($mapItem-width, 2);
         transform: translate(-50%, 50%);
@@ -104,20 +113,11 @@ $mapItem-width: 6em;
         color: rgba(#fff, 75%);
     }
 
+    // Icone Drag&Drop
     & svg.dragHandle {
         overflow: visible;
-
         margin: auto .25em auto .125em;
         transition: background-color 250ms ease-in-out;
         color: rgba(0, 0, 0, .5);
-    }
-
-    &:hover {
-        cursor: grab;
-
-        & svg.dragHandle {
-            background-color: rgba(#fff, 25%);
-            border-radius: .25em;
-        }
     }
 }
