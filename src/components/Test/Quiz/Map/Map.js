@@ -5,14 +5,13 @@ import DroppedItem from '../DroppedItem/DroppedItem';
 
 const Map = forwardRef(({ answers, addAnswer }, mapRef) => {
 
-    // const mapRef = useRef(); // référence au DIV qui englobe Map pour pouvoir récupérer ses dimensions
+    // mapRef : référence au DIV qui englobe Map pour pouvoir récupérer ses dimensions
 
     const [{ isOver, canDrop }, dropRef] = useDrop(() => ({
         accept: "listItem",
         drop: (item, monitor) => {
             let dropped = monitor.getItem();
             let pos = monitor.getClientOffset(); // last recorded { x, y } client offset of the pointer
-            // console.log(mapRef.current.getBoundingClientRect())
             addAnswer({
                 ...dropped,
                 ...pos,
@@ -25,18 +24,11 @@ const Map = forwardRef(({ answers, addAnswer }, mapRef) => {
         }),
     }));
 
-    // function myFunc(ev) {
-    //     const rect = ev.target.getBoundingClientRect();
-    //     console.log("xMouse:", ev.clientX, "yMouse:", ev.clientY);
-    //     console.log("x:", ev.clientX - rect.x, "y:", ev.clientY - rect.y);
-    // }
-
     return (
         <div ref={mapRef} className='quizMap__wrap'>
             <div
                 className={(isOver) ? 'quizMap over' : 'quizMap'}
                 ref={dropRef}
-                // onClick={myFunc}
                 style={{
                     backgroundColor: isOver ? 'purple' : ''
                 }}

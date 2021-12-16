@@ -49,7 +49,6 @@ function Test() {
         }
         if (!theTest) {
             getTest();
-            console.log(theTest)
         }
     }, [theTest, setLoadingError]);
 

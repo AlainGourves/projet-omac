@@ -33,6 +33,9 @@ function Home() {
                 .from('tests')
                 .select('id, created_at, is_current, name')
                 .order(testsOrderBy, { ascending: (testsOrderBy === 'name') ? testsOrderByNameAsc : testsOrderByDateAsc });
+            if (error) {
+                throw new Error(error.message);
+            }
             if (data) {
                 // transforme les strings `created_at` en Date
                 // et récupère le test actif
@@ -244,7 +247,9 @@ function Home() {
                 .select()
                 .order('id', { ascending: true });
 
-            console.log("records:", records)
+            if (error) {
+                throw new Error(error.message);
+            }
             const type = table.replace(/s$/, ''); // 'quiz||test'
             const jsonExport = {
                 type,

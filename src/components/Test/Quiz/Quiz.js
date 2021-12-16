@@ -69,7 +69,6 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
     }
 
     const askConfirm = () => {
-        console.log("click !", nextStep)
         setModal({
             show: true,
             title: 'Confirmation',
