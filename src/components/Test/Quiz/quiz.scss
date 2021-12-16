@@ -1,3 +1,4 @@
+@use "sass:math";
 // Include Bootstrap to load mixins
 @import 'bootstrap/scss/bootstrap';
 $clr-label: deeppink;
@@ -95,7 +96,7 @@ $mapItem-width: 6em;
         width: 18px;
         height: 18px;
         bottom: 0;
-        left: #{$mapItem-width / 2};
+        left: math.div($mapItem-width, 2);
         transform: translate(-50%, 50%);
         padding: 0;
         background-color: transparent;
