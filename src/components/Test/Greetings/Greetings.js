@@ -12,7 +12,7 @@ function Greetings({ greetings }) {
         if (localStorage.getItem('user')) {
             localStorage.removeItem('user');
         }
-        setRedirect('/test');
+        setRedirect('/');
     }
     if (redirect) {
         return <Redirect to={redirect} />
