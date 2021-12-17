@@ -21,7 +21,7 @@ function AdminMenu(props) {
                 <NavLink to="/admin/export" className="nav-link" activeClassName="active">Exporter les résultats</NavLink>
             </li>
             <li className="nav-item ms-auto quit">
-                <NavLink exact to="/" className="nav-link">Quitter</NavLink>
+                <NavLink exact to="/" className="nav-link">Quitter Admin</NavLink>
             </li>
         </ul>
     </nav>

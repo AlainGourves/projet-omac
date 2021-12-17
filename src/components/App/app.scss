@@ -12,6 +12,11 @@
     background-color: #fff;
 }
 
+// réserver de l'espace pour le dashboard quand il est présent
+.dashboard + * {
+    margin-top: 3rem;
+}
+
 .eye {
     background-color: var(--bs-gray-100);
     svg {

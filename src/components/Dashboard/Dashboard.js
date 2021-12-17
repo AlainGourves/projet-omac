@@ -12,7 +12,7 @@ const Dashboard = function ({ prenom, nom }) {
         // Ends session
         await signOut()
         // Redirect to Login page
-        history.push('/connexion');
+        history.push('/');
     }
 
     const goAdmin = (ev) => {
@@ -21,19 +21,17 @@ const Dashboard = function ({ prenom, nom }) {
     }
 
     return user && (
-        <div className="toast show position-absolute m-3 top-0 end-0">
-            <div className="toast-body d-flex justify-content-beetween">
+            <div className="dashboard fixed-top d-flex align-items-baseline justify-content-end">
                 <p>Coucou, <strong>{prenom} {nom}</strong> !</p>
                 <button
                     type="button"
-                    className="btn btn-primary"
+                    className="btn btn-sm btn-primary"
                     onClick={goAdmin}>Admin</button>
                 <button
                     type="button"
-                    className="btn btn-danger"
+                    className="btn btn-sm btn-danger"
                     onClick={handleSignOut}>Déconnexion</button>
             </div>
-        </div>
     )
 }
 

@@ -1,4 +1,6 @@
 import './app.scss';
+import { useState, useEffect } from 'react';
+import { supabase } from '../../supabaseClient';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { useAuth } from '../../contexts/Auth';
 import { ModalProvider } from '../../contexts/ModalContext';
@@ -9,8 +11,7 @@ import Test from '../Test/Test';
 import Page404 from '../Page404/Page404';
 import Admin from '../Admin/Admin';
 import Dashboard from '../Dashboard/Dashboard';
-import { useState, useEffect } from 'react';
-import { supabase } from '../../supabaseClient';
+import Home from '../Home/Home';
 
 function App() {
     const { user } = useAuth();
@@ -52,7 +53,8 @@ function App() {
                 <Switch>
                     {/* <Route path="/inscription" component={SignUp} /> */}
                     <Route path="/connexion" component={Login} />
-                    <PrivateRoute exact path="/" component={Test} />
+                    <Route exact path="/" component={Home} />
+                    {/* <PrivateRoute exact path="/" component={Test} /> */}
                     <PrivateRoute path="/test" component={Test} />
                     {isAdmin ?
                         (<PrivateRoute path="/admin" component={Admin} />) : (<Redirect to="/" />)

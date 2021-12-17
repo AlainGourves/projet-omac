@@ -1,3 +1,9 @@
-.toast {
-    z-index: 100;
+.dashboard {
+    padding: .25rem;
+    background-color: hsl(0, 0%, 80%);
+
+    & > * {
+        margin: 0;
+        margin-left: .25rem;
+    }
 }

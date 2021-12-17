@@ -3,7 +3,7 @@
 // Include Bootstrap to load mixins
 @import 'bootstrap/scss/bootstrap';
 $clr-map: deepskyblue;
-$clr-label: hsl(105, 60%, 65%);
+$clr-label: hsl(66, 60%, 65%);
 $mapItem-width: 6em;
 
 .listItems {
@@ -72,6 +72,7 @@ $mapItem-width: 6em;
     justify-content: flex-start;
     align-items: center;
     flex-wrap: nowrap;
+    border: 1px solid rgba(#fff, .75);
     border-radius: .25em;
     margin: 0;
     padding: 0.125em .75em 0.125em 0;

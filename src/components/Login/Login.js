@@ -1,6 +1,6 @@
 import './login.scss';
 import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../contexts/Auth';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -120,6 +120,7 @@ const Login = function () {
 
             <div className="d-flex flex-column justify-content-center align-items-center">
                 <button className="btn btn-primary mb-2" type="submit">Connexion</button>
+                <p><Link to='/'>Retour à l'accueil</Link></p>
             </div>
 
         </form>
