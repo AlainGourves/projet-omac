@@ -9,7 +9,7 @@ function Item(props) {
         item: {
             id: props.infos.id,
             label: props.infos.label,
-            isDraggable: props.infos.isDraggable,
+            isUsed: props.infos.isUsed,
         },
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),

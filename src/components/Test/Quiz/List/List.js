@@ -6,7 +6,7 @@ function List(props) {
     return (
         <ul className="quiz-items-list">
             {props.items.map((li) => (
-                li.isDraggable && <Item key={li.id} infos={li} />
+                !li.isUsed && <Item key={li.id} infos={li} />
             ))}
         </ul>
     );

@@ -28,7 +28,7 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
             // randomize la liste si besoin
             let items = (!quizs[id].is_alpha) ? shuffleArray(quizs[id].items.slice()) : quizs[id].items;
             // Ajoute une propriété pour savoir si l'item est draggable (true par défaut)
-            items.forEach(item => item.isDraggable = true)
+            items.forEach(item => item.isUsed = false)
             setQuiz({
                 ...quizs[id],
                 items
@@ -47,13 +47,13 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
     const [answers, setAnswers] = useState([]);
     const addAnswer = (obj) => {
         if (mapRef.current) {
-            // Changer la propriété isDraggable de l'item correspondant dans la liste
+            // Changer la propriété isUsed de l'item correspondant dans la liste
             let id = obj.id;
             setQuiz((arr) => {
                 // trouver l'indice dans quiz.items
                 const idx = arr.items.findIndex(el => el.id === id);
                 let newItems = arr.items.slice(); // copie de l'array
-                newItems[idx].isDraggable = false;
+                newItems[idx].isUsed = true;
                 return {
                     ...arr,
                     items: newItems
