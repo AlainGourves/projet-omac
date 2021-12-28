@@ -4,7 +4,8 @@
 @import 'bootstrap/scss/bootstrap';
 $clr-map: deepskyblue;
 $clr-label: hsl(66, 75%, 45%);
-$mapItem-width: 6em;
+// ! important ! la valeur de $mapItem-width (6rem) est utilisée dans `./src/components/Test/Quiz/Quiz.js` pour calculer le placement des items dans la Map. A modifier le cas échéant
+$mapItem-width: 6rem;
 
 .listItems {
     @include media-breakpoint-up(sm) {
@@ -67,7 +68,7 @@ $mapItem-width: 6em;
 .mapItem {
     position: absolute;
     width: $mapItem-width;
-    min-width: $mapItem-width; // nécessaire pour que le max-xontent du :hover ne soit pas plus petit
+    min-width: $mapItem-width; // nécessaire pour que le max-content du :hover ne soit pas plus petit
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -79,6 +80,10 @@ $mapItem-width: 6em;
     user-select: none;
     background-color: $clr-label;
 
+    &.over {
+        opacity: .5;
+    }
+
     &>span {
         // le span est nécessaire pour pouvoir tronquer le texte ! cf.
         // https://css-tricks.com/flexbox-truncated-text/
@@ -88,7 +93,7 @@ $mapItem-width: 6em;
     }
 
     &:hover {
-        z-index: 999 !important;
+        z-index: 9999 !important;
         box-shadow: .25em .25em .25em rgba(0, 0, 0, .25);
         // width: max($mapItem-width, max-content);
         width: max-content;

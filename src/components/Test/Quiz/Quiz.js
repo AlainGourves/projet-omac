@@ -12,7 +12,7 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
 
     // Stocke les infos du quiz :
     const [quiz, setQuiz] = useState(null);
-    useEffect(()=>{
+    useEffect(() => {
         const shuffleArray = (arr) => {
             // Fisher–Yates shuffle (plus efficace que d'utiliser simplement la fonction random())
             // ref : https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj
@@ -43,6 +43,22 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
     // référence au DIV qui englobe Map pour pouvoir récupérer ses dimensions
     const mapRef = useRef();
 
+    // Décalages à appliquer pour placer les items sur la Map
+    const [wOffset, setWOffset] = useState(null);
+    const [hOffset, setHOffset] = useState(null);
+    useEffect(() => {
+        // calcule la valeur du `rem`en `px`
+        let rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+        if (rem) {
+            setWOffset((rem * 6) / 2);
+            setHOffset(rem * 1.75 + 2); // height + padding + 2px border
+        }
+    }, []);
+
+    // Compteur pour les z-index des map-items
+    // utilise useRef() parce que la valeur persiste entre les re-rendus des composants
+    const zIdx = useRef(0);
+
     // réponses
     const [answers, setAnswers] = useState([]);
     const addAnswer = (obj) => {
@@ -61,12 +77,34 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
             })
             const rect = mapRef.current.getBoundingClientRect();
             // calcul de la position dans Map en pourcentage
-            // TODO: récupérer width/2 & height de .mapItem pour les mettre à la place des valeurs en dur 48 & 28
-            obj.x = (obj.x - rect.x - 48)/rect.width*100;
-            obj.y = (obj.y - rect.y - 28)/rect.height*100;
-            setAnswers(answers => [...answers, obj])
+            obj.x = (obj.x - rect.x - wOffset) / rect.width * 100;
+            obj.y = (obj.y - rect.y - hOffset) / rect.height * 100;
+            obj.z = zIdx.current;
+            setAnswers(answers => [...answers, obj]);
+            zIdx.current++;
         }
     };
+
+    const modifyAnswer = (obj) => {
+        if (mapRef.current) {
+            let id = obj.id;
+            setAnswers(answers => {
+                // trouver l'index dans `answers` de l'obj correspondant
+                let idx = answers.findIndex(el => el.id === id);
+                let updatedItems = answers.slice(); // copie du array
+                const rect = mapRef.current.getBoundingClientRect();
+                // calcul de la position dans Map en pourcentage
+                obj.x = (obj.x - rect.x - wOffset) / rect.width * 100;
+                obj.y = (obj.y - rect.y - hOffset) / rect.height * 100;
+                // update les coordonnées
+                updatedItems[idx].x = obj.x;
+                updatedItems[idx].y = obj.y;
+                updatedItems[idx].z = zIdx.current;
+                return updatedItems;
+            });
+            zIdx.current++;
+        }
+    }
 
     // Routage :
     let nextStep;
@@ -127,6 +165,7 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
                         <Map
                             answers={answers}
                             addAnswer={addAnswer}
+                            modifyAnswer={modifyAnswer}
                             ref={mapRef}
                         />
                     </div>
