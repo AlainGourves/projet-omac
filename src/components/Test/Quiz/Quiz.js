@@ -7,11 +7,16 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import List from './List/List';
 import Map from './Map/Map';
 
-function Quiz({ quizs, getElapsedTime, ...props }) {
+function Quiz({ quizs,isVerbatim, ...props }) {
     const { id } = useParams();
 
     // Stocke les infos du quiz :
     const [quiz, setQuiz] = useState(null);
+    const [countItems, setCountItems] = useState(0);
+    // Chronométrage du temps de réponse au quiz
+    const [quizStartTime, setQuizStartTime] = useState(0);
+    // Routage :
+    const nextStep = useRef('/test');
     useEffect(() => {
         const shuffleArray = (arr) => {
             // Fisher–Yates shuffle (plus efficace que d'utiliser simplement la fonction random())
@@ -27,14 +32,28 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
         if (quizs[id]) {
             // randomize la liste si besoin
             let items = (!quizs[id].is_alpha) ? shuffleArray(quizs[id].items.slice()) : quizs[id].items;
-            // Ajoute une propriété pour savoir si l'item est draggable (true par défaut)
+            // Ajoute une propriété pour savoir si l'item a été déposé sur la carte (false par défaut)
             items.forEach(item => item.isUsed = false)
             setQuiz({
                 ...quizs[id],
                 items
-            })
+            });
+            setCountItems(items.length);
+            setQuizStartTime(Date.now())
+
+            // Routage :
+            if (parseInt(id) !== quizs.length - 1) {
+                // quiz[id] n'est pas la dernière valeur du array
+                nextStep.current = '/test/quiz/' + (parseInt(id) + 1);
+            } else {
+                if (isVerbatim) {
+                    nextStep.current = '/test/verbatim/0';
+                } else {
+                    nextStep.current = '/test/fin'
+                }
+            }
         }
-    }, [id, quizs]);
+    }, [id, quizs, isVerbatim]);
 
     const [modal, setModal] = useModal();
 
@@ -81,6 +100,7 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
             obj.y = (obj.y - rect.y - hOffset) / rect.height * 100;
             obj.z = zIdx.current;
             setAnswers(answers => [...answers, obj]);
+            setCountItems(count => count - 1);
             zIdx.current++;
         }
     };
@@ -106,19 +126,6 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
         }
     }
 
-    // Routage :
-    let nextStep;
-    if (parseInt(id) !== quizs.length - 1) {
-        // quiz[id] n'est pas la dernière valeur du array
-        nextStep = '/test/quiz/' + (parseInt(id) + 1);
-    } else {
-        if (props.isVerbatim) {
-            nextStep = '/test/verbatim/0';
-        } else {
-            nextStep = '/test/fin'
-        }
-    }
-
     const askConfirm = () => {
         setModal({
             show: true,
@@ -127,24 +134,39 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
             btnCancel: 'Annuler',
             btnOk: 'Continuer',
             fn: () => {
-                // TODO: c'est là que le chronomètre doit s'arrêter
+                // calcul du temps de réponse en secondes
+                const quizEndTime = Date.now();
+                const quizDuration = Math.floor((quizEndTime - quizStartTime) / 1000);
+                // Tri des réponses sur l'id des items
+                const sortedAnswers = answers.sort((a, b) => (a.id > b.id) ? 1 : -1);
+                // On en garde que les valeurs de `x` & `y`
+                const quizResult = sortedAnswers.map(item => {
+                    return { 'x': item.x.toFixed(3), 'y': item.y.toFixed(3) }
+                });
+                // Enregistrement des résultats en localStorage
+                const finalResult = {
+                    'quizId': quizs[id].id,
+                    'quizTitle': quizs[id].title,
+                    'results': quizResult,
+                    'duration': quizDuration,
+                }
+                if (localStorage.getItem('quizs')) {
+                    // la clé existe déjà -> mise à jour
+                    let savedQuizs = JSON.parse(localStorage.getItem('quizs'));
+                    // TODO: vérifier que le quiz n'est pas déjà enregistré (à partir de son `id`)
+                    savedQuizs.push(finalResult);
+                    localStorage.setItem('quizs', JSON.stringify(savedQuizs));
+                }else{
+                    localStorage.setItem('quizs', JSON.stringify([finalResult]));
+                }
                 setModal({
                     ...modal,
                     show: false
                 })
-                history.push(nextStep);
+                history.push(nextStep.current);
             }
         });
     }
-
-    useEffect(() => {
-        const startTime = Date.now();
-
-        return () => {
-            const endTime = Date.now();
-            getElapsedTime(id, Math.floor((endTime - startTime) / 1000));
-        }
-    }, [getElapsedTime, id]);
 
     if (!quiz) {
         return (
@@ -175,18 +197,20 @@ function Quiz({ quizs, getElapsedTime, ...props }) {
                             items={quiz.items}
                         />
 
+                        {/* countItems = 0 -> Tous les items sont placés sur la carte, on affiche le bouton "Continuer" */}
+                        {!countItems &&
+                            <div className='my-3'>
+                                <button
+                                    type='button'
+                                    onClick={askConfirm}
+                                    className="btn btn-primary"
+                                >Continuer</button>
+
+                            </div>
+                        }
                     </div>
                 </DndProvider>
             </main>
-            <div className='my-3'>
-                <button
-                    type='button'
-                    // onClick={() => history.push(nextStep)}
-                    onClick={askConfirm}
-                    className="btn btn-primary"
-                >Continuer</button>
-
-            </div>
         </div>
     );
 }

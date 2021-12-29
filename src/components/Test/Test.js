@@ -90,11 +90,6 @@ function Test() {
         }
     }, [loadingError, setModal])
 
-    // Récupération des réponses
-    const getElapsedTime = (idx, duration) => {
-        console.log(`Durée du quiz ${idx} :`, duration, 'secondes')
-    }
-
     const getVerbatimResponse = (idx, response) => {
         console.log(`Verbatim, réponse ${idx} :`, response)
     }
@@ -115,7 +110,6 @@ function Test() {
                     <Quiz
                         quizs={theQuizs}
                         isVerbatim={theTest.isVerbatim}
-                        getElapsedTime={getElapsedTime}
                     />
                 </Route>
 

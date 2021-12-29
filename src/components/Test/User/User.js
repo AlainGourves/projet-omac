@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import AlertMesg from '../../Utils/AlertMesg/AlertMesg';
-import { supabase } from '../../../supabaseClient';
+// import { supabase } from '../../../supabaseClient';
 
 
 function Home() {
@@ -98,13 +98,14 @@ function Home() {
             'gender': vals.gender,
             'institution': vals.institution
         }
-        const { error } = await supabase
-            .from('clients')
-            .insert(obj, { returning: 'minimal' });
-            // returning: 'minimal' -> Supabase ne renvoit pas les infos enregistrées
-        if (error) {
-            console.warn(error)
-        }
+        // !!!! On attend la fin du test pour enregistrer les infos dans Supabase !!!!!
+        // const { error } = await supabase
+        //     .from('clients')
+        //     .insert(obj, { returning: 'minimal' });
+        //     // returning: 'minimal' -> Supabase ne renvoit pas les infos enregistrées
+        // if (error) {
+        //     console.warn(error)
+        // }
         localStorage.setItem('user', JSON.stringify(obj));
         setRedirect('/test/quiz/0');
     }
