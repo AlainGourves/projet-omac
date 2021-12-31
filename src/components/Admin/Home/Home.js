@@ -17,7 +17,7 @@ function Home() {
     const [quizsOrderByDateAsc, setQuizsOrderByDateAsc] = useState(false);
     const [quizsOrderByTitleAsc, setQuizsOrderByTitleAsc] = useState(true);
 
-    // options for formatting dates
+    // options for formating dates
     const dateOptions = {
         day: "numeric",
         month: "long",
@@ -48,7 +48,7 @@ function Home() {
                 setAllTests(data);
             }
         } catch (error) {
-            console.log("failed to fetch all tests:", error);
+            console.warn("failed to fetch all tests:", error);
         }
     }, [testsOrderBy, testsOrderByNameAsc, testsOrderByDateAsc])
 
@@ -71,7 +71,7 @@ function Home() {
                 setAllQuizs(data);
             }
         } catch (error) {
-            console.log("failed to fetch all quizs:", error);
+            console.warn("failed to fetch all quizs:", error);
         }
     }, [quizsOrderBy, quizsOrderByDateAsc, quizsOrderByTitleAsc])
 
@@ -82,18 +82,18 @@ function Home() {
     // _________________ Fonctions de tri _______________
     // Tri des tests en fonction des états
     useEffect(() => {
-        console.log("order:", testsOrderBy, "date", (testsOrderByDateAsc ? 'ASC' : 'DESC'), "nom", (testsOrderByNameAsc ? 'ASC' : 'DESC'))
+        // console.log("order:", testsOrderBy, "date", (testsOrderByDateAsc ? 'ASC' : 'DESC'), "nom", (testsOrderByNameAsc ? 'ASC' : 'DESC'))
         switch (testsOrderBy) {
             case 'created_at':
                 // tri par date
-                console.log("par date")
+                // console.log("par date")
                 setAllTests(allTests.sort((a, b) => {
                     return (testsOrderByDateAsc) ? a.created_at - b.created_at : b.created_at - a.created_at;
                 }));
                 break;
             case 'name':
                 // tri par nom
-                console.log("par nom")
+                // console.log("par nom")
                 setAllTests(allTests.sort((a, b) => {
                     return (testsOrderByNameAsc) ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
                 }))
@@ -105,18 +105,18 @@ function Home() {
 
     // Tri des quizs en fonction des états
     useEffect(() => {
-        console.log("order:", quizsOrderBy, "date", (quizsOrderByDateAsc ? 'ASC' : 'DESC'), "nom", (quizsOrderByTitleAsc ? 'ASC' : 'DESC'))
+        // console.log("order:", quizsOrderBy, "date", (quizsOrderByDateAsc ? 'ASC' : 'DESC'), "nom", (quizsOrderByTitleAsc ? 'ASC' : 'DESC'))
         switch (quizsOrderBy) {
             case 'created_at':
                 // tri par date
-                console.log("par date")
+                // console.log("par date")
                 setAllQuizs(allQuizs.sort((a, b) => {
                     return (quizsOrderByDateAsc) ? a.created_at - b.created_at : b.created_at - a.created_at;
                 }));
                 break;
             case 'title':
                 // tri par nom
-                console.log("par titre")
+                // console.log("par titre")
                 setAllQuizs(allQuizs.sort((a, b) => {
                     return (quizsOrderByTitleAsc) ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
                 }))
@@ -129,7 +129,6 @@ function Home() {
     const changeCurrentTest = async (ev) => {
         let prevCurrent = currentTest;
         let newCurrent = parseInt(ev.target.value);
-        console.log("changement de test actif, nouveau:", newCurrent)
         try {
             if (prevCurrent) {
                 // traite l'ancien courant s'i existait (valeur initiale : 0)
@@ -193,7 +192,6 @@ function Home() {
             // Pour les tests : évite d'avoir des problèmes de doublon
             if (a.hasOwnProperty('is_current')) delete a.is_current;
         });
-        console.log("ajout en groupe de", arr)
         try {
             await supabase
                 .from(`${table}`)
@@ -210,7 +208,6 @@ function Home() {
     }
 
     const removeTestFromDb = async function (id) {
-        console.log("Supprimer le test ", id)
         // TODO: avant de supprimer un test, il faudra supprimer tous les résultats et les verbatim qui y font référence
         try {
             await supabase
@@ -224,7 +221,6 @@ function Home() {
     }
 
     const removeQuizFromDb = async function (id) {
-        console.log("Supprimer le quiz ", id)
         try {
             await supabase
                 .from('quizs')
@@ -240,7 +236,6 @@ function Home() {
     // _________________ Fonctions Export/Import JSON _______________
     const exportJSON = async function (table) {
         // table to export ('tests' || 'quizs')
-        console.log("export JSON de ", table)
         try {
             const { data: records, error } = await supabase
                 .from(`${table}`)
@@ -315,7 +310,7 @@ function Home() {
             }, false)
             reader.readAsText(file);
         } catch (err) {
-            console.log("Erreur:", err);
+            console.warn("Erreur:", err);
         }
     }
 

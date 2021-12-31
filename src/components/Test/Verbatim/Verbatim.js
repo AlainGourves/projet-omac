@@ -1,33 +1,38 @@
 import './verbatim.scss';
+import { useEffect, useRef } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import {addToLocalStorage} from '../../Utils/helperFunctions';
 
-function Verbatim(props) {
+function Verbatim({verbatim, ...props}) {
     let history = useHistory();
     
     const { id } = useParams();
-    const verbatim = props.verbatim; // données des verbatim
-
+    
     const { register, handleSubmit } = useForm({
         defaultValues: {
             response: ''
         }
     })
-
-    // Routage
-    let nextStep;
-    if (parseInt(id) !== verbatim.length - 1) {
-        // verbatim[id] n'est pas la dernière valeur du array
-        nextStep = '/test/verbatim/' + (parseInt(id) + 1);
-    } else {
-        nextStep = '/test/fin'
-    }
+    
+    // Routage :
+    const nextStep = useRef('/test');
+    useEffect(() => {
+        if (id !== undefined) {
+            if (parseInt(id) !== verbatim.length - 1) {
+                // verbatim[id] n'est pas la dernière valeur du array
+                nextStep.current = '/test/verbatim/' + (parseInt(id) + 1);
+            } else {
+                nextStep.current = '/test/fin'
+            }
+        }
+    }, [id, verbatim]);
 
     const onSubmit = (values, ev) => {
-        props.getVerbatimResponse(id, values.response);
+        addToLocalStorage('verbatim', values.response);
         ev.target[0].value = ''; // vide le champ
         ev.target[0].focus(); // remet le focus dessus
-        history.push(nextStep)
+        history.push(nextStep.current)
     }
 
     return (

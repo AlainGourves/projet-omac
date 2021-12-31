@@ -8,7 +8,7 @@ import AlertMesg from '../../Utils/AlertMesg/AlertMesg';
 // import { supabase } from '../../../supabaseClient';
 
 
-function Home() {
+function User() {
     const [redirect, setRedirect] = useState(null);
 
     // Validation du formulaire
@@ -198,4 +198,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default User;

@@ -6,6 +6,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import List from './List/List';
 import Map from './Map/Map';
+import {addToLocalStorage} from '../../Utils/helperFunctions';
 
 function Quiz({ quizs,isVerbatim, ...props }) {
     const { id } = useParams();
@@ -17,6 +18,9 @@ function Quiz({ quizs,isVerbatim, ...props }) {
     const [quizStartTime, setQuizStartTime] = useState(0);
     // Routage :
     const nextStep = useRef('/test');
+    // Stockage des item placés sur la carte
+    const [answers, setAnswers] = useState([]);
+
     useEffect(() => {
         const shuffleArray = (arr) => {
             // Fisher–Yates shuffle (plus efficace que d'utiliser simplement la fonction random())
@@ -30,6 +34,7 @@ function Quiz({ quizs,isVerbatim, ...props }) {
         }
 
         if (quizs[id]) {
+            setAnswers([]);
             // randomize la liste si besoin
             let items = (!quizs[id].is_alpha) ? shuffleArray(quizs[id].items.slice()) : quizs[id].items;
             // Ajoute une propriété pour savoir si l'item a été déposé sur la carte (false par défaut)
@@ -79,7 +84,6 @@ function Quiz({ quizs,isVerbatim, ...props }) {
     const zIdx = useRef(0);
 
     // réponses
-    const [answers, setAnswers] = useState([]);
     const addAnswer = (obj) => {
         if (mapRef.current) {
             // Changer la propriété isUsed de l'item correspondant dans la liste
@@ -150,15 +154,7 @@ function Quiz({ quizs,isVerbatim, ...props }) {
                     'results': quizResult,
                     'duration': quizDuration,
                 }
-                if (localStorage.getItem('quizs')) {
-                    // la clé existe déjà -> mise à jour
-                    let savedQuizs = JSON.parse(localStorage.getItem('quizs'));
-                    // TODO: vérifier que le quiz n'est pas déjà enregistré (à partir de son `id`)
-                    savedQuizs.push(finalResult);
-                    localStorage.setItem('quizs', JSON.stringify(savedQuizs));
-                }else{
-                    localStorage.setItem('quizs', JSON.stringify([finalResult]));
-                }
+                addToLocalStorage('quizs', finalResult);
                 setModal({
                     ...modal,
                     show: false

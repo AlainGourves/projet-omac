@@ -18,7 +18,9 @@ function Test() {
     const [theQuizs, setTheQuizs] = useState(null);
 
     const [, setModal] = useModal(); // Laisser la virgule ! (on utilise pas `modal` dans le script => si on l'ajoute ici, il y aura une erreur "unused")
-    const [loadingError, setLoadingError] = useState(false)
+    const [loadingError, setLoadingError] = useState(false);
+
+    const [isSavedToDB, setIsSavedToDB] = useState(false);
 
     useEffect(() => {
         const getTest = async () => {
@@ -76,22 +78,78 @@ function Test() {
         }
     }, [theTest, theQuizs, setLoadingError])
 
-    useEffect(()=>{
+    useEffect(() => {
         if (loadingError) {
             setModal({
                 show: true,
                 title: "Erreur !",
                 message: "Impossible de charger les données. Veuillez contacter un administrateur pour signaler le problème.",
                 btnOk: 'Fermer',
-                fn: () => {setModal({
-                    show: false,
-                })}
+                fn: () => {
+                    setModal({
+                        show: false,
+                    })
+                }
             });
         }
-    }, [loadingError, setModal])
+    }, [loadingError, setModal]);
 
-    const getVerbatimResponse = (idx, response) => {
-        console.log(`Verbatim, réponse ${idx} :`, response)
+    // Enregistrement des données dans Supabase
+    const save2Supabase = async () => {
+        const persona = JSON.parse(localStorage.getItem('user'));
+        const results = JSON.parse(localStorage.getItem('quizs'));
+        const verbatim = (theTest.isVerbatim) ? JSON.parse(localStorage.getItem('verbatim')) : null;
+        // Met en forme les résultats pour la requète d'insertion dans DB
+        const reqResults = results.map((q) => {
+            return {
+                client_id: persona.uniqueId,
+                test_id: theTest.id,
+                quiz_id: q.quizId,
+                responses: q.results,
+                duration: q.duration,
+            }
+        });
+        const reqVerbatim = (theTest.isVerbatim) ? {
+            client_id: persona.uniqueId,
+            test_id: theTest.id,
+            responses: verbatim,
+        } : null;
+        console.log("reqResults:", reqResults)
+        console.log("reqVerbatim:", reqVerbatim)
+
+        try {
+            // enregitrement dans 'clients'
+            {
+                const { error } = await supabase
+                    .from('clients')
+                    .insert(persona, { returning: 'minimal' })
+                if (error) {
+                    throw new Error(error.message);
+                }
+            }
+            {
+                // enregitrement dans 'results'
+                const { error } = await supabase
+                    .from('results')
+                    .insert(reqResults, { returning: 'minimal' })
+                if (error) {
+                    throw new Error(error.message);
+                }
+            }
+            if (verbatim) {
+                // enregitrement dans 'verbatim'
+                const { error } = await supabase
+                    .from('verbatim')
+                    .insert(reqVerbatim, { returning: 'minimal' })
+                if (error) {
+                    throw new Error(error.message);
+                }
+            }
+        } catch (error) {
+            console.log("Erreur enregistrement DB:", error.message);
+        } finally {
+            setIsSavedToDB(true)
+        }
     }
 
     if (!theTest || !theQuizs) {
@@ -116,12 +174,15 @@ function Test() {
                 <Route path='/test/verbatim/:id'>
                     <Verbatim
                         verbatim={theTest.verbatim}
-                        getVerbatimResponse={getVerbatimResponse}
                     />
                 </Route>
 
                 <Route path='/test/fin'>
-                    <Greetings greetings={theTest.greetings} />
+                    <Greetings
+                        greetings={theTest.greetings}
+                        isSavedToDB={isSavedToDB}
+                        save2Supabase={save2Supabase}
+                    />
                 </Route>
 
                 <Route path='/test/user'>

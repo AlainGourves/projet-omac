@@ -1,29 +1,42 @@
 import './greetings.scss';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 
-function Greetings({ greetings }) {
+function Greetings({ greetings, isSavedToDB, save2Supabase }) {
     const [redirect, setRedirect] = useState(null);
 
+    useEffect(() => {
+        if (!isSavedToDB) {
+            save2Supabase();
+        }
+    }, [isSavedToDB, save2Supabase]);
 
     const onSubmit = (ev) => {
         ev.preventDefault();
-        // Supprime l'objet user de localStorage (pour pouvoir en créer un nouveau au cobaye suivant)
+        // Vide localStorage
         if (localStorage.getItem('user')) {
-            localStorage.removeItem('user');
+            localStorage.clear();
         }
         setRedirect('/');
     }
+
     if (redirect) {
         return <Redirect to={redirect} />
     }
+
     return (
-        <div className="carte row text-center">
-            <h1>{greetings}</h1>
-            <form onSubmit={onSubmit}>
-                <button type='submit' className="btn btn-primary">Fin</button>
-            </form>
-        </div>
+        <>
+            {(!isSavedToDB) ? (
+                <h1>Enregistrement des données...</h1 >
+            ) : (
+                <div className="carte row text-center">
+                    <h1>{greetings}</h1>
+                    <form onSubmit={onSubmit}>
+                        <button type='submit' className="btn btn-primary">Fin</button>
+                    </form>
+                </div >
+            )}
+        </>
     );
 }
 

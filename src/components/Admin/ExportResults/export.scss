@@ -1,0 +1,4 @@
+// Ref : https://stackoverflow.com/questions/58404615/css-only-dropdown-without-popper-min
+.dropdown>button:focus~.dropdown-menu {
+    display: block;
+ }
