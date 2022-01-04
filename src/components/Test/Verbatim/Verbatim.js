@@ -42,6 +42,7 @@ function Verbatim({verbatim, ...props}) {
                 <div className="row mb-3">
                     <textarea
                         {...register("response")}
+                        className='verbatim'
                         placeholder="Ta réponse..."
                     />
                 </div>
