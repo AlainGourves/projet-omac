@@ -240,7 +240,7 @@ function EditTest(props) {
     }
     return (
         <section>
-            <h1>{testId ? "Modifier le" : "Créer un"} test {testId && <em>{testName}</em>}</h1>
+            <h1>{testId ? "Modifier le" : "Créer un"} test {(testId !== 0) && <em>{testName}</em>}</h1>
             <FormProvider {...methods} >
                 {/* pass all methods into the context */}
                 <form onSubmit={methods.handleSubmit(onSubmit)}>
@@ -309,84 +309,84 @@ function EditTest(props) {
                                     Les quizs s'enchaîneront au cours du test en suivant l'ordre de cette liste.</p>
 
                                 <div className="alert alert-danger">
-                                BUG!! Les quizs enregistrés ne s'affichent pas toujours ci-dessous.
+                                    BUG!! Les quizs enregistrés ne s'affichent pas toujours ci-dessous.
+                                </div>
                             </div>
-                        </div>
-                        <div className="row mb-3">
-                            <div className="col-md-5 ul-quizs">
-                                <QuizDropZone
-                                    quizs={allQuizs}
-                                    addToDropped={addToDropped}
-                                    removeFromDropped={removeFromDropped}
-                                />
-                                {errors.quizs_ids &&
-                                    <AlertMesg message={errors.quizs_ids?.message} />
-                                }
+                            <div className="row mb-3">
+                                <div className="col-md-5 ul-quizs">
+                                    <QuizDropZone
+                                        quizs={allQuizs}
+                                        addToDropped={addToDropped}
+                                        removeFromDropped={removeFromDropped}
+                                    />
+                                    {errors.quizs_ids &&
+                                        <AlertMesg message={errors.quizs_ids?.message} />
+                                    }
+                                </div>
+                                <div className="col-md-1 arrow">
+                                    <ArrowLeft className="fs-1 text-primary" />
+                                </div>
+                                <div className="col-md-5 ul-quizs">
+                                    <QuizList
+                                        quizs={allQuizs}
+                                    // items={sourceItems.filter((q) => !q.isUsed)}
+                                    />
+                                </div>
                             </div>
-                            <div className="col-md-1 arrow">
-                                <ArrowLeft className="fs-1 text-primary" />
-                            </div>
-                            <div className="col-md-5 ul-quizs">
-                                <QuizList
-                                    quizs={allQuizs}
-                                // items={sourceItems.filter((q) => !q.isUsed)}
-                                />
-                            </div>
-                        </div>
-                    </DndProvider>
-                </article>
-                <article>
-                    <h2>
-                        <span className="badge rounded-pill bg-primary">4</span>
-                        Verbatim
-                    </h2>
-                    <p>Saisir le(s) texte(s) qui apparaitra(ont) au-dessus d'une zone de texte à remplir par le cobaye à la fin du test. <br />Ce champ n'est pas obligatoire.</p>
-                    {
-                        fields.map((item, index) => (
-                            <div key={item.id} className="d-flex mb-3">
-                                <Verbatim
-                                    count={index}
-                                    isLast={(index === (fields.length - 1))}
-                                    addVerbatim={addVerbatim}
-                                    removeVerbatim={removeVerbatim}
-                                />
-                            </div>
-                        ))
-                    }
-                </article>
-                <article>
-                    <h2>
-                        <span className="badge rounded-pill bg-primary">5</span>
-                        Remerciements/Écran de fin
-                    </h2>
-                    <div className="row mb-3">
-                        <div className="input-group">
-                            <span className="input-group-text text-end">Texte :</span>
-                            <textarea
-                                {...register("greetings", { required: true })}
-                                className="form-control"
-                            />
-                        </div>
-                        {errors.greetings &&
-                            <AlertMesg message={errors.greetings?.message} />
+                        </DndProvider>
+                    </article>
+                    <article>
+                        <h2>
+                            <span className="badge rounded-pill bg-primary">4</span>
+                            Verbatim
+                        </h2>
+                        <p>Saisir le(s) texte(s) qui apparaitra(ont) au-dessus d'une zone de texte à remplir par le cobaye à la fin du test. <br />Ce champ n'est pas obligatoire.</p>
+                        {
+                            fields.map((item, index) => (
+                                <div key={item.id} className="d-flex mb-3">
+                                    <Verbatim
+                                        count={index}
+                                        isLast={(index === (fields.length - 1))}
+                                        addVerbatim={addVerbatim}
+                                        removeVerbatim={removeVerbatim}
+                                    />
+                                </div>
+                            ))
                         }
+                    </article>
+                    <article>
+                        <h2>
+                            <span className="badge rounded-pill bg-primary">5</span>
+                            Remerciements/Écran de fin
+                        </h2>
+                        <div className="row mb-3">
+                            <div className="input-group">
+                                <span className="input-group-text text-end">Texte :</span>
+                                <textarea
+                                    {...register("greetings", { required: true })}
+                                    className="form-control"
+                                />
+                            </div>
+                            {errors.greetings &&
+                                <AlertMesg message={errors.greetings?.message} />
+                            }
+                        </div>
+                    </article>
+                    <div className="d-flex justify-content-end pb-3">
+                        <NavLink to="/admin">
+                            <button
+                                type="button"
+                                className="btn btn-outline-primary me-2"
+                            >Annuler</button>
+                        </NavLink>
+                        <input
+                            type="submit"
+                            className="btn btn-primary"
+                            value="Enregistrer"
+                        />
                     </div>
-                </article>
-                <div className="d-flex justify-content-end pb-3">
-                    <NavLink to="/admin">
-                        <button
-                            type="button"
-                            className="btn btn-outline-primary me-2"
-                        >Annuler</button>
-                    </NavLink>
-                    <input
-                        type="submit"
-                        className="btn btn-primary"
-                        value="Enregistrer" /
-                    >
-                </div>
-            </form>
-        </FormProvider>
+                </form>
+            </FormProvider>
         </section >
     )
 }

@@ -81,7 +81,7 @@ function User() {
                 'gender': JSON.parse(localStorage.getItem('user')).gender,
                 'institution': JSON.parse(localStorage.getItem('user')).institution
             }
-            reset(defaultValues)
+            reset(defaultValues);
         }
     }, [reset])
 
