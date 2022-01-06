@@ -179,28 +179,29 @@ function ExportResults() {
 
             {allTests &&
                 <section className='config'>
-                    <div className='d-flex mb-3'>
+                    <div className='d-flex flex-sm-column flex-md-row mb-3'>
                         <div className='input-group'>
-                            <span className='input-group-text'>Sélectionner un test:</span>
-                            <select
-                                className="form-select"
-                                onChange={selectTest}
-                            >
-                                <option value="0" >Sélectionner...</option>
-                                {allTests.map(({ id, name }) => (
-                                    <option
-                                        key={id}
-                                        value={id}
-                                        className=""
-                                    >{name}</option>
-                                ))}
-                            </select>
+                            <label className='input-group-text w-100'>Sélectionner un test:
+                                <select
+                                    className="form-select"
+                                    onChange={selectTest}
+                                >
+                                    <option value="0" >Sélectionner...</option>
+                                    {allTests.map(({ id, name }) => (
+                                        <option
+                                            key={id}
+                                            value={id}
+                                            className=""
+                                        >{name}</option>
+                                    ))}
+                                </select>
+                            </label>
                         </div>
 
                         {
                             (testQuizs.length > 0 && nbTestResults > 0) &&
                             <div className='input-group'>
-                                <label className='input-group-text'>Sélectionner le quiz:
+                                <label className='input-group-text w-100'>Sélectionner le quiz:
                                     <select
                                         className="form-select"
                                         onChange={selectQuiz}
@@ -224,20 +225,22 @@ function ExportResults() {
                             {/* Affichage du nombre de résultats */}
                             {
                                 (loadResults) ? (
-                                    <strong>Chargement...</strong>
+                                    <div className="spinner-border text-primary" role="status">
+                                        <span className="visually-hidden">Chargement...</span>
+                                    </div>
                                 ) : (
                                     <div className='alert alert-info'>
                                         {
                                             // Self invoking function
                                             (() => {
                                                 if (nbTestResults === 0) {
-                                                    return (<p>Il n'y a pas encore de résultat pour ce test.</p>)
+                                                    return (<>Il n'y a pas encore de résultat pour ce test.</>)
                                                 } else {
                                                     let output = <>Il y a <strong>{nbTestResults}</strong> enregistrement{(nbTestResults > 1) ? 's' : ''}</>;
                                                     if (diffBetweenResults < 1) {
-                                                        return (<p>{output}, le <strong>{resultsStartDate && resultsStartDate.toLocaleString()}</strong>.</p>)
+                                                        return (<>{output}, le <strong>{resultsStartDate && resultsStartDate.toLocaleString()}</strong>.</>)
                                                     } else {
-                                                        return (<p>{output}, entre le <strong>{resultsStartDate && resultsStartDate.toLocaleString()}</strong> et le <strong>{resultsEndDate && resultsEndDate.toLocaleString()}</strong>.</p>)
+                                                        return (<>{output}, entre le <strong>{resultsStartDate && resultsStartDate.toLocaleString()}</strong> et le <strong>{resultsEndDate && resultsEndDate.toLocaleString()}</strong>.</>)
                                                     }
                                                 }
                                             })()
