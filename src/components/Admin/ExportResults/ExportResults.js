@@ -148,14 +148,66 @@ function ExportResults() {
         }
     }, [testQuizs, quizId])
 
+    // Requêtes Supabase
+    const exportVerbatim = async function (date1, date2) {
+        date1 = DateTime.fromISO(date1);
+        date2 = DateTime.fromISO(date2);
+        // pour s'assurer que les dates sont ien dans l'ordre chronologique
+        let start = (date1 < date2) ? date1 : date2;
+        let end = (date2 > date1) ? date2 : date1;
+        // Par défaut, l'obj DateTime est créé avec 00h00m00s comme heure, les résultats
+        // enregitrés le jour de `end` sont donc exclus
+        // Pour qu'ils soient inclus, on ajoute un jour à `end`
+        end = end.plus({ days: 1 });
+        start = start.toISO();
+        end = end.toISO();
+        try {
+            const { error, data } = await supabase
+                .from('verbatim')
+                .select('client_id, responses')
+                .eq('test_id', testId)
+                .gte('created_at', start)
+                .lt('created_at', end)
+                .order('client_id');
+            if (error) {
+                throw new Error(error.message);
+            }
+            if (data) {
+                let content = '';
+                data.forEach((record) => {
+                    // Chaque réponse est entourée de double quotes pour prévenir les problèmes liés aux retours à la ligne dans les fichier CSV
+                    // cf. https://stackoverflow.com/questions/566052/can-you-encode-cr-lf-in-into-csv-files
+                    content += `${record.client_id}\t${record.responses
+                            .map(str => `"${str}"`)
+                            .join('\t')}\n`;
+                });
+                exportCSV('verbatim', content);
+            }
+        } catch (error) {
+            console.warn(error)
+        }
+    }
+
+    // Export CSV
+    const exportCSV = function (name, content) {
+        const fileDowloadUrl = URL.createObjectURL(
+            new Blob([content])
+        );
+        const link = document.createElement('a');
+        link.href = fileDowloadUrl;
+        link.setAttribute(
+            'download',
+            `${name}.csv`
+        );
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+    }
+
+    // Gestion des FORMs
     const submitVerbatim = (values) => {
-        console.log("Je suis le parent !!!")
         if (values.startDate && values.endDate) {
-            // TODO: vérifier que `start` est bien antérieur à `end`
-            const start = DateTime.fromISO(values.startDate);
-            const end = DateTime.fromISO(values.endDate);
-            console.log("start:", start);
-            console.log("end:", end);
+            exportVerbatim(values.startDate, values.endDate);
         }
     }
 
