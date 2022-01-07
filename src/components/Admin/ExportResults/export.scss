@@ -1,7 +1,32 @@
-section.config>div{
-    gap: 1rem;
-}
+section {
 
-section.export>* {
-    margin: auto;
+    &.export>* {
+        margin: auto;
+    }
+    
+    &.config>div {
+        gap: 1rem;
+    }
+    
+    .form-select {
+        margin-left: .5rem;
+        ;
+    }
+
+    .card {
+        max-width: min(40rem, 65vw);
+        box-shadow: 0 0 0.65em rgba(0,0,0,.25);
+
+        &.beware {
+            border-color: var(--bs-danger) !important;
+            
+            & .card-header{
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                background-color: var(--bs-danger) !important;
+                color: #fff;
+            }
+        }
+    }
 }

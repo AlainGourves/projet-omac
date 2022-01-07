@@ -151,6 +151,7 @@ function ExportResults() {
     const submitVerbatim = (values) => {
         console.log("Je suis le parent !!!")
         if (values.startDate && values.endDate) {
+            // TODO: vérifier que `start` est bien antérieur à `end`
             const start = DateTime.fromISO(values.startDate);
             const end = DateTime.fromISO(values.endDate);
             console.log("start:", start);
@@ -161,6 +162,7 @@ function ExportResults() {
     const submitExportQuiz = (values) => {
         console.log("Exporter les réultats du quiz")
         if (values.startDate && values.endDate) {
+            // TODO: vérifier que `start` est bien antérieur à `end`
             const start = DateTime.fromISO(values.startDate);
             const end = DateTime.fromISO(values.endDate);
             console.log("start:", start);
@@ -169,6 +171,7 @@ function ExportResults() {
     }
 
     const submitDeleteResults = (values) => {
+        // TODO: vérifier que `start` est bien antérieur à `end`
         console.log("Supprimer des résultats de quiz de la base.")
     }
 
@@ -225,8 +228,10 @@ function ExportResults() {
                             {/* Affichage du nombre de résultats */}
                             {
                                 (loadResults) ? (
-                                    <div className="spinner-border text-primary" role="status">
-                                        <span className="visually-hidden">Chargement...</span>
+                                    <div className="d-flex justify-content-center">
+                                        <div className="spinner-border text-primary" role="status">
+                                            <span className="visually-hidden">Chargement...</span>
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className='alert alert-info'>
@@ -261,6 +266,8 @@ function ExportResults() {
                         title={"Exporter les résultats du quiz."}
                         startDate={resultsStartDate}
                         endDate={resultsEndDate}
+                        diff={diffBetweenResults}
+                        alert={false}
                     />
                 }
 
@@ -272,6 +279,8 @@ function ExportResults() {
                             title={"Exporter les verbatim du test."}
                             startDate={resultsStartDate}
                             endDate={resultsEndDate}
+                            diff={diffBetweenResults}
+                            alert={false}
                         />
 
                         {/* Supprimer des résultats */}
@@ -280,6 +289,8 @@ function ExportResults() {
                             title={"Supprimer des résultats de la base de données."}
                             startDate={resultsStartDate}
                             endDate={resultsEndDate}
+                            diff={diffBetweenResults}
+                            alert={true}
                         />
                     </>
                 }

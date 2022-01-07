@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { AlertTriangle } from 'react-feather';
+
 
 function ExportForm(props) {
     const [startDate, setStartDate] = useState('');
@@ -11,7 +13,7 @@ function ExportForm(props) {
             setStartDate(props.startDate.toFormat('yyyy-MM-dd'));
             setEndDate(props.endDate.toFormat('yyyy-MM-dd'));
         }
-    }, [props]);
+    }, [props.startDate, props.endDate]);
 
     useEffect(() => {
         const defaultValues = {
@@ -22,40 +24,44 @@ function ExportForm(props) {
     }, [startDate, endDate, reset]);
 
     return (
-        <div className='card w-75 my-3'>
-            <div className="card-header">
-                <h3>{props.title}</h3>
-            </div>
+        <div className={`card my-3 ${props.alert ? 'beware' : ''}`}>
+            <h4 className="card-header">
+                {props.alert && <AlertTriangle />}
+                {props.title}
+                {props.alert && <AlertTriangle />}
+            </h4>
             <div className='card-body'>
                 <form onSubmit={handleSubmit(props.submitFn)}>
-                    {(props.startDate && props.endDate) &&
+                    {(props.startDate && props.endDate && props.diff && props.diff > 1) &&
                         <>
-                            <h4>Sélection de l'intervalle :</h4>
+                            <div className='row mb-1'>
+                                <strong>Sélection de l'intervalle :</strong>
+                            </div>
                             <div className='row'>
-                            <div className="col-md-5">
-                                <div className='input-group'>
-                                    <span className='input-group-text'>Début:</span>
-                                    <input
-                                        {...register("startDate")}
-                                        type="date"
-                                        min={startDate}
-                                        max={endDate}
-                                        className="form-control"
-                                    />
+                                <div className="col-md-5 mb-3">
+                                    <div className='input-group'>
+                                        <span className='input-group-text'>Début:</span>
+                                        <input
+                                            {...register("startDate")}
+                                            type="date"
+                                            min={startDate}
+                                            max={endDate}
+                                            className="form-control"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="col-md-5">
-                                <div className='input-group'>
-                                    <span className='input-group-text'>Fin:</span>
-                                    <input
-                                        {...register("endDate")}
-                                        type="date"
-                                        min={startDate}
-                                        max={endDate}
-                                        className="form-control"
-                                    />
+                                <div className="col-md-5 mb-3">
+                                    <div className='input-group'>
+                                        <span className='input-group-text'>Fin:</span>
+                                        <input
+                                            {...register("endDate")}
+                                            type="date"
+                                            min={startDate}
+                                            max={endDate}
+                                            className="form-control"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
                             </div>
                         </>
                     }
