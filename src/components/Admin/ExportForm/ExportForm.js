@@ -32,9 +32,9 @@ function ExportForm(props) {
             </h4>
             <div className='card-body'>
                 <form onSubmit={handleSubmit(props.submitFn)}>
+                    {props.body}
                     {(props.startDate && props.endDate && props.diff && props.diff > 1) &&
                         <>
-                        {props.body}
                             <div className='row mb-1'>
                                 <strong>Sélection de l'intervalle :</strong>
                             </div>
