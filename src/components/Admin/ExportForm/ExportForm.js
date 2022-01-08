@@ -34,6 +34,7 @@ function ExportForm(props) {
                 <form onSubmit={handleSubmit(props.submitFn)}>
                     {(props.startDate && props.endDate && props.diff && props.diff > 1) &&
                         <>
+                        {props.body}
                             <div className='row mb-1'>
                                 <strong>Sélection de l'intervalle :</strong>
                             </div>

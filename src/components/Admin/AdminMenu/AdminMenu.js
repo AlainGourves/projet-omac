@@ -18,7 +18,7 @@ function AdminMenu(props) {
                 <NavLink to="/admin/quiz" className="nav-link" activeClassName="active">Création d'un quiz</NavLink>
             </li>
             <li className="nav-item">
-                <NavLink to="/admin/export" className="nav-link" activeClassName="active">Exporter les résultats</NavLink>
+                <NavLink to="/admin/export" className="nav-link" activeClassName="active">Gestion des résultats</NavLink>
             </li>
             <li className="nav-item ms-auto quit">
                 <NavLink exact to="/" className="nav-link">Quitter Admin</NavLink>

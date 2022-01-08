@@ -148,19 +148,61 @@ function ExportResults() {
         }
     }, [testQuizs, quizId])
 
-    // Requêtes Supabase
-    const exportVerbatim = async function (date1, date2) {
-        date1 = DateTime.fromISO(date1);
-        date2 = DateTime.fromISO(date2);
-        // pour s'assurer que les dates sont ien dans l'ordre chronologique
-        let start = (date1 < date2) ? date1 : date2;
-        let end = (date2 > date1) ? date2 : date1;
+    // Requêtes Supabase -------------------------------
+
+    // pour s'assurer que les dates sont bien dans l'ordre chronologique
+    const sortDates = function (d1, d2) {
+        d1 = DateTime.fromISO(d1);
+        d2 = DateTime.fromISO(d2);
+        let start = (d1 < d2) ? d1 : d2;
+        let end = (d2 >= d1) ? d2 : d1;
         // Par défaut, l'obj DateTime est créé avec 00h00m00s comme heure, les résultats
         // enregitrés le jour de `end` sont donc exclus
         // Pour qu'ils soient inclus, on ajoute un jour à `end`
         end = end.plus({ days: 1 });
         start = start.toISO();
         end = end.toISO();
+        return [start, end];
+    }
+
+    const exportQuizResults = async function (date1, date2) {
+        let dates = sortDates(date1, date2);
+        let start = dates[0];
+        let end = dates[1];
+        try {
+            const { error, data } = await supabase
+                .from('results')
+                .select('client_id, responses, duration')
+                .eq('test_id', testId)
+                .eq('quiz_id', quizId)
+                .gte('created_at', start)
+                .lt('created_at', end)
+                .order('client_id');
+            if (error) {
+                throw new Error(error.message);
+            }
+            if (data) {
+                let content = '';
+                let durations = [];
+                data.forEach((record) => {
+                    durations.push([record.client_id, record.duration]);
+                    content += `${record.client_id}\t${record.responses
+                        .map(obj => Object.values(obj).join('\t'))
+                        .join('\t')}\n`;
+                });
+                exportCSV(`results_quiz_${quizTitle}`, content);
+                // console.log(content)
+                console.log(durations)
+            }
+        } catch (error) {
+            console.warn(error)
+        }
+    }
+
+    const exportVerbatim = async function (date1, date2) {
+        let dates = sortDates(date1, date2);
+        let start = dates[0];
+        let end = dates[1];
         try {
             const { error, data } = await supabase
                 .from('verbatim')
@@ -178,8 +220,8 @@ function ExportResults() {
                     // Chaque réponse est entourée de double quotes pour prévenir les problèmes liés aux retours à la ligne dans les fichier CSV
                     // cf. https://stackoverflow.com/questions/566052/can-you-encode-cr-lf-in-into-csv-files
                     content += `${record.client_id}\t${record.responses
-                            .map(str => `"${str}"`)
-                            .join('\t')}\n`;
+                        .map(str => `"${str}"`)
+                        .join('\t')}\n`;
                 });
                 exportCSV('verbatim', content);
             }
@@ -188,7 +230,7 @@ function ExportResults() {
         }
     }
 
-    // Export CSV
+    // Export CSV -------------------------------
     const exportCSV = function (name, content) {
         const fileDowloadUrl = URL.createObjectURL(
             new Blob([content])
@@ -204,7 +246,7 @@ function ExportResults() {
         link.parentNode.removeChild(link);
     }
 
-    // Gestion des FORMs
+    // Gestion des FORMs -------------------------------
     const submitVerbatim = (values) => {
         if (values.startDate && values.endDate) {
             exportVerbatim(values.startDate, values.endDate);
@@ -212,13 +254,8 @@ function ExportResults() {
     }
 
     const submitExportQuiz = (values) => {
-        console.log("Exporter les réultats du quiz")
         if (values.startDate && values.endDate) {
-            // TODO: vérifier que `start` est bien antérieur à `end`
-            const start = DateTime.fromISO(values.startDate);
-            const end = DateTime.fromISO(values.endDate);
-            console.log("start:", start);
-            console.log("end:", end);
+            exportQuizResults(values.startDate, values.endDate);
         }
     }
 
@@ -229,8 +266,7 @@ function ExportResults() {
 
     return (
         <main>
-            <h2>Export des résultats</h2>
-            <p>Affichage des tests enregistrés pour sélectionner les résultats à exporter en fichier CSV</p>
+            <h2>Gestion des résultats</h2>
 
             {allTests &&
                 <section className='config'>
@@ -316,6 +352,7 @@ function ExportResults() {
                     <ExportForm
                         submitFn={submitExportQuiz}
                         title={"Exporter les résultats du quiz."}
+                        body={<p>Export en fichier CSV (avec TAB comme séparateur).</p>}
                         startDate={resultsStartDate}
                         endDate={resultsEndDate}
                         diff={diffBetweenResults}
@@ -329,6 +366,7 @@ function ExportResults() {
                         <ExportForm
                             submitFn={submitVerbatim}
                             title={"Exporter les verbatim du test."}
+                            body={<p>Export en fichier CSV (avec TAB comme séparateur).</p>}
                             startDate={resultsStartDate}
                             endDate={resultsEndDate}
                             diff={diffBetweenResults}
@@ -339,6 +377,7 @@ function ExportResults() {
                         <ExportForm
                             submitFn={submitDeleteResults}
                             title={"Supprimer des résultats de la base de données."}
+                            body={<p className='alert alert-warning'>Rien pour le moment.</p>}
                             startDate={resultsStartDate}
                             endDate={resultsEndDate}
                             diff={diffBetweenResults}
