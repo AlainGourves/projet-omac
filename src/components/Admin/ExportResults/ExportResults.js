@@ -9,15 +9,15 @@ function ExportResults() {
     const [allTests, setAllTests] = useState([]);
     const [allQuizs, setAllQuizs] = useState([]);
     const [testId, setTestId] = useState(0);
+    const [testName, setTestName] = useState('');
     const [quizId, setQuizId] = useState(0);
     const [quizTitle, setQuizTitle] = useState(null);
-    const [loadResults, setLoadResults] = useState(false);
+    const [loadingResults, setLoadingResults] = useState(false);
     const [nbTestResults, setNbTestResults] = useState(0);
     const [resultsStartDate, setResultsStartDate] = useState(null);
     const [resultsEndDate, setResultsEndDate] = useState(null);
     const [diffBetweenResults, setDiffBetweenResults] = useState(null);
-    const [testQuizs, setTestQuizs]
-        = useState([]);
+    const [testQuizs, setTestQuizs] = useState([]);
 
     // Récupère les infos sur les tests
     const fetchTestsList = useCallback(async () => {
@@ -72,14 +72,14 @@ function ExportResults() {
         // et leur date d'enregistrement (pour pouvoir par la suite sélectionner une plage temporelle)
         const searchTestResults = async (id) => {
             try {
-                setLoadResults(true);
+                setLoadingResults(true);
                 const { data, error } = await supabase
-                    .rpc('get_test_results_by_id', { 'test_id_input': id });
+                .rpc('get_test_results_by_id', { 'test_id_input': id });
                 if (error) {
                     throw new Error(error.message)
                 }
                 if (data) {
-                    setLoadResults(false);
+                    setLoadingResults(false);
                     if (data.length > 0) {
                         setNbTestResults(data.length);
                         setResultsStartDate(DateTime.fromISO(data[0].created_at));
@@ -90,14 +90,29 @@ function ExportResults() {
                 console.warn(error)
             }
         }
-
+        
         if (testId > 0) {
+            // Récupère le nom du test
+            if (allTests.length > 0) {
+                setTestName(() => {
+                    const theTest = allTests.find((test) => Number(test.id) === Number(testId));
+                    return theTest.name;
+                });
+            }
             searchTestResults(testId);
         }
-    }, [testId])
+    }, [allTests, testId, testName]);
 
+    // Récupère le titre du quiz sélectionné
     useEffect(() => {
-        // Calcule la différence (en jours) entre les premiers résultats et les derniers
+        if (quizId > 0) {
+            const theQuiz = testQuizs.find((el) => Number(el.id) === Number(quizId));
+            setQuizTitle(theQuiz.title);
+        }
+    }, [testQuizs, quizId])
+
+    // Calcule la différence (en jours) entre les premiers résultats et les derniers
+    useEffect(() => {
         if (resultsStartDate && resultsEndDate) {
             setDiffBetweenResults(resultsEndDate.diff(resultsStartDate, 'days').as('days'));
         }
@@ -140,13 +155,6 @@ function ExportResults() {
             setQuizId(ev.target.value);
         }
     }
-
-    useEffect(() => {
-        if (quizId > 0) {
-            const theQuiz = testQuizs.find((el) => Number(el.id) === Number(quizId));
-            setQuizTitle(theQuiz.title);
-        }
-    }, [testQuizs, quizId])
 
     // Requêtes Supabase -------------------------------
 
@@ -223,7 +231,7 @@ function ExportResults() {
                         .map(str => `"${str}"`)
                         .join('\t')}\n`;
                 });
-                exportCSV('verbatim', content);
+                exportCSV(`verbatim_${testName}`, content);
             }
         } catch (error) {
             console.warn(error)
@@ -260,8 +268,7 @@ function ExportResults() {
     }
 
     const submitDeleteResults = (values) => {
-        // TODO: vérifier que `start` est bien antérieur à `end`
-        console.log("Supprimer des résultats de quiz de la base.")
+        alert("Supprimer des résultats de quiz de la base.")
     }
 
     return (
@@ -315,7 +322,7 @@ function ExportResults() {
                         <div>
                             {/* Affichage du nombre de résultats */}
                             {
-                                (loadResults) ? (
+                                (loadingResults) ? (
                                     <div className="d-flex justify-content-center">
                                         <div className="spinner-border text-primary" role="status">
                                             <span className="visually-hidden">Chargement...</span>
