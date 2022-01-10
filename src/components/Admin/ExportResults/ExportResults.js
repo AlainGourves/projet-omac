@@ -10,14 +10,15 @@ function ExportResults() {
     const [allQuizs, setAllQuizs] = useState([]);
     const [testId, setTestId] = useState(0);
     const [testName, setTestName] = useState('');
-    const [quizId, setQuizId] = useState(0);
-    const [quizTitle, setQuizTitle] = useState(null);
-    const [loadingResults, setLoadingResults] = useState(false);
-    const [nbTestResults, setNbTestResults] = useState(0);
-    const [resultsStartDate, setResultsStartDate] = useState(null);
-    const [resultsEndDate, setResultsEndDate] = useState(null);
-    const [diffBetweenResults, setDiffBetweenResults] = useState(null);
-    const [testQuizs, setTestQuizs] = useState([]);
+    const [testQuizs, setTestQuizs] = useState([]); // quizs du test sélectionné
+    const [quizId, setQuizId] = useState(0); // Id du quiz sélectionné
+    const [quizTitle, setQuizTitle] = useState(null); // titre du quiz sélectionné
+    const [loadingResults, setLoadingResults] = useState(false); // Bool pour afficher le spinner pendant le chargement des résultats
+    const [nbTestResults, setNbTestResults] = useState(0); // Stocke le nombre de résultats pour le test sélectionné
+    const [resultsStartDate, setResultsStartDate] = useState(null); // Date d'enregistrement du plus vieux résultat
+    const [resultsEndDate, setResultsEndDate] = useState(null); // Date d'enregistrement du résultat le plus récent
+    const [diffBetweenResults, setDiffBetweenResults] = useState(null); // Différence en jours entre les 2 précédents (pour afficher ou nom la sélection d'intervalle)
+    const [resultsDates, setResultsDates] = useState([]); // Stocke les DateTimes des résultats pour pouvoir afficher le nombre de résultats quand on modifie l'intervalle de temps
 
     // Récupère les infos sur les tests
     const fetchTestsList = useCallback(async () => {
@@ -74,7 +75,7 @@ function ExportResults() {
             try {
                 setLoadingResults(true);
                 const { data, error } = await supabase
-                .rpc('get_test_results_by_id', { 'test_id_input': id });
+                    .rpc('get_test_results_by_id', { 'test_id_input': id });
                 if (error) {
                     throw new Error(error.message)
                 }
@@ -82,6 +83,9 @@ function ExportResults() {
                     setLoadingResults(false);
                     if (data.length > 0) {
                         setNbTestResults(data.length);
+                        setResultsDates(() => {
+                            return data.map((record) => DateTime.fromISO(record.created_at));
+                        });
                         setResultsStartDate(DateTime.fromISO(data[0].created_at));
                         setResultsEndDate(DateTime.fromISO(data[data.length - 1].created_at));
                     }
@@ -90,7 +94,7 @@ function ExportResults() {
                 console.warn(error)
             }
         }
-        
+
         if (testId > 0) {
             // Récupère le nom du test
             if (allTests.length > 0) {
@@ -113,10 +117,10 @@ function ExportResults() {
 
     // Calcule la différence (en jours) entre les premiers résultats et les derniers
     useEffect(() => {
-        if (resultsStartDate && resultsEndDate) {
-            setDiffBetweenResults(resultsEndDate.diff(resultsStartDate, 'days').as('days'));
+        if (resultsDates.length > 1) {
+            setDiffBetweenResults(resultsDates[resultsDates.length - 1].diff(resultsDates[0], 'days').as('days'));
         }
-    }, [resultsStartDate, resultsEndDate])
+    }, [resultsDates])
 
     if (testId > 0 && testQuizs.length === 0) {
         // Récupère les ids des quizs du test sélectionné
@@ -138,14 +142,16 @@ function ExportResults() {
 
     const selectTest = (ev) => {
         if (ev.target.value > 0) {
-            // réinitialisation
+            // réinitialisation des états quand on sélectionne un nouveau test
             setTestQuizs([]);
             setNbTestResults(0);
+            setResultsDates([]);
             setResultsStartDate(null);
             setResultsEndDate(null);
             setDiffBetweenResults(null);
             setQuizId(0);
             setQuizTitle(null);
+            // Changement du test sélectionné :
             setTestId(ev.target.value);
         }
     }
@@ -268,7 +274,7 @@ function ExportResults() {
     }
 
     const submitDeleteResults = (values) => {
-        alert("Supprimer des résultats de quiz de la base.")
+        alert("Supprimer des résultats de test de la base.")
     }
 
     return (
@@ -366,6 +372,7 @@ function ExportResults() {
                             </pre>
                             <p>Les positions (<em>x</em>, <em>y</em>) sont exprimées en % des dimensions de la carte, avec 3 décimales.</p>
                         </div>}
+                        resultsDates={resultsDates}
                         startDate={resultsStartDate}
                         endDate={resultsEndDate}
                         diff={diffBetweenResults}
@@ -380,6 +387,7 @@ function ExportResults() {
                             submitFn={submitVerbatim}
                             title={"Exporter les verbatim du test."}
                             body={<p>Export en fichier CSV (avec TAB comme séparateur).</p>}
+                            resultsDates={resultsDates}
                             startDate={resultsStartDate}
                             endDate={resultsEndDate}
                             diff={diffBetweenResults}
@@ -391,6 +399,7 @@ function ExportResults() {
                             submitFn={submitDeleteResults}
                             title={"Supprimer des résultats de la base de données."}
                             body={<p className='alert alert-warning'>Rien pour le moment.</p>}
+                            resultsDates={resultsDates}
                             startDate={resultsStartDate}
                             endDate={resultsEndDate}
                             diff={diffBetweenResults}

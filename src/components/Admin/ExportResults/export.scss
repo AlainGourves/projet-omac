@@ -66,12 +66,21 @@ section {
     max-width: min(40rem, 65vw);
     box-shadow: 0 0 0.65em rgba(0, 0, 0, .25);
 
+    &:not(.beware) .card-header{
+        color: var(--bs-primary);
+    }
+
     & pre {
         font-family: monospace;
         font-size: .75em;
         padding: .5em .5em;
         border-radius: .25em;
         background-color: $gray-700;
+    }
+
+    & .alert {
+        padding: .5rem;
+        margin-bottom: 0;
     }
 
     &.beware {

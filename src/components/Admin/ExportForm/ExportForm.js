@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { DateTime, Interval } from 'luxon';
 import { AlertTriangle } from 'react-feather';
 
 
 function ExportForm(props) {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('')
-    const { register, handleSubmit, reset } = useForm();
+    const { register, handleSubmit, reset, watch } = useForm();
+
+    const watchStart = watch('startDate');
+    const watchEnd = watch('endDate');
+
+    const [resultsInInterval, setResultsInInterval] = useState(0);
 
     useEffect(() => {
         if (props.startDate && props.endDate) {
@@ -23,6 +29,18 @@ function ExportForm(props) {
         reset(defaultValues);
     }, [startDate, endDate, reset]);
 
+    useEffect(() => {
+        if (props.resultsDates.length > 1) {
+            let interval = Interval.fromDateTimes(DateTime.fromISO(watchStart), DateTime.fromISO(watchEnd).plus({ days: 1 })); // ajoute un jour à la fin pour que toute la journée en question soit dans l'intervalle
+            if (!interval.isValid && interval.invalidReason === 'end before start') {
+                // l'intervalle n'est pas valide : `end` est antérieur à `start`
+                interval = Interval.fromDateTimes(DateTime.fromISO(watchEnd), DateTime.fromISO(watchStart).plus({ days: 1 }));
+            }
+            const results = props.resultsDates.filter(date => interval.contains(date));
+            setResultsInInterval(results.length);
+        }
+    }, [watchStart, watchEnd, props.resultsDates]);
+
     return (
         <div className={`card my-3 ${props.alert ? 'beware' : ''}`}>
             <h4 className="card-header">
@@ -33,7 +51,7 @@ function ExportForm(props) {
             <div className='card-body'>
                 <form onSubmit={handleSubmit(props.submitFn)}>
                     {props.body}
-                    {(props.startDate && props.endDate && props.diff && props.diff > 1) &&
+                    {(props.diff && props.diff > 1) &&
                         <>
                             <div className='row mb-1'>
                                 <strong>Sélection de l'intervalle :</strong>
@@ -66,7 +84,14 @@ function ExportForm(props) {
                             </div>
                         </>
                     }
-                    <div className="d-flex justify-content-end pb-3">
+                    <div className="d-flex justify-content-between align-items-center pb-3">
+                        <div>
+                            {(props.diff && props.diff > 1) &&
+                                <span className='alert alert-info'>
+                                    <strong>{resultsInInterval} enregistrement{resultsInInterval > 1 ? 's' : ''}</strong>
+                                </span>
+                            }
+                        </div>
                         <input
                             type="submit"
                             className="btn btn-primary"
