@@ -361,7 +361,7 @@ function ExportResults() {
                         title={"Exporter les résultats du quiz."}
                         body={<div className="fs-6">
                             <p>Export en fichier CSV (avec TAB comme séparateur), sous la forme :</p>
-                            <pre>
+                            <pre className='text-info bg-dark'>
                                 [identifiant utilisateur][<em>x</em> item 1][<em>y</em> item 1]...[<em>x</em> item <em>n</em>][<em>y</em> item <em>n</em>](fin de ligne)
                             </pre>
                             <p>Les positions (<em>x</em>, <em>y</em>) sont exprimées en % des dimensions de la carte, avec 3 décimales.</p>

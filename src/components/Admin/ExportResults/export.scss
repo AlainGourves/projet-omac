@@ -1,4 +1,6 @@
 @use 'sass:math';
+@import '/node_modules/bootstrap/scss/_functions.scss';
+@import '/node_modules/bootstrap/scss/_variables.scss';
 
 section {
 
@@ -9,16 +11,18 @@ section {
 
         & .input-group-text {
             border: none;
-            background-color: var(--bs-gray-400);
+            background-color: var(--bs-primary);
+            color: #fff;
         }
 
         & .input-group:first-of-type:not(:last-of-type) .input-group-text{
+
             z-index: 10;
 
             &::after{
                 position: absolute;
                 content: '';
-                background: var(--bs-gray-400);
+                background: var(--bs-primary);
                 width: calc(#{math.cos(45deg)} * 3rem);
                 height: calc(#{math.cos(45deg)} * 3rem);
                 right: calc((#{math.cos(45deg) * -0.5} * 3rem) + .125rem);
@@ -33,7 +37,7 @@ section {
 
         & .input-group:last-of-type:not(:first-of-type) .input-group-text{
             border-radius: 0 .25rem .25rem 0;
-            background-color: var(--bs-gray-200) !important;
+            background-color: $blue-300 !important;
             padding-left: 2rem;
 
             &::after{
@@ -63,9 +67,11 @@ section {
     box-shadow: 0 0 0.65em rgba(0, 0, 0, .25);
 
     & pre {
-        font-family: 'Courier New', Courier, monospace;
+        font-family: monospace;
         font-size: .75em;
-        color: var(--bs-gray-600);
+        padding: .5em .5em;
+        border-radius: .25em;
+        background-color: $gray-700;
     }
 
     &.beware {
