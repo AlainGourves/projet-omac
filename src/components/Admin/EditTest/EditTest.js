@@ -1,6 +1,6 @@
 import './edit-test.scss';
 import { supabase } from '../../../supabaseClient';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, useParams, Redirect } from 'react-router-dom';
 import { useForm, FormProvider, useFieldArray } from 'react-hook-form';
 import { DndProvider } from 'react-dnd';
@@ -13,14 +13,15 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import AlertMesg from '../../Utils/AlertMesg/AlertMesg';
 
-function EditTest(props) {
+function EditTest({ allQuizs }) {
     // id passé en param, si c'est une modification
     let { id } = useParams();
     const [testId, setTestId] = useState(0);
     const [testName, setTestName] = useState('');
     // Pour rediriger sur /admin après enregistrement dans la base
     const [redirect, setRedirect] = useState(null);
-    // Gestion du formulaire
+
+    // Gestion du formulaire -------------------------------------------------
     const schema = yup.object().shape({
         name: yup.string().required("Merci de donner un nom au test."),
         homeTitle: yup.string().required("Merci de saisir le titre du test."),
@@ -47,71 +48,12 @@ function EditTest(props) {
         shouldUnregister: true,
     });
 
-    // Gestion drag&drop
-    const [allQuizs, setAllQuizs] = useState([]);
+    const [theQuizs, setTheQuizs] = useState(allQuizs);
+    const [usedQuizs, setUsedQuizs] = useState([]);
+    const [droppedQuizs, setDroppedQuizs] = useState([]);
 
-    const getAllQuizs = useCallback(async () => {
-        // Récupère tous les quizs, classés du plus récent au plus ancien
-        try {
-            const { data } = await supabase
-                .from('quizs')
-                .select('id, title')
-                .order('created_at', { ascending: false });
-            if (data) {
-                // Ajoute une propriété isDragged (false par défaut)
-                setAllQuizs(data.map((q) => {
-                    return { 'isUsed': false, ...q }
-                }));
-            }
-        } catch (error) {
-            console.log("Erreur fetch quizs:", error);
-        }
-    }, [setAllQuizs]);
-
+    // Récupère les infos du test dans BDD si un ID en paramètre
     useEffect(() => {
-        if (allQuizs.length === 0) {
-            getAllQuizs();
-        }
-    }, [allQuizs, getAllQuizs]);
-
-    const removeFromDropped = (id) => {
-        // Remet isUsed: false pour l'objet correspondant
-        setAllQuizs((arr) => {
-            const idx = arr.findIndex(obj => obj.id === id);
-            if (idx !== -1 && arr[idx].isUsed) {
-                const modifiedObj = Object.assign(arr[idx], { 'isUsed': false });
-                return [
-                    ...arr.slice(0, idx),
-                    modifiedObj,
-                    ...arr.slice(idx + 1)
-                ];
-            } else {
-                return arr;
-            }
-        })
-    }
-
-    // Appelé quand un quiz est déposé dans la dropzone
-    const addToDropped = (id) => {
-        setAllQuizs((arr) => {
-            // cherche l'index correspondant dans allQuizs
-            const idx = arr.findIndex(obj => obj.id === id);
-            if (idx !== -1 && !arr[idx].isUsed) {
-                // Modifie la propriété `isUsed` à true
-                const modifiedObj = Object.assign(arr[idx], { 'isUsed': true });
-                return [
-                    ...arr.slice(0, idx),
-                    modifiedObj,
-                    ...arr.slice(idx + 1)
-                ];
-            } else {
-                return arr;
-            }
-        })
-    }
-
-    useEffect(() => {
-        // Si un ID de test est passé en paramètre dans l'URL, récupère les infos dans DB
         const getTestById = async () => {
             try {
                 const { data } = await supabase
@@ -135,17 +77,10 @@ function EditTest(props) {
                         theTest.verbatim = [{ val: '' }];
                     }
                     theTest.greetings = data.greetings;
-                    reset(theTest)
                     if (data.quizs_ids) {
-                        const quizs_ids = data.quizs_ids;
-                        setAllQuizs((arr) => arr.map((item) => {
-                            return {
-                                id: item.id,
-                                title: item.title,
-                                isUsed: (quizs_ids.includes(item.id))
-                            }
-                        }));
+                        setUsedQuizs(data.quizs_ids);
                     }
+                    reset(theTest);
                 }
             } catch (error) {
                 console.warn("Problème pour récupérer le test id", id, ": ", error);
@@ -155,8 +90,59 @@ function EditTest(props) {
         if (id) {
             getTestById();
         }
-    }, [id, reset, setAllQuizs]) //allQuizs, setAllQuizs, reset]);
-    // sourceItems -> pour que les quizs utlisés soient chargés en cas de modif
+    }, [id, reset]);
+
+    useEffect(() => {
+        setDroppedQuizs(usedQuizs);
+        setTheQuizs((arr) => arr.map((item) => {
+            return {
+                id: item.id,
+                title: item.title,
+                isUsed: (usedQuizs.includes(item.id))
+            }
+        }));
+    }, [usedQuizs]);
+
+    // Gestion drag&drop -------------------------------------------------
+    const removeFromDropped = (id) => {
+        setDroppedQuizs(oldValue => oldValue.filter(val => val !== id));
+        // Remet isUsed: false pour l'objet correspondant
+        setTheQuizs((arr) => {
+            const idx = arr.findIndex(obj => obj.id === id);
+            if (idx !== -1 && arr[idx].isUsed) {
+                const modifiedObj = Object.assign(arr[idx], { 'isUsed': false });
+                return [
+                    ...arr.slice(0, idx),
+                    modifiedObj,
+                    ...arr.slice(idx + 1)
+                ];
+            } else {
+                return arr;
+            }
+        })
+    }
+
+    // Appelé quand un quiz est déposé dans la dropzone
+    const addToDropped = (id) => {
+        // Garder le fonction fléchée, sinon ça ne marche pas !!!!
+        setDroppedQuizs(prevValue => [...prevValue, id]);
+
+        setTheQuizs((arr) => {
+            // cherche l'index correspondant dans theQuizs
+            const idx = arr.findIndex(obj => obj.id === id);
+            if (idx !== -1 && !arr[idx].isUsed) {
+                // Modifie la propriété `isUsed` à true
+                const modifiedObj = Object.assign(arr[idx], { 'isUsed': true });
+                return [
+                    ...arr.slice(0, idx),
+                    modifiedObj,
+                    ...arr.slice(idx + 1)
+                ];
+            } else {
+                return arr;
+            }
+        })
+    };
 
     const saveTest = async function (test, fn) {
         try {
@@ -166,7 +152,7 @@ function EditTest(props) {
             // fonction à exécuter en cas de succès (redirection)
             fn();
         } catch (error) {
-            console.error("Erreur update du test:", error);
+            console.warn("Erreur update du test:", error);
         }
     }
 
@@ -178,7 +164,7 @@ function EditTest(props) {
                 .eq('id', id)
             fn();
         } catch (error) {
-            console.error("Erreur update du test:", error);
+            console.warn("Erreur update du test:", error);
         }
     }
 
@@ -188,8 +174,8 @@ function EditTest(props) {
             'title': `${values.homeTitle}`,
             'description': `${values.homeDescription}`
         }
-        // Array des ID de allQuizs dont `isUsed` est true
-        let quizs_ids = allQuizs.filter(item => item.isUsed).map(item => item.id);
+        // Array des ID de theQuizs dont `isUsed` est true
+        let quizs_ids = theQuizs.filter(item => item.isUsed).map(item => item.id);
         // validation : le array doit contenir au moins un item
         if (quizs_ids.length < 1) {
             setError('quizs_ids', {
@@ -306,16 +292,13 @@ function EditTest(props) {
                             </h2>
                             <div className="row mb-3">
                                 <p>Cliquez-glissez chaque quiz sélectionné dans cette zone.<br />
-                                    Les quizs s'enchaîneront au cours du test en suivant l'ordre de cette liste.</p>
-
-                                <div className="alert alert-danger">
-                                    BUG!! Les quizs enregistrés ne s'affichent pas toujours ci-dessous.
-                                </div>
+                                Les quizs s'enchaîneront au cours du test en suivant l'ordre de cette liste.</p>
                             </div>
                             <div className="row mb-3">
                                 <div className="col-md-5 ul-quizs">
                                     <QuizDropZone
-                                        quizs={allQuizs}
+                                        quizs={theQuizs}
+                                        droppedQuizs={droppedQuizs}
                                         addToDropped={addToDropped}
                                         removeFromDropped={removeFromDropped}
                                     />
@@ -328,8 +311,7 @@ function EditTest(props) {
                                 </div>
                                 <div className="col-md-5 ul-quizs">
                                     <QuizList
-                                        quizs={allQuizs}
-                                    // items={sourceItems.filter((q) => !q.isUsed)}
+                                        quizs={theQuizs}
                                     />
                                 </div>
                             </div>

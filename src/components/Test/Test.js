@@ -101,14 +101,12 @@ function Test() {
         let verbatim = (theTest.isVerbatim) ? JSON.parse(localStorage.getItem('verbatim')) : null;
         // Mise en forme de verbatim : comme TAB est utilisé à l'export comme séparateur CSV, il faut les remplacer dans le texte des réponses par des espaces.
         if (verbatim) {
-            console.log("avant:", verbatim)
             verbatim = verbatim.map((verb) => {
                 verb = verb.replaceAll(/\t/g, ' ');
                 // on en profite pour supprimer les lignes vides
                 verb = verb.replaceAll(/\n+/g, '\n');
                 return verb.trim();
             });
-            console.log("après:", verbatim)
         }
         // Met en forme les résultats pour la requète d'insertion dans DB
         const reqResults = results.map((q) => {

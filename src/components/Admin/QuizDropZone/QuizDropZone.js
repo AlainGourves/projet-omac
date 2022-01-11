@@ -1,36 +1,48 @@
 import './quiz-dropzone.scss';
 import { useDrop } from 'react-dnd';
 import ListItem from '../ListItem/ListItem';
+import { useState } from 'react';
+import { useEffect } from 'react/cjs/react.development';
 
 
-const QuizDropZone = function (props) {
+const QuizDropZone = function ({ quizs, droppedQuizs, addToDropped, removeFromDropped }) {
+    const [result, setResult] = useState(null);
+
     const [{ isOver }, dropRef] = useDrop(() => ({
         accept: "listItem",
-        drop: (item) => updateLists(item),
+        drop: (item) => updateDropped(item.id),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
         }),
     }));
 
-    function updateLists(obj) {
-        props.addToDropped(obj.id)
-    }
-
+    const updateDropped = (id) => {
+        addToDropped(id)
+    };
+    
+    useEffect(() => {
+        if (droppedQuizs.length > 0) {
+            setResult(droppedQuizs.map(id => quizs.find(q => q.id === id)));
+            // setResult(quizs.filter(q => droppedQuizs.includes(q.id)));
+        }else{
+            setResult(null);
+        }
+    }, [quizs, droppedQuizs])
+    
     return (
         <ul
             ref={dropRef}
             className={isOver ? "dropzone over" : "dropzone"}
         >
-            {(props.quizs.length > 0) &&
-                props.quizs.map(({ id, title, isUsed }) => (
-                    isUsed && <ListItem 
-                        key={id}
-                        id={id}
-                        title={title}
-                        isUsed={isUsed}
-                        removeFromDropped={props.removeFromDropped}
-                    />
-                ))
+            {result && result.map(({ id, title, isUsed }) => (
+                <ListItem
+                    key={id}
+                    id={id}
+                    title={title}
+                    isUsed={true}
+                    removeFromDropped={removeFromDropped}
+                />
+            ))
             }
         </ul>
     )
