@@ -1,9 +1,7 @@
 import './quiz-dropzone.scss';
 import { useDrop } from 'react-dnd';
 import ListItem from '../ListItem/ListItem';
-import { useState } from 'react';
-import { useEffect } from 'react/cjs/react.development';
-
+import { useState, useEffect } from 'react';
 
 const QuizDropZone = function ({ quizs, droppedQuizs, addToDropped, removeFromDropped }) {
     const [result, setResult] = useState(null);
