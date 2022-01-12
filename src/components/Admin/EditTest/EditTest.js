@@ -125,7 +125,8 @@ function EditTest({ allQuizs }) {
     // Appelé quand un quiz est déposé dans la dropzone
     const addToDropped = (id) => {
         // Garder le fonction fléchée, sinon ça ne marche pas !!!!
-        setDroppedQuizs(prevValue => [...prevValue, id]);
+        // Il faut la fonction fléchée parce que `setDroppedQuizs` utilise la valeur précédente pour la mettre à jour
+        setDroppedQuizs(oldValue => [...oldValue, id]);
 
         setTheQuizs((arr) => {
             // cherche l'index correspondant dans theQuizs
@@ -292,7 +293,7 @@ function EditTest({ allQuizs }) {
                             </h2>
                             <div className="row mb-3">
                                 <p>Cliquez-glissez chaque quiz sélectionné dans cette zone.<br />
-                                Les quizs s'enchaîneront au cours du test en suivant l'ordre de cette liste.</p>
+                                Les quizs s'enchaîneront au cours du test en suivant l'ordre de la liste.</p>
                             </div>
                             <div className="row mb-3">
                                 <div className="col-md-5 ul-quizs">

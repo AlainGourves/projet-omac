@@ -1,7 +1,5 @@
-import './list-item.scss';
 import { useDrag } from "react-dnd";
-import { XCircle, MoreVertical } from 'react-feather';
-
+import { MoreVertical } from 'react-feather';
 
 function ListItem(props) {
     const [{ isDragging }, dragRef] = useDrag(() => ({
@@ -22,21 +20,10 @@ function ListItem(props) {
         <li
             ref={dragRef}
             data-id={props.id}
-            className={isDragging ? "list-group-item d-flex disabled" : "list-group-item d-flex"}
+            className={`list-group-item d-flex ${isDragging ? 'disabled' : ''}`}
         >
-            {!props.isUsed &&
-                <MoreVertical className='grab' />
-            }
+            <MoreVertical className='grab' />
             {props.title}
-            {props.isUsed &&
-                <button 
-                    type="button"
-                    className="btn"
-                    onClick={() => removeItem(props.id)}
-                >
-                    <XCircle />
-                </button>
-            }
         </li>
     )
 }

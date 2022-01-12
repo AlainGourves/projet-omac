@@ -21,3 +21,21 @@ $bs-primary: #0d6efd;
     border: 1px solid rgba(0,0,0,.25);
     box-shadow: 0 0 0.25em rgba(0,0,0,.25) inset;
 }
+
+.list-group-item {
+    width: 100%;
+    padding-left: .5rem;
+    user-select: none;
+
+    & svg {
+        color: var(--bs-primary);
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        &.grab:hover {
+            cursor: grab;
+        }
+    }
+}

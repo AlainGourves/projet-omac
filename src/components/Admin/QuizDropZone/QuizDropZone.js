@@ -1,6 +1,6 @@
 import './quiz-dropzone.scss';
 import { useDrop } from 'react-dnd';
-import ListItem from '../ListItem/ListItem';
+import DroppedItem from '../DroppedItem/DroppedItem';
 import { useState, useEffect } from 'react';
 
 const QuizDropZone = function ({ quizs, droppedQuizs, addToDropped, removeFromDropped }) {
@@ -33,7 +33,7 @@ const QuizDropZone = function ({ quizs, droppedQuizs, addToDropped, removeFromDr
             className={isOver ? "dropzone over" : "dropzone"}
         >
             {result && result.map(({ id, title, isUsed }) => (
-                <ListItem
+                <DroppedItem
                     key={id}
                     id={id}
                     title={title}
