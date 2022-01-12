@@ -12,10 +12,6 @@ function ListItem(props) {
         })
     }));
 
-    const removeItem = (idx) => {
-        props.removeFromDropped(idx);
-    }
-
     return (
         <li
             ref={dragRef}
