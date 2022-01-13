@@ -43,34 +43,22 @@ const Login = function () {
             console.log("Erreur signIn(): ", error);
             setError("Les informations fournies ne sont pas reconnues, vérifiez votre saisie.");
         } else {
-            let isAdmin, prenom, nom;
             const getUser = async (user) => {
                 try {
-                    const { data, error } = await supabase
+                    const { error } = await supabase
                         .from('users')
                         .select()
                         .eq('id', user.id)
                         .single()
-    
+
                     if (error) {
                         throw error;
-                    }
-    
-                    if (data) {
-                        isAdmin = data.is_admin;
-                        if (isAdmin) {
-                            prenom = data.prenom;
-                            nom = data.nom;
-                        }
-                        (isAdmin)  ? console.log("je suis un admin") : console.log("je ne suis pas un admin")
-                        if (prenom && nom) console.log(`je suis ${prenom} ${nom}`)
                     }
                 } catch (error) {
                     console.warn("Erreur getUser: ", error)
                 }
             }
 
-            console.log("from login", user)
             getUser(user);
             history.push('/test');
         }
@@ -93,7 +81,7 @@ const Login = function () {
                 <label className="form-label" htmlFor="email">Email</label>
                 <input
                     {...register("email")}
-                    className={`form-control ${error ? 'is-invalid':''}`}
+                    className={`form-control ${error ? 'is-invalid' : ''}`}
                     type="email"
                 />
                 {errors.email &&
@@ -106,7 +94,7 @@ const Login = function () {
                 <div className="input-group">
                     <input
                         {...register("password")}
-                        className={`form-control ${error ? 'is-invalid':''}`}
+                        className={`form-control ${error ? 'is-invalid' : ''}`}
                         type={eyeIcon ? "password" : "text"}
                     />
                     <span className="eye input-group-text" onClick={showPassword}>
