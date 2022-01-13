@@ -6,9 +6,9 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import List from './List/List';
 import Map from './Map/Map';
-import {addToLocalStorage} from '../../Utils/helperFunctions';
+import { addToLocalStorage } from '../../Utils/helperFunctions';
 
-function Quiz({ quizs,isVerbatim, ...props }) {
+function Quiz({ quizs, isVerbatim, ...props }) {
     const { id } = useParams();
 
     // Stocke les infos du quiz :
@@ -71,11 +71,15 @@ function Quiz({ quizs,isVerbatim, ...props }) {
     const [wOffset, setWOffset] = useState(null);
     const [hOffset, setHOffset] = useState(null);
     useEffect(() => {
+        // Fixe la valeur de `--mapItem-width` (utilisée pour les calculs de placement et des résultats)
+        const mapItemWidth = 6; // valeur en `rem`
+        document.documentElement.style.setProperty('--mapItem-width', `${mapItemWidth}rem`);
         // calcule la valeur du `rem`en `px`
         let rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
         if (rem) {
-            setWOffset((rem * 6) / 2);
-            setHOffset(rem * 1.75 + 2); // height + padding + 2px border
+            // TODO: mettre les valeurs pour width & height quelque part bien en évidence (voir par rappport au SCSS)
+            setWOffset((rem * mapItemWidth) / 2);
+            setHOffset(rem * 1.75 + 2); // hauteur des mapItems : line-height + padding + 2px border
         }
     }, []);
 
@@ -91,7 +95,8 @@ function Quiz({ quizs,isVerbatim, ...props }) {
             setQuiz((arr) => {
                 // trouver l'indice dans quiz.items
                 const idx = arr.items.findIndex(el => el.id === id);
-                let newItems = arr.items.slice(); // copie de l'array
+                let newItems = [...arr.items]; // copie de l'array
+                // let newItems = arr.items.slice(); // copie de l'array
                 newItems[idx].isUsed = true;
                 return {
                     ...arr,
@@ -99,9 +104,14 @@ function Quiz({ quizs,isVerbatim, ...props }) {
                 }
             })
             const rect = mapRef.current.getBoundingClientRect();
-            // calcul de la position dans Map en pourcentage
-            obj.x = (obj.x - rect.x - wOffset) / rect.width * 100;
-            obj.y = (obj.y - rect.y - hOffset) / rect.height * 100;
+            // calcul de la position enregistrée (centre de la croix)
+            // (x, y) moins les décalages wOffset, hOffset
+            obj.registeredX = (obj.x - rect.x) / rect.width * 100;
+            obj.registeredY = (obj.y - rect.y) / rect.height * 100;
+            // calcul de la position du coin supérieur gauche dans Map en pourcentage
+            obj.x = obj.registeredX - (wOffset / rect.width * 100);
+            obj.y = obj.registeredY - (hOffset / rect.height * 100);
+            // z-index
             obj.z = zIdx.current;
             setAnswers(answers => [...answers, obj]);
             setCountItems(count => count - 1);
@@ -115,14 +125,20 @@ function Quiz({ quizs,isVerbatim, ...props }) {
             setAnswers(answers => {
                 // trouver l'index dans `answers` de l'obj correspondant
                 let idx = answers.findIndex(el => el.id === id);
-                let updatedItems = answers.slice(); // copie du array
+                let updatedItems = [...answers]; // copie du array
                 const rect = mapRef.current.getBoundingClientRect();
-                // calcul de la position dans Map en pourcentage
-                obj.x = (obj.x - rect.x - wOffset) / rect.width * 100;
-                obj.y = (obj.y - rect.y - hOffset) / rect.height * 100;
+                // calcul de la position enregistrée (centre de la croix)
+                // (x, y) moins les décalages wOffset, hOffset
+                obj.registeredX = (obj.x - rect.x) / rect.width * 100;
+                obj.registeredY = (obj.y - rect.y) / rect.height * 100;
+                // calcul de la position du coin supérieur gauche dans Map en pourcentage
+                obj.x = obj.registeredX - (wOffset / rect.width * 100);
+                obj.y = obj.registeredY - (hOffset / rect.height * 100);
                 // update les coordonnées
                 updatedItems[idx].x = obj.x;
                 updatedItems[idx].y = obj.y;
+                updatedItems[idx].registeredX = obj.registeredX;
+                updatedItems[idx].registeredY = obj.registeredY;
                 updatedItems[idx].z = zIdx.current;
                 return updatedItems;
             });
@@ -145,7 +161,11 @@ function Quiz({ quizs,isVerbatim, ...props }) {
                 const sortedAnswers = answers.sort((a, b) => (a.id > b.id) ? 1 : -1);
                 // On en garde que les valeurs de `x` & `y`
                 const quizResult = sortedAnswers.map(item => {
-                    return { 'x': item.x.toFixed(3), 'y': item.y.toFixed(3) }
+                    // Il peut y avoir des cas limite où x et/ou y sont négatifs, comme c'est toujours très proche de 0, on arrondit à 0
+                    return { 
+                        'x': (item.registeredX > 0) ? item.registeredX.toFixed(3) : 0, 
+                        'y': (item.registeredY > 0) ? item.registeredY.toFixed(3) : 0 
+                    }
                 });
                 // Enregistrement des résultats en localStorage
                 const finalResult = {
@@ -163,6 +183,8 @@ function Quiz({ quizs,isVerbatim, ...props }) {
             }
         });
     }
+
+    // useEffect(()=> console.log(answers), [answers])
 
     if (!quiz) {
         return (

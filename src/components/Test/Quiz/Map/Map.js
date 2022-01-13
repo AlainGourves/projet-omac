@@ -45,6 +45,8 @@ const Map = forwardRef(({ answers, addAnswer, modifyAnswer }, mapRef) => {
                         label={ans.label}
                         x={ans.x}
                         y={ans.y}
+                        registeredX={ans.registeredX}
+                        registeredY={ans.registeredY}
                         z={ans.z}
                     />)
                 )}

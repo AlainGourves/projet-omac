@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import AlertMesg from '../../Utils/AlertMesg/AlertMesg';
-// import { supabase } from '../../../supabaseClient';
 
 
 function User() {
@@ -55,21 +54,10 @@ function User() {
         const age = d1.getFullYear() - d2.getFullYear();
         if (!Number.isNaN(age) && age > 0 && age < 100) {
             setValue('age', age)
+        }else{
+            setValue('age', undefined)
         }
     }, [watchBirthDate, setValue]);
-
-    const watchGender = watch('gender')
-    useEffect(() => {
-        let bgCol;
-        if (watchGender === 'M') {
-            bgCol = 'blue';
-        } else if (watchGender === 'F') {
-            bgCol = 'pink'
-        } else {
-            bgCol = 'gray'
-        }
-        document.documentElement.style.setProperty('--bg-carte', `var(--bg-${bgCol})`);
-    }, [watchGender])
 
     useEffect(() => {
         if (localStorage.getItem('user') && localStorage.getItem('user') !== null) {
@@ -98,14 +86,7 @@ function User() {
             'gender': vals.gender,
             'institution': vals.institution
         }
-        // !!!! On attend la fin du test pour enregistrer les infos dans Supabase !!!!!
-        // const { error } = await supabase
-        //     .from('clients')
-        //     .insert(obj, { returning: 'minimal' });
-        //     // returning: 'minimal' -> Supabase ne renvoit pas les infos enregistrées
-        // if (error) {
-        //     console.warn(error)
-        // }
+        
         localStorage.setItem('user', JSON.stringify(obj));
         setRedirect('/test/quiz/0');
     }

@@ -1,7 +1,7 @@
 import { useDrag } from "react-dnd";
 import { MoreVertical, XCircle } from "react-feather";
 
-const DroppedItem = ({id, label, x, y, z}) => {
+const DroppedItem = ({id, label, registeredX, registeredY, x, y, z}) => {
     const [{ isDragging }, dragRef] = useDrag(() => ({
         type: "droppedItem",
         item: {
@@ -17,8 +17,10 @@ const DroppedItem = ({id, label, x, y, z}) => {
     return (
         <div
             key={id}
-            data-label={label}
             data-id={id}
+            data-label={label}
+            data-position-x={registeredX}
+            data-position-y={registeredY}
             ref={dragRef}
             className={`mapItem ${isDragging ? 'over':''}`}
             style={{left: `${x}%`, top: `${y}%`, zIndex: `${z +10}`, }}

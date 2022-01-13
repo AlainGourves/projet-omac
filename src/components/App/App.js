@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/Auth';
 import { ModalProvider } from '../../contexts/ModalContext';
 import PrivateRoute from '../PrivateRoute/PrivateRoute';
 import Login from '../Login/Login';
-// import SignUp from '../SignUp/SignUp';
+import SignUp from '../SignUp/SignUp';
 import Test from '../Test/Test';
 import Page404 from '../Page404/Page404';
 import Admin from '../Admin/Admin';
@@ -51,7 +51,7 @@ function App() {
             <div className="container-md min-vh-100 d-flex flex-column justify-content-center align-items-center">
                 {isAdmin && <Dashboard prenom={prenom} nom={nom} />}
                 <Switch>
-                    {/* <Route path="/inscription" component={SignUp} /> */}
+                    <Route path="/inscription" component={SignUp} />
                     <Route path="/connexion" component={Login} />
                     <Route exact path="/" component={Home} />
                     {/* <PrivateRoute exact path="/" component={Test} /> */}
