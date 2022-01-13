@@ -1,14 +1,15 @@
 :root {
-    --bg-blue: deepskyblue;
-    --bg-pink: deeppink;
-    --bg-gray: lightslategray;
+    // ! important ! la taille des .mapItem et d'un certain d'autres choses dépendent de var(--mapItem-width)
+    // La valeur par défaut est définie dans /index.scss et elle est modifiée dans
+    // `./src/components/Test/Quiz/Quiz.js`
+    --mapItem-width: 6rem;
 }
 
 .carte {
     width: min(40rem, 50vw);
     padding: 1rem;
     border-radius: .25rem;
-    background-color: var(--bg-carte, deepskyblue);
+    background-color: deepskyblue;
     box-shadow: 0 0 1em rgba(0, 0, 0, .45);
     transition: background-color .125s linear;
 }
