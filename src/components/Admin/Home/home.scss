@@ -1,6 +1,7 @@
 .table-tests tr td:nth-child(1),
 .table-tests tr td:nth-child(4),
 .table-tests tr td:nth-child(5),
+.table-tests tr td:nth-child(6),
 .table-tests tr th:nth-child(5) {
     text-align: center
 }
@@ -23,4 +24,8 @@ button.icon{
     appearance: none;
     border: 0;
     background: transparent;
+}
+
+th.col-icon {
+    width: 3rem;
 }

@@ -98,8 +98,8 @@ function QuizTable(props) {
                             {(props.quizsOrderBy === 'created_at') && (props.quizsOrderByDateAsc) && <ChevronDown />}
                             {(props.quizsOrderBy === 'created_at') && (!props.quizsOrderByDateAsc) && <ChevronUp />}
                         </th>
-                        <th scope="col" className="col-1"></th>
-                        <th scope="col" className="col-1"></th>
+                        <th scope="col" className="col-icon"></th>
+                        <th scope="col" className="col-icon"></th>
                     </tr>
                 </thead>
                 <tbody>

@@ -14,8 +14,9 @@ import * as yup from 'yup';
 import AlertMesg from '../../Utils/AlertMesg/AlertMesg';
 
 function EditTest({ allQuizs }) {
-    // id passé en param, si c'est une modification
-    let { id } = useParams();
+    // params : `id` -> si c'est une modification
+    // `duplicate` -> copie d'un test
+    let { id, duplicate } = useParams();
     const [testId, setTestId] = useState(0);
     const [testName, setTestName] = useState('');
     // Pour rediriger sur /admin après enregistrement dans la base
@@ -54,17 +55,18 @@ function EditTest({ allQuizs }) {
 
     // Récupère les infos du test dans BDD si un ID en paramètre
     useEffect(() => {
-        const getTestById = async () => {
+        const getTestById = async (action) => {
             try {
+                const theId = (action === 'edit') ? id : duplicate;
                 const { data } = await supabase
                     .from('tests')
                     .select()
-                    .eq('id', id)
+                    .eq('id', theId)
                     .single();
                 if (data) {
-                    setTestId(data.id);
+                    if (action === 'edit') setTestId(data.id);
                     let theTest = {};
-                    theTest.name = data.name;
+                    theTest.name = (action === 'edit') ? data.name : `${data.name} (copie)`;
                     setTestName(theTest.name);
                     theTest.homeTitle = data.home.title;
                     theTest.homeDescription = data.home.description;
@@ -88,9 +90,12 @@ function EditTest({ allQuizs }) {
         }
 
         if (id) {
-            getTestById();
+            getTestById('edit');
         }
-    }, [id, reset]);
+        if (duplicate) {
+            getTestById('duplicate');
+        }
+    }, [id, duplicate, reset]);
 
     useEffect(() => {
         setDroppedQuizs(usedQuizs);
@@ -293,7 +298,7 @@ function EditTest({ allQuizs }) {
                             </h2>
                             <div className="row mb-3">
                                 <p>Cliquez-glissez chaque quiz sélectionné dans cette zone.<br />
-                                Les quizs s'enchaîneront au cours du test en suivant l'ordre de la liste.</p>
+                                    Les quizs s'enchaîneront au cours du test en suivant l'ordre de la liste.</p>
                             </div>
                             <div className="row mb-3">
                                 <div className="col-md-5 ul-quizs">

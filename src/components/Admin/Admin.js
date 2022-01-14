@@ -73,6 +73,9 @@ const Admin = function (props) {
                     <Route path="/admin/edit-test/:id">
                         <EditTest allQuizs={allQuizs} />
                     </Route>
+                    <Route path="/admin/copy-test/:duplicate">
+                        <EditTest allQuizs={allQuizs} />
+                    </Route>
                     <Route path="/admin/export">
                         <ExportResults />
                     </Route> 

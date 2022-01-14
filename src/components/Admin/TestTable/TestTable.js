@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useModal } from '../../../contexts/ModalContext';
-import { ChevronDown, ChevronUp, Edit, Trash } from 'react-feather';
+import { ChevronDown, ChevronUp, Edit, Trash, Copy } from 'react-feather';
 
 function TestTable(props) {
     const [modal, setModal] = useModal();
@@ -62,6 +62,16 @@ function TestTable(props) {
                     </NavLink>
                 </td>
                 <td>
+                    <NavLink
+                        to={`/admin/copy-test/${id}`}
+                        data-edit={id}
+                        className="icon"
+                        title="Dupliquer ce test"
+                    >
+                        <Copy />
+                    </NavLink>
+                </td>
+                <td>
                     <button
                         className="icon"
                         type="button"
@@ -92,7 +102,7 @@ function TestTable(props) {
             <table className="table table-hover table-tests">
                 <thead className="table-light">
                     <tr>
-                        <th scope="col" className="col-1">Actif</th>
+                        <th scope="col" className="col-icon">Actif</th>
                         <th scope="col"
                             onClick={props.orderTestsByName}
                             className={`clickable ${(props.testsOrderBy === 'name') ? "table-info" : ''}`}
@@ -111,8 +121,9 @@ function TestTable(props) {
                             {(props.testsOrderBy === 'created_at') && (props.testsOrderByDateAsc) && <ChevronDown />}
                             {(props.testsOrderBy === 'created_at') && (!props.testsOrderByDateAsc) && <ChevronUp />}
                         </th>
-                        <th scope="col" className="col-1"></th>
-                        <th scope="col" className="col-1"></th>
+                        <th scope="col" className="col-icon"></th>
+                        <th scope="col" className="col-icon"></th>
+                        <th scope="col" className="col-icon"></th>
                     </tr>
                 </thead>
                 <tbody>
