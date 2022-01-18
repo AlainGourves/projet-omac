@@ -10,6 +10,7 @@ import Home from './Home/Home';
 import Quiz from './Quiz/Quiz';
 import ExportResults from './ExportResults/ExportResults';
 import EditTest from './EditTest/EditTest';
+import AddAdmin from './AddAdmin/AddAdmin';
 
 const Admin = function (props) {
     // const { user } = useAuth();
@@ -78,6 +79,9 @@ const Admin = function (props) {
                     </Route>
                     <Route path="/admin/export">
                         <ExportResults />
+                    </Route> 
+                    <Route path="/admin/add-admin">
+                        <AddAdmin />
                     </Route> 
                     <Route path="/">
                         <Home />
