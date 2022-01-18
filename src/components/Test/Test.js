@@ -9,6 +9,7 @@ import User from './User/User';
 import Quiz from './Quiz/Quiz';
 import Verbatim from './Verbatim/Verbatim';
 import Greetings from './Greetings/Greetings';
+import Page404 from '../Page404/Page404';
 import { supabase } from '../../supabaseClient';
 import { useModal } from '../../contexts/ModalContext';
 
@@ -200,6 +201,10 @@ function Test() {
                     <Home
                         title={theTest.home.title}
                         description={theTest.home.description} />
+                </Route>
+
+                <Route path='/test/*'>
+                    <Page404 />
                 </Route>
 
             </Switch>
