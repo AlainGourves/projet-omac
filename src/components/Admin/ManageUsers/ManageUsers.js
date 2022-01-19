@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import './manage-users.scss';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../../contexts/Auth';
 import { supabase } from '../../../supabaseClient';
@@ -7,15 +8,40 @@ import * as yup from 'yup';
 import { Eye, EyeOff } from 'react-feather';
 import AlertMesg from '../../Utils/AlertMesg/AlertMesg';
 import { generatePassword } from '../../Utils/helperFunctions';
+import UsersTable from '../UsersTable/UsersTable';
 
-const AddAdmin = function () {
+const ManageUsers = function () {
 
     const [eyeIcon, setEyeIcon] = useState(true); // true -> Eye, false -> EyeOff
 
     // Get connexion function from the Auth context
     const { signUp } = useAuth();
 
+    // Récupère les infos de `public.users`
+    const [usersList, setUsersList] = useState([]);
+    useEffect(() => {
+        const getUsers = async () => {
+            try{
+            const {data, error} = await supabase
+                .from('users')
+                .select('id, email, is_admin');
+                if (error) {
+                    throw new Error(error.message);
+                }
+                if (data) {
+                    console.log(data)
+                    setUsersList(data);
+                }
+            }catch(error) {
+                console.warn("Failed to fetch all users:", error);
+            }
+        }
+
+        getUsers();
+    }, []);
+
     const schema = yup.object().shape({
+        userStatus: yup.string().required("Merci de choisr un statut pour l'utilisateur."),
         firstName: yup.string().required("Merci de renseigner votre prénom."),
         lastName: yup.string().required("Merci de renseigner votre nom."),
         email: yup.string().email("Vérifier l'adresse mail, elle ne semble pas correcte.").required("Merci de renseigner votre adresse mail."),
@@ -28,6 +54,7 @@ const AddAdmin = function () {
 
     const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm({
         defaultValues: {
+            'userStatus': 'admin',
             'firstName': '',
             'lastName': '',
             'email': '',
@@ -43,12 +70,13 @@ const AddAdmin = function () {
     }
 
     const onSubmit = async (values) => {
-        // console.log("submit", values)
+        console.log("submit", values)
         // Get input values
         const firstName = values.firstName;
         const lastName = values.lastName;
         const email = values.email;
         const password = values.password;
+        const is_admin = (values.userStatus === 'admin');
 
         try {
             const { user, error } = await signUp({ email, password });
@@ -63,7 +91,7 @@ const AddAdmin = function () {
                     email: user.email,
                     prenom: firstName,
                     nom: lastName,
-                    is_admin: true,
+                    is_admin,
                 }
                 const { error } = await supabase.from('users').insert([userData])
                 if (error) {
@@ -97,13 +125,43 @@ const AddAdmin = function () {
 
     return (
         <>
-            <h1 className='mb-5'>Ajouter un administrateur</h1>
+            <h1 className='mb-5'>Gestion des utilisateurs</h1>
+
+            <h2 className='mb-3'>Ajouter un utilisateur</h2>
             <p>Une fois le nouveau compte créé, vous êtes automatiquement reconnecté au site avec celui-ci. En cas d'échec, veus êtes aussi déconnecté du site, et renvoyé vers la page d'accueil.</p>
-            <div className='d-flex justify-content-center'>
+            <div className='d-flex justify-content-center mb-5'>
                 <form onSubmit={handleSubmit(onSubmit, onError)} className='form_add_admin'>
-                    <div className="row mb-3 gy-2">
+
+                    <div className="d-flex flex-column flex-lg-row mb-3 status_radio">
+                        <div className='user_label'>Statut</div>
+                        <div className="form-check">
+                            <label className='form-check-label'>
+                                <input
+                                    {...register('userStatus', { required: true })}
+                                    value='admin'
+                                    type='radio'
+                                    className='form-check-input'
+                                />Admin</label>
+                        </div>
+                        <div className="form-check">
+                            <label className='form-check-label'>
+                                <input
+                                    {...register('userStatus', { required: true })}
+                                    value='visitor'
+                                    type='radio'
+                                    className='form-check-input'
+                                />Visiteur</label>
+                        </div>
+                        {errors.userStatus &&
+                            <div className='flex-nowrap'>
+                                <AlertMesg message={errors.userStatus?.message} />
+                            </div>
+                        }
+                    </div>
+
+                    <div className="row flex-column flex-lg-row gx-2">
                         <div className="col">
-                            <label className="form-label" htmlFor="firstName">Prénom</label>
+                            <label className="form-label user_label" htmlFor="firstName">Prénom</label>
                             <input
                                 {...register("firstName")}
                                 className="form-control"
@@ -114,7 +172,7 @@ const AddAdmin = function () {
                             }
                         </div>
                         <div className="col">
-                            <label className="form-label" htmlFor="lastName">Nom</label>
+                            <label className="form-label user_label" htmlFor="lastName">Nom</label>
                             <input
                                 {...register("lastName")}
                                 className="form-control"
@@ -128,7 +186,7 @@ const AddAdmin = function () {
 
 
                     <div className="mb-3">
-                        <label className="form-label" htmlFor="email">Email</label>
+                        <label className="form-label user_label" htmlFor="email">Email</label>
                         <input
                             {...register("email")}
                             className="form-control"
@@ -139,9 +197,9 @@ const AddAdmin = function () {
                         }
                     </div>
 
-                    <div className="row align-items-end mb-3 gy-2">
+                    <div className="row flex-column flex-lg-row align-items-end mb-3 gx-2">
                         <div className="col">
-                            <label className="form-label" htmlFor="password">Mot de passe</label>
+                            <label className="form-label user_label" htmlFor="password">Mot de passe</label>
                             <div className="input-group">
                                 <input
                                     {...register("password")}
@@ -157,7 +215,7 @@ const AddAdmin = function () {
                             }
                         </div>
                         <div className="col">
-                            <label className="form-label" htmlFor="confPassword">Confirmer le mot de passe</label>
+                            <label className="form-label user_label" htmlFor="confPassword">Confirmer le mot de passe</label>
                             <div className="input-group">
                                 <input
                                     {...register("confPassword")}
@@ -174,13 +232,13 @@ const AddAdmin = function () {
                         </div>
                     </div>
 
-                    <div className="d-flex justify-content-between">
+                    <div className="d-flex flex-column flex-lg-row justify-content-between">
                         <button type="button"
                             className="btn btn-outline-secondary mb-2"
                             onClick={setNewPassword}
                         >
                             Générer un mot de passe</button>
-                        <div>
+                        <div className='d-flex justify-content-center justify-content-lg-end'>
                             <button type="button"
                                 className="btn btn-outline-primary mb-2 me-1"
                                 onClick={formReset}
@@ -194,8 +252,24 @@ const AddAdmin = function () {
 
                 </form>
             </div>
+
+            <h2 className='mb-3'>Utilisateurs enregistrés</h2>
+            <div className='row justify-content-around mb-3'>
+                <div className='col-10 col-lg-5 mb-3'>
+                    <UsersTable
+                        usersList={usersList}
+                        userAdmin={true}
+                    />
+                </div>
+                <div className='col-10 col-lg-5 mb-3'>
+                    <UsersTable
+                        usersList={usersList}
+                        userAdmin={false}
+                    />
+                </div>
+            </div>
         </>
     )
 }
 
-export default AddAdmin;
+export default ManageUsers;

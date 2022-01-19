@@ -18,7 +18,7 @@ function AdminMenu(props) {
                 <NavLink to="/admin/quiz" className="nav-link" activeClassName="active">Création d'un quiz</NavLink>
             </li>
             <li className="nav-item">
-                <NavLink to="/admin/add-admin" className="nav-link" activeClassName="active">Ajouter un admin</NavLink>
+                <NavLink to="/admin/manage-users" className="nav-link" activeClassName="active">Utilisateurs</NavLink>
             </li>
             <li className="nav-item">
                 <NavLink to="/admin/export" className="nav-link" activeClassName="active">Gestion des résultats</NavLink>

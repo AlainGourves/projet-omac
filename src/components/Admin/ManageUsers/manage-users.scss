@@ -1,0 +1,14 @@
+.status_radio {
+    gap: .125rem 1rem;
+}
+
+.user_label {
+    font-weight: 600;
+    color: var(--bs-primary);
+}
+
+.users-list{
+    width: min(75vw, 22rem);
+    max-height: 14rem;
+    overflow-y: auto;
+}
