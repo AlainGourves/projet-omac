@@ -57,6 +57,10 @@ function Quiz({ quizs, isVerbatim, ...props }) {
                     nextStep.current = '/test/fin'
                 }
             }
+        }else{
+            // TODO: traiter l'erreur 'pas de quiz correspondant au param id'
+            // Rediriger vers /test/ ?
+            console.log("Problème avec :", id)
         }
     }, [id, quizs, isVerbatim]);
 

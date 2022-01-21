@@ -23,6 +23,15 @@ function EditTest({ allQuizs }) {
     const [redirect, setRedirect] = useState(null);
 
     // Gestion du formulaire -------------------------------------------------
+    const cleanEmailsList = (val) => {
+        if (typeof val === 'string') {
+            // Nettoie le texte en entrée pour renvoyer un array d'adresses mail uniques
+            val = val.replace(/,|;/g, ' ').replace(/\s+/g, ' ');
+            const mySet = new Set(val.split(' ')); // création d'un Set (pour supprimer les doublons)
+            return (mySet.size) ? [...mySet] : null; // retourn un array
+        }
+    }
+
     const schema = yup.object().shape({
         name: yup.string().required("Merci de donner un nom au test."),
         homeTitle: yup.string().required("Merci de saisir le titre du test."),
@@ -30,7 +39,8 @@ function EditTest({ allQuizs }) {
         verbatim: yup.array().of(yup.object().shape({
             val: yup.string()
         })),
-        greetings: yup.string().required("Merci de saisir le texte de remerciement."),
+        greetings: yup.string().required("Merci de renseigner le texte de remerciement."),
+        emailsList: yup.array().of(yup.string().email(({ value }) => value)),
     })
     const methods = useForm({
         defaultValues: {
@@ -39,10 +49,13 @@ function EditTest({ allQuizs }) {
             homeDescription: '',
             verbatim: [{ val: '' }],
             greetings: '',
+            emailsList: '',
+            email: 'lfloch@hotmail.com',
+            password: '',
         },
         resolver: yupResolver(schema),
     });
-    const { register, setError, formState: { errors }, setValue, control, reset } = methods;
+    const { register, setError, formState: { errors }, setValue, getValues, control, reset, watch } = methods;
     const { fields, append, remove } = useFieldArray({
         control,
         name: 'verbatim',
@@ -58,7 +71,7 @@ function EditTest({ allQuizs }) {
         const getTestById = async (action) => {
             try {
                 const theId = (action === 'edit') ? id : duplicate;
-                const { data } = await supabase
+                let { data } = await supabase
                     .from('tests')
                     .select()
                     .eq('id', theId)
@@ -81,6 +94,20 @@ function EditTest({ allQuizs }) {
                     theTest.greetings = data.greetings;
                     if (data.quizs_ids) {
                         setUsedQuizs(data.quizs_ids);
+                    }
+                    // Cherche s'il y a des mails pour invitation enregistrés dans `annuaire`
+                    try {
+                        let { data, error } = await supabase
+                            .from('annuaire')
+                            .select('email')
+                            .eq('test_id', id);
+                        if (error) throw new Error(error.message);
+                        if (data) {
+                            const theList = data.map(m => m.email)
+                            theTest.emailsList = theList.join('\n');
+                        }
+                    } catch (error) {
+                        console.warn("Problème pour récupérer la liste d'invités", error);
                     }
                     reset(theTest);
                 }
@@ -107,6 +134,40 @@ function EditTest({ allQuizs }) {
             }
         }));
     }, [usedQuizs]);
+
+    // Récupération de la liste des comptes 'visiteur' -------------------------------------------------
+    const [visitorsList, setVisitorsList] = useState([]);
+    const [visitorPassword, setVisitorPassword] = useState(null);
+    const watchVisitorAccount = watch('visitorAccount');
+    useEffect(() => {
+        const getVisitors = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('id, email, password')
+                    .eq('is_admin', false);
+                if (error) {
+                    throw new Error(error.message);
+                }
+                if (data) {
+                    setVisitorsList(data);
+                }
+            } catch (error) {
+                console.warn("Failed to fetch all users:", error);
+            }
+        }
+
+        getVisitors();
+    }, []);
+
+    useEffect(() => {
+        if (watchVisitorAccount && Number(watchVisitorAccount) !== 0) {
+            const account = visitorsList.find((vis) => vis.id === watchVisitorAccount);
+            setVisitorPassword(account.password);
+        } else {
+            setVisitorPassword(null);
+        }
+    }, [watchVisitorAccount, visitorsList])
 
     // Gestion drag&drop -------------------------------------------------
     const removeFromDropped = (id) => {
@@ -150,19 +211,32 @@ function EditTest({ allQuizs }) {
         })
     };
 
-    const saveTest = async function (test, fn) {
+    const saveTest = async function (test, emailsList, fn) {
         try {
-            await supabase
+            const { data, error } = await supabase
                 .from('tests')
-                .insert(test, { returning: 'minimal' })
+                .insert(test);
+            if (error) throw new Error(error.message);
+            if (data && emailsList.length > 0) {
+                // Enregistre la liste d'emails dans `annuaire`
+                const id = data[0].id; // id du test créé, `data` est un array
+                let arr = [];
+                emailsList.forEach(m => arr.push({
+                    email: m,
+                    test_id: id,
+                }));
+                await supabase
+                    .from('annuaire')
+                    .insert(arr, { returning: 'minimal' });
+            }
             // fonction à exécuter en cas de succès (redirection)
             fn();
         } catch (error) {
-            console.warn("Erreur update du test:", error);
+            console.warn("Erreur création du test:", error);
         }
     }
 
-    const updateTest = async function (id, obj, fn) {
+    const updateTest = async function (id, obj, emailsList, fn) {
         try {
             await supabase
                 .from('tests')
@@ -197,6 +271,8 @@ function EditTest({ allQuizs }) {
             })
         }
         let greetings = `${values.greetings}`;
+        // liste d'adresses mail
+        const emailsList = values.emailsList;
         const result = {
             name,
             // date: (new Date().toISOString()),
@@ -209,10 +285,10 @@ function EditTest({ allQuizs }) {
         if (testId) {
             // cas update
             // success -> redirection vers l'accueil admin
-            updateTest(testId, result, () => setRedirect("/admin"));
+            updateTest(testId, result, emailsList, () => setRedirect("/admin"));
         } else {
             // cas nouveau test
-            saveTest(result, () => setRedirect("/admin"));
+            saveTest(result, emailsList, () => setRedirect("/admin"));
         }
     }
 
@@ -226,6 +302,19 @@ function EditTest({ allQuizs }) {
             setValue('verbatim.0.val', '');
         }
     };
+
+    const sendMagicLink = async () => {
+        let { user, error } = await supabase.auth.signIn({
+            email: 'alain.gourves@gmail.com'
+        });
+        if (error) console.warn(error.message);
+        if (user) {
+            console.log("user:", user)
+        }
+    }
+
+    // console.log("errors", errors)
+    // console.log("error message", errors?.emailsList?.pop()?.message)
 
     if (redirect) {
         return <Redirect to={redirect} />
@@ -358,6 +447,82 @@ function EditTest({ allQuizs }) {
                             {errors.greetings &&
                                 <AlertMesg message={errors.greetings?.message} />
                             }
+                        </div>
+                    </article>
+                    <article>
+                        <h2>
+                            <span className="badge rounded-pill bg-primary">6</span>
+                            Accès au test
+                        </h2>
+                        <div className="row mb-3">
+                            <p>TODO: Explications</p>
+                        </div>
+                        <div className="row mb-3">
+                            <div className="col col-5">
+                                <p>Adresses mail pour les invitations.</p>
+                                <textarea
+                                    {...register("emailsList", {
+                                        // nettoie l'entrée avant validation
+                                        setValueAs: v => cleanEmailsList(v),
+                                    })}
+                                    className="form-control"
+                                    rows="10"
+                                />
+                                <div className="d-flex justify-content-end mt-1">
+                                    <button type="button"
+                                        className="btn btn-outline-secondary btn-sm me-1"
+                                        onClick={() => setValue('emailsList', '')}
+                                    >
+                                        Vider</button>
+
+                                    <button type="button"
+                                        className="btn btn-outline-secondary btn-sm me-1"
+                                        onClick={() => {
+                                            setValue('emailsList', getValues('emailsList').sort().join('\n'));
+                                        }}
+                                    >
+                                        Nettoyage</button>
+
+                                    <button type="button"
+                                        className="btn btn-outline-secondary btn-sm me-1"
+                                        onClick={sendMagicLink}
+                                    >
+                                        Magic Link</button>
+
+                                </div>
+                                {errors.emailsList &&
+                                    <AlertMesg message={errors.emailsList?.map((m, idx) => (<div key={idx}><strong>{m.message}</strong> n'est pas une adresse valide.</div>))} />
+                                }
+                            </div>
+                            <div className='col col-2 display-6 text-center text-primary'>ET / OU</div>
+                            <div className="col col-5">
+                                <p>Utiliser un compte "visiteur"</p>
+                                <p>Dans ce cas, les personnes qui accèdent au site seront dirigés vers le test actuellement actif.</p>
+                                <p>Sélectionner le compte visiteur (l'idée est d'avoir plusieurs comptes visiteur pour pouvoir les associer à des tests, et d'avoir pus de possibilités qu'avec le seul test actif)</p>
+
+                                <div className='input-group'>
+                                    <label className='input-group-text w-100'>Sélectionner un compte:
+                                        <select
+                                            className="form-select"
+                                            {...register('visitorAccount')}
+                                        // onChange={selectVisitorAccount}
+                                        >
+                                            <option value="0" >Sélectionner...</option>
+                                            {visitorsList.map(({ id, email }) => (
+                                                <option
+                                                    key={id}
+                                                    value={id}
+                                                    className=""
+                                                >{email}</option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                </div>
+                                {
+                                    visitorPassword &&
+                                    <p>Rappel du mot de passe : <strong>{visitorPassword}</strong></p>
+                                }
+                            </div>
                         </div>
                     </article>
                     <div className="d-flex justify-content-end pb-3">

@@ -18,21 +18,23 @@ const ManageUsers = function () {
     const { signUp } = useAuth();
 
     // Récupère les infos de `public.users`
+    const [loadingResults, setLoadingResults] = useState(false); // Bool pour afficher le spinner pendant le chargement des données
     const [usersList, setUsersList] = useState([]);
     useEffect(() => {
         const getUsers = async () => {
-            try{
-            const {data, error} = await supabase
-                .from('users')
-                .select('id, email, is_admin');
+            try {
+                setLoadingResults(true);
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('id, email, is_admin');
                 if (error) {
                     throw new Error(error.message);
                 }
                 if (data) {
-                    console.log(data)
+                    setLoadingResults(false);
                     setUsersList(data);
                 }
-            }catch(error) {
+            } catch (error) {
                 console.warn("Failed to fetch all users:", error);
             }
         }
@@ -85,18 +87,22 @@ const ManageUsers = function () {
             };
             if (user) {
                 // Enregistrement dans `public.users`
-                // récupèe l'id généré dans `auth.users`
+                // récupère l'id généré dans `auth.users`
+                // le mot de passe n'est stocké en clair que pour les comptes 'visiteurs' (sécurité !) pour pouvoir le rappeler dans EditTest
+                const thePassword = (is_admin) ? null : password;
                 const userData = {
                     id: user.id,
                     email: user.email,
                     prenom: firstName,
                     nom: lastName,
                     is_admin,
+                    password: thePassword
                 }
                 const { error } = await supabase.from('users').insert([userData])
                 if (error) {
                     throw new Error(error.message);
                 } else {
+                    // TODO: Si c'est un compte visiteur qui vient d'être crée, rediriger sur la page d'accueil (un visiteur n'a pas accès à /admin)
                     // RàZ du formulaire
                     reset();
                     console.log("Succès !")
@@ -104,7 +110,7 @@ const ManageUsers = function () {
             }
         } catch (error) {
             // traitement de l'erreur
-            // if (error.message === 'User already registered')
+            // TODO: if (error.message === 'User already registered')
             console.log("Ajout admin: ", error.message);
         }
     }
@@ -128,7 +134,8 @@ const ManageUsers = function () {
             <h1 className='mb-5'>Gestion des utilisateurs</h1>
 
             <h2 className='mb-3'>Ajouter un utilisateur</h2>
-            <p>Une fois le nouveau compte créé, vous êtes automatiquement reconnecté au site avec celui-ci. En cas d'échec, veus êtes aussi déconnecté du site, et renvoyé vers la page d'accueil.</p>
+            <p>Une fois le nouveau compte créé, <strong>vous êtes automatiquement reconnecté au site avec celui-ci</strong>. <br />
+            En cas d'échec, veus êtes aussi déconnecté du site, et renvoyé vers la page d'accueil.</p>
             <div className='d-flex justify-content-center mb-5'>
                 <form onSubmit={handleSubmit(onSubmit, onError)} className='form_add_admin'>
 
@@ -254,20 +261,28 @@ const ManageUsers = function () {
             </div>
 
             <h2 className='mb-3'>Utilisateurs enregistrés</h2>
-            <div className='row justify-content-around mb-3'>
-                <div className='col-10 col-lg-5 mb-3'>
-                    <UsersTable
-                        usersList={usersList}
-                        userAdmin={true}
-                    />
+            {(loadingResults) ? (
+                <div className="d-flex justify-content-center">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Chargement...</span>
+                    </div>
                 </div>
-                <div className='col-10 col-lg-5 mb-3'>
-                    <UsersTable
-                        usersList={usersList}
-                        userAdmin={false}
-                    />
+            ) : (
+                <div className='row justify-content-around mb-3'>
+                    <div className='col-10 col-lg-5 mb-3'>
+                        <UsersTable
+                            usersList={usersList}
+                            userAdmin={true}
+                        />
+                    </div>
+                    <div className='col-10 col-lg-5 mb-3'>
+                        <UsersTable
+                            usersList={usersList}
+                            userAdmin={false}
+                        />
+                    </div>
                 </div>
-            </div>
+            )}
         </>
     )
 }

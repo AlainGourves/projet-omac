@@ -5,4 +5,9 @@ $clr: var(--bs-danger); // var(--bs-danger) rebeccapurple
     border-color: $clr !important;
     font-size: .75em;
     padding: .5em;
+
+    & svg {
+        // empêcher l'icone de réduire faut de place
+        flex-shrink: 0;
+    }
 }
