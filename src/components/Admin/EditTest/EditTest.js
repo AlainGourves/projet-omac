@@ -28,7 +28,7 @@ function EditTest({ allQuizs }) {
             // Nettoie le texte en entrée pour renvoyer un array d'adresses mail uniques
             val = val.replace(/,|;/g, ' ').replace(/\s+/g, ' ');
             const mySet = new Set(val.split(' ')); // création d'un Set (pour supprimer les doublons)
-            return (mySet.size) ? [...mySet] : null; // retourn un array
+            return [...mySet].sort(); // retourn un array
         }
     }
 
@@ -238,10 +238,28 @@ function EditTest({ allQuizs }) {
 
     const updateTest = async function (id, obj, emailsList, fn) {
         try {
-            await supabase
-                .from('tests')
-                .update(obj, { returning: 'minimal' })
-                .eq('id', id)
+            const { data, error } = await supabase
+            .from('tests')
+            .update(obj)
+            .eq('id', id)
+            if (error) throw new Error(error.message);
+            if (data && emailsList.length > 0) {
+                // Commence par supprimer les anciens enregistrements de `annuaire`
+                await supabase
+                .from('annuaire')
+                .delete()
+                .match({test_id: id})
+                // Enregistre la liste d'emails dans `annuaire`
+                let arr = [];
+                emailsList.forEach(m => arr.push({
+                    email: m,
+                    test_id: id,
+                }));
+                await supabase
+                    .from('annuaire')
+                    .insert(arr, { returning: 'minimal' });
+            }
+            // Redirection
             fn();
         } catch (error) {
             console.warn("Erreur update du test:", error);
