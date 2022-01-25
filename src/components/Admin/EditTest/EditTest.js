@@ -515,8 +515,9 @@ function EditTest({ allQuizs }) {
                             <div className='col col-2 display-6 text-center text-primary'>ET / OU</div>
                             <div className="col col-5">
                                 <p>Utiliser un compte "visiteur"</p>
-                                <p>Dans ce cas, les personnes qui accèdent au site seront dirigés vers le test actuellement actif.</p>
-                                <p>Sélectionner le compte visiteur (l'idée est d'avoir plusieurs comptes visiteur pour pouvoir les associer à des tests, et d'avoir pus de possibilités qu'avec le seul test actif)</p>
+                                <p>Les personnes accedant au site avec ce compte seront dirigés vers ce test.</p>
+                                <p className='alert alert-warning'>L'idée est d'avoir plusieurs comptes visiteur pour pouvoir les associer à des tests, et d'avoir ainsi plus de possibilités qu'avec le seul test actif. Un compte visiteur ne peut être associé qu'à un unique test. <br/>
+                                Le menu déroulant ci-dessous affiche la liste des comptes visiteur encore "libres", s'il n'y en a plus, on peut en créer des nouveaux dans l'onglet <NavLink to="/admin/manage-users">Utilisateurs</NavLink>.</p>
 
                                 <div className='input-group'>
                                     <label className='input-group-text w-100'>Sélectionner un compte:

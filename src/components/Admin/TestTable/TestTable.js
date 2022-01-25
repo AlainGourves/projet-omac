@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useModal } from '../../../contexts/ModalContext';
-import { ChevronDown, ChevronUp, Edit, Trash, Copy } from 'react-feather';
+import { ChevronDown, ChevronUp, Edit, Trash, Copy, Mail, User } from 'react-feather';
 
 function TestTable(props) {
     const [modal, setModal] = useModal();
@@ -38,7 +38,7 @@ function TestTable(props) {
     let testsList = [];
     if (props.allTests.length) {
 
-        testsList = props.allTests.map(({ id, name, created_at }) => (
+        testsList = props.allTests.map(({ id, name, created_at, invitations, email }) => (
             <tr key={id}>
                 <td>
                     <input
@@ -49,7 +49,15 @@ function TestTable(props) {
                         checked={(props.currentTest && props.currentTest === id) ? true : false}
                     />
                 </td>
-                <td>{name}</td>
+                <td>
+                    <div className='d-flex justify-content-between test__name'>
+                        {name}
+                        <div>
+                        {email && <User />}
+                        {(invitations > 0) && <Mail title="Coucou!" />}
+                        </div>
+                    </div>
+                </td>
                 <td>{new Intl.DateTimeFormat('fr-FR', props.dateOptions).format(created_at)}</td>
                 <td>
                     <NavLink
