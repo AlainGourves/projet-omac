@@ -1,16 +1,25 @@
+import { NavLink } from 'react-router-dom';
+import { LogIn } from 'react-feather';
+
 function UsersTable({ usersList, userAdmin }) {
 
     return (
-        <div>
+        <div className='mb-3'>
             <h4>Comptes "{userAdmin ? "Admin" : "Visiteur"}"</h4>
             <div className="users-list">
                 <ul className="list-group">
                     {
-                        usersList.map(({ id, email, is_admin }) => (
+                        usersList.map(({ id, email, is_admin, test_id }) => (
                             (userAdmin === is_admin) && <li
                                 key={id}
-                                className="list-group-item">
-                                <em>{email}</em>
+                                className="list-group-item d-flex justify-content-between">
+                                <span><em>{email}</em></span>
+
+                                {(test_id) && <span>
+                                    <NavLink to={`edit-test/${test_id}`}>
+                                        Test<LogIn />
+                                    </NavLink>
+                                </span>}
                             </li>
                         ))
                     }

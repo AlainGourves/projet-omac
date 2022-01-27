@@ -19,7 +19,7 @@ function App() {
     const [nom, setNom] = useState('');
     const [prenom, setPrenom] = useState('');
 
-    // // Récupère les infos dans `public.users`
+    // Récupère les infos dans `public.users`
     useEffect(() => {
         const getUser = async (user) => {
             try {
@@ -43,7 +43,10 @@ function App() {
             }
         }
 
-        if (user) getUser(user);
+        if (user) {
+            // console.log("l'user:", user)
+            getUser(user)
+        };
     }, [user]);
 
     return (
@@ -59,7 +62,10 @@ function App() {
                     {isAdmin ?
                         (<PrivateRoute path="/admin" component={Admin} />) : (<Redirect to="/" />)
                     }
-                    <Route path='*' component={Page404} />
+                    <Route path='*'>
+                    {/* TODO: ça n'a pas l'air de fonctionner !! */}
+                        <Page404 />
+                    </Route>    
                 </Switch>
             </div>
         </ModalProvider>

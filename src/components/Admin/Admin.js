@@ -1,9 +1,6 @@
 import './admin.scss';
-// import { useState } from 'react';
-// import axios from 'axios';
 import { supabase } from '../../supabaseClient';
 import { useState, useEffect } from 'react';
-// import { useAuth } from '../../contexts/Auth';
 import { Switch, Route } from 'react-router-dom';
 import AdminMenu from './AdminMenu/AdminMenu';
 import Home from './Home/Home';
@@ -13,23 +10,6 @@ import EditTest from './EditTest/EditTest';
 import ManageUsers from './ManageUsers/ManageUsers';
 
 const Admin = function (props) {
-    // const { user } = useAuth();
-    // const { user, sessionToken } = useAuth();
-
-    // const url = process.env.REACT_APP_BACKEND_URL;
-    // console.log("from admin: ", user)
-
-    // useEffect(() => {
-    //     // Faire un POST qui contient le token de session (`sessionToken`)
-    //     axios.post(url,
-    //         {
-    //             sessionToken,
-    //         })
-    //         .then((response) => {
-
-    //             console.log("from admin:", response.data)
-    //         })
-    // }, [])
 
     const [allQuizs, setAllQuizs] = useState([]);
 

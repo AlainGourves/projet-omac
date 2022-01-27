@@ -30,9 +30,7 @@ function Home() {
     const fetchTestsList = useCallback(async () => {
         try {
             const { data, error } = await supabase
-                .from('tests')
-                .select('id, created_at, is_current, name')
-                .order(testsOrderBy, { ascending: (testsOrderBy === 'name') ? testsOrderByNameAsc : testsOrderByDateAsc });
+                    .rpc('get_tests_list_with_accounts', {col_name: testsOrderBy, is_asc: (testsOrderBy === 'name') ? testsOrderByNameAsc : testsOrderByDateAsc});
             if (error) {
                 throw new Error(error.message);
             }

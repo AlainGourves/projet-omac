@@ -8,7 +8,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import QuizList from '../QuizList/QuizList';
 import QuizDropZone from '../QuizDropZone/QuizDropZone';
 import Verbatim from '../Verbatim/Verbatim';
-import { ArrowLeft } from 'react-feather';
+import { ArrowLeft, XCircle } from 'react-feather';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import AlertMesg from '../../Utils/AlertMesg/AlertMesg';
@@ -19,6 +19,13 @@ function EditTest({ allQuizs }) {
     let { id, duplicate } = useParams();
     const [testId, setTestId] = useState(0);
     const [testName, setTestName] = useState('');
+    // Pour gérer le compte visiteur éventuellement associé au test
+    const [visitorAccount, setVisitorAccount] = useState('');
+    const [visitorPassword, setVisitorPassword] = useState('');
+    // liste des comptes visiteur
+    const [visitorsList, setVisitorsList] = useState([]);
+    // pour savoir s'il y avait une liste d'adresses mail d'invitation au chargment du test (en cas d'edit)
+
     // Pour rediriger sur /admin après enregistrement dans la base
     const [redirect, setRedirect] = useState(null);
 
@@ -30,7 +37,8 @@ function EditTest({ allQuizs }) {
         verbatim: yup.array().of(yup.object().shape({
             val: yup.string()
         })),
-        greetings: yup.string().required("Merci de saisir le texte de remerciement."),
+        greetings: yup.string().required("Merci de renseigner le texte de remerciement."),
+        emailsList: yup.array().of(yup.string().email(({ value }) => value)),
     })
     const methods = useForm({
         defaultValues: {
@@ -39,15 +47,36 @@ function EditTest({ allQuizs }) {
             homeDescription: '',
             verbatim: [{ val: '' }],
             greetings: '',
+            emailsList: '',
+            selectVisitorAccount: '0',
         },
         resolver: yupResolver(schema),
     });
-    const { register, setError, formState: { errors }, setValue, control, reset } = methods;
+    const { register, setError, formState: { errors }, setValue, getValues, control, reset, watch } = methods;
     const { fields, append, remove } = useFieldArray({
         control,
         name: 'verbatim',
         shouldUnregister: true,
     });
+
+    const watchVisitor = watch('selectVisitorAccount');
+
+    const cleanEmailsList = (val) => {
+        if (typeof val === 'string') {
+            // Nettoie le texte en entrée pour renvoyer un array d'adresses mail uniques
+            val = val.replace(/,|;/g, ' ').replace(/\s+/g, ' ');
+            let arr = val.split(' ').filter(item => item); // enlève les chaînes vides ('' est évalué à false)
+            let mySet = new Set(arr); // création d'un Set pour supprimer les doublons
+            return [...mySet].sort(); // retourne un array
+        }
+    }
+
+    const removeLinkedAccount = async () => {
+        setValue('selectVisitorAccount', 0);
+        setVisitorAccount('');
+        setVisitorPassword('');
+    }
+
 
     const [theQuizs, setTheQuizs] = useState(allQuizs);
     const [usedQuizs, setUsedQuizs] = useState([]);
@@ -58,10 +87,8 @@ function EditTest({ allQuizs }) {
         const getTestById = async (action) => {
             try {
                 const theId = (action === 'edit') ? id : duplicate;
-                const { data } = await supabase
-                    .from('tests')
-                    .select()
-                    .eq('id', theId)
+                let { data } = await supabase
+                    .rpc('get_test_by_id', { 'input_id': theId })
                     .single();
                 if (data) {
                     if (action === 'edit') setTestId(data.id);
@@ -81,6 +108,27 @@ function EditTest({ allQuizs }) {
                     theTest.greetings = data.greetings;
                     if (data.quizs_ids) {
                         setUsedQuizs(data.quizs_ids);
+                    }
+                    // S'il y a des mails pour invitation enregistrés dans `annuaire`,
+                    if (data.invitations > 0) {
+                        try {
+                            let { data, error } = await supabase
+                                .from('annuaire')
+                                .select('email')
+                                .eq('test_id', id);
+                            if (error) throw new Error(error.message);
+                            if (data) {
+                                const theList = data.map(m => m.email)
+                                theTest.emailsList = theList.join('\n');
+                            }
+                        } catch (error) {
+                            console.warn("Problème pour récupérer la liste d'invités", error);
+                        }
+                    }
+                    // Compte visiteur éventuellement lié au test
+                    if (data.account_email) {
+                        setVisitorAccount(data.account_email);
+                        setVisitorPassword(data.account_password);
                     }
                     reset(theTest);
                 }
@@ -107,6 +155,43 @@ function EditTest({ allQuizs }) {
             }
         }));
     }, [usedQuizs]);
+
+    // Récupération de la liste des comptes 'visiteur' -------------------------------------------------
+    useEffect(() => {
+        const getVisitors = async () => {
+            try {
+                // requête pour récupérer tous les comptes visiteur encore dispo
+                // ainsi que le compte associé au test s'il y en a
+                // Structure : id (uuid) | email | password | test_id (int ou null)
+                const { data, error } = await supabase
+                    .rpc('get_visitor_account_list', { 'testid': testId })
+                if (error) {
+                    throw new Error(error.message);
+                }
+                if (data) {
+                    setVisitorsList(data);
+                }
+            } catch (error) {
+                console.warn("Failed to fetch visitors' account:", error);
+            }
+        }
+
+        getVisitors();
+    }, [testId]);
+
+    useEffect(() => {
+        if (watchVisitor) {
+            if (Number(watchVisitor) !== 0) {
+                const account = visitorsList.find((vis) => vis.email === watchVisitor);
+                setVisitorAccount(account.email);
+                setVisitorPassword(account.password);
+            } else {
+                setVisitorAccount('');
+                setVisitorPassword('');
+            }
+        }
+    }, [watchVisitor, visitorsList]);
+
 
     // Gestion drag&drop -------------------------------------------------
     const removeFromDropped = (id) => {
@@ -150,24 +235,37 @@ function EditTest({ allQuizs }) {
         })
     };
 
-    const saveTest = async function (test, fn) {
+    const saveTest = async function (test, emailsList, fn) {
         try {
-            await supabase
+            const { data, error } = await supabase
                 .from('tests')
-                .insert(test, { returning: 'minimal' })
+                .insert(test);
+            if (error) throw new Error(error.message);
+            if (data && emailsList.length > 0) {
+                const id = data[0].id; // id du test créé, `data` est un array
+                // Enregistre la liste d'emails dans `annuaire`
+                await supabase
+                    .rpc('upsert_annuaire', { input_id: id, input_emails: emailsList });
+            }
             // fonction à exécuter en cas de succès (redirection)
             fn();
         } catch (error) {
-            console.warn("Erreur update du test:", error);
+            console.warn("Erreur création du test:", error);
         }
     }
 
-    const updateTest = async function (id, obj, fn) {
+    const updateTest = async function (id, obj, emailsList, fn) {
         try {
-            await supabase
+            const { data, error } = await supabase
                 .from('tests')
-                .update(obj, { returning: 'minimal' })
+                .update(obj)
                 .eq('id', id)
+            if (error) throw new Error(error.message);
+            if (data) {
+                await supabase
+                    .rpc('upsert_annuaire', { input_id: id, input_emails: emailsList });
+            }
+            // Redirection
             fn();
         } catch (error) {
             console.warn("Erreur update du test:", error);
@@ -197,22 +295,40 @@ function EditTest({ allQuizs }) {
             })
         }
         let greetings = `${values.greetings}`;
+        // liste d'adresses mail
+        const emailsList = values.emailsList;
         const result = {
             name,
             // date: (new Date().toISOString()),
-            created_at: new Date(),
+            modified_at: new Date(),
             home,
             quizs_ids,
             verbatim,
             greetings,
         }
+        // Lien avec un compte visiteur, 3 cas:
+        // 1) un compte était déjà lié mais pas de modif => `selectVisitorAccount` n'est pas défini
+        // 2) on a supprimé un compte lié => `selectVisitorAccount` est défini, mais string vide
+        // 3) on lit un compte => `selectVisitorAccount` est défini et non vide
+        if (values.selectVisitorAccount !== undefined) {
+            let param = { input_id: testId };
+            if (values.selectVisitorAccount !== 0) {
+                param = { ...param, input_email: visitorAccount }
+            }
+            const updateUsers = async (param) => {
+                await supabase.rpc('set_linked_test', param);
+            }
+            updateUsers(param);
+        }
+
+        // Update de la table 'tests'
         if (testId) {
             // cas update
             // success -> redirection vers l'accueil admin
-            updateTest(testId, result, () => setRedirect("/admin"));
+            updateTest(testId, result, emailsList, () => setRedirect("/admin"));
         } else {
             // cas nouveau test
-            saveTest(result, () => setRedirect("/admin"));
+            saveTest(result, emailsList, () => setRedirect("/admin"));
         }
     }
 
@@ -358,6 +474,104 @@ function EditTest({ allQuizs }) {
                             {errors.greetings &&
                                 <AlertMesg message={errors.greetings?.message} />
                             }
+                        </div>
+                    </article>
+                    <article>
+                        <h2>
+                            <span className="badge rounded-pill bg-primary">6</span>
+                            Gestion des utilisateurs pour l'accès au test
+                        </h2>
+                        <div className="row mb-3">
+                            <p>Il y a deux techniques pour que les gens accèdent aux test :</p>
+                            <ul className='mx-3'>
+                                <li>Ils reçoivent une <strong>invitation par mail</strong> à leur adresse personnelle (le mail contient un lien qui autorise une connection automatique sans nécessiter de mot de passe).</li>
+                                <li>On leur fournit les identifiants d'un <strong>compte "Visiteur"</strong> pour se connecter (utile s'il n'est pas possible de récupérer toutes les adresses email du public ciblé).</li>
+                            </ul>
+                        </div>
+                        <div className="row mb-3">
+                            <div className="col col-5">
+                                <h3>Invitations par mail</h3>
+                                <textarea
+                                    {...register("emailsList", {
+                                        // nettoie l'entrée avant validation
+                                        setValueAs: v => cleanEmailsList(v),
+                                    })}
+                                    className="form-control"
+                                    rows="10"
+                                />
+                                <div className="d-flex justify-content-end mt-1">
+                                    <button type="button"
+                                        className="btn btn-outline-secondary btn-sm me-1"
+                                        onClick={() => setValue('emailsList', '')}
+                                    >
+                                        Vider</button>
+
+                                    <button type="button"
+                                        className="btn btn-outline-secondary btn-sm me-1"
+                                        onClick={() => {
+                                            setValue('emailsList', getValues('emailsList').sort().join('\n'));
+                                        }}
+                                    >
+                                        Nettoyage</button>
+
+                                </div>
+                                {errors.emailsList &&
+                                    <AlertMesg message={errors.emailsList?.map((m, idx) => (<div key={idx}><strong>{m.message}</strong> n'est pas une adresse valide.</div>))} />
+                                }
+                            </div>
+                            <div className='col col-2 display-6 text-center text-primary'>ET / OU</div>
+                            <div className="col col-5">
+                                <h3>Utiliser un compte "visiteur"</h3>
+                                {visitorAccount ?
+                                    (
+                                        <div className='rounded-1 border border-gray-400 p-3'>
+                                            <div className='row align-items-center'>
+                                                <div className='col-5 text-end'>Compte lié :</div>
+                                                <div className='col-7 d-flex justify-content-between align-items-center'>
+                                                    <span><em>{visitorAccount}</em></span>
+                                                    <button
+                                                        onClick={removeLinkedAccount}
+                                                        className='btn btn-sm text-primary'
+                                                        title='Supprimer le lien'
+                                                        type="button">
+                                                        <XCircle />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className='row align-items-center'>
+                                                <div className='col-5 text-end'>Mot de passe :</div>
+                                                <div className='col-7'><em>{visitorPassword}</em></div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        (visitorsList.length > 0) ? (
+                                            <div className='rounded-1 border border-gray-400 p-3'>
+                                                <div className='d-flex justify-content-between align-items-center'>
+                                                    <label>Compte <strong>Visiteur</strong></label>
+                                                    <select
+                                                        className="form-select"
+                                                        {...register('selectVisitorAccount')}
+                                                    >
+                                                        <option value="0">Sélectionner...</option>
+                                                        {visitorsList.map(({ email }) => (
+                                                            <option
+                                                                key={email}
+                                                                value={email}
+                                                                className=""
+                                                            >{email}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className='alert alert-warning'>
+                                                <strong>Il ne reste plus de compte visiteur disponible.</strong><br />
+                                                Vous pouvez en créer de nouveaux dans l'onglet <NavLink to="/admin/manage-users">Utilisateurs</NavLink>, ou désassocier un ancien test de son compte.
+                                            </div>
+                                        )
+                                    )
+                                }
+                            </div>
                         </div>
                     </article>
                     <div className="d-flex justify-content-end pb-3">

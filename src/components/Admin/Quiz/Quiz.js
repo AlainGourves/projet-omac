@@ -26,7 +26,6 @@ function Quiz(props) {
             then: yup.string().required("S'il y a une corbeille, fournir un texte d'explication de son usage.")
         })
     });
-    // TODO: itemsList: yup.array().of(yup.string()).required("Merci de fournir les items du quiz.")
 
     const { register, handleSubmit, setError, formState: { errors }, getValues, setValue, watch } = useForm({
         defaultValues: {
@@ -116,7 +115,8 @@ function Quiz(props) {
             is_alpha,
             is_trash,
             trash_text,
-            items: []
+            items: [],
+            modified_at: new Date(),
         };
         let items = values.itemsList.trim().split('\n').sort();
         items.forEach((val, idx) => {
@@ -232,9 +232,6 @@ function Quiz(props) {
                             >
                                 Tri alpha</button>
                         </div>
-                        <div className="alert alert-warning mt-1">
-                                "Aide à la saisie", pour trier les items ou mettre en Cap la première lettre de chaque ligne. Possible d'ajouter d'autres fonctions au besoin.
-                            </div>
                     </div>
 
                     <div className="col col-4">

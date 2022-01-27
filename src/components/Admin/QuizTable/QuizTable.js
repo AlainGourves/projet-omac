@@ -94,7 +94,7 @@ function QuizTable(props) {
                             className={`clickable ${(props.quizsOrderBy === 'created_at') ? 'table-info col-3' : ' col-3'}`}
                             title={props.quizsOrderByDateAsc ? "Date, par ordre croissant" : "Date, par ordre décroissant"}
                         >
-                            Date
+                            Date de création
                             {(props.quizsOrderBy === 'created_at') && (props.quizsOrderByDateAsc) && <ChevronDown />}
                             {(props.quizsOrderBy === 'created_at') && (!props.quizsOrderByDateAsc) && <ChevronUp />}
                         </th>

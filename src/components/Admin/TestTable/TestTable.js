@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useModal } from '../../../contexts/ModalContext';
-import { ChevronDown, ChevronUp, Edit, Trash, Copy } from 'react-feather';
+import { ChevronDown, ChevronUp, Edit, Trash, Copy, Mail, User } from 'react-feather';
 
 function TestTable(props) {
     const [modal, setModal] = useModal();
@@ -38,7 +38,7 @@ function TestTable(props) {
     let testsList = [];
     if (props.allTests.length) {
 
-        testsList = props.allTests.map(({ id, name, created_at }) => (
+        testsList = props.allTests.map(({ id, name, created_at, invitations, email }) => (
             <tr key={id}>
                 <td>
                     <input
@@ -49,7 +49,15 @@ function TestTable(props) {
                         checked={(props.currentTest && props.currentTest === id) ? true : false}
                     />
                 </td>
-                <td>{name}</td>
+                <td>
+                    <div className='d-flex justify-content-between test__name'>
+                        {name}
+                        <div>
+                        {email && <User />}
+                        {(invitations > 0) && <Mail />}
+                        </div>
+                    </div>
+                </td>
                 <td>{new Intl.DateTimeFormat('fr-FR', props.dateOptions).format(created_at)}</td>
                 <td>
                     <NavLink
@@ -117,7 +125,7 @@ function TestTable(props) {
                             className={`clickable ${(props.testsOrderBy === 'created_at') ? 'table-info col-3' : 'col-3'}`}
                             title={props.testsOrderByDateAsc ? "Date, par ordre croissant" : "Date, par ordre décroissant"}
                         >
-                            Date
+                            Date de création
                             {(props.testsOrderBy === 'created_at') && (props.testsOrderByDateAsc) && <ChevronDown />}
                             {(props.testsOrderBy === 'created_at') && (!props.testsOrderByDateAsc) && <ChevronUp />}
                         </th>
@@ -131,7 +139,7 @@ function TestTable(props) {
                 </tbody>
             </table>
 
-            <div className="d-flex justify-content-around">
+            <div className="d-flex justify-content-around mb-3">
                 <button
                     onClick={exportTests}
                     className='btn btn-outline-primary'
@@ -144,6 +152,10 @@ function TestTable(props) {
                 <NavLink to="/admin/edit-test">
                     <button className='btn btn-primary'>Nouveau test</button>
                 </NavLink>
+            </div>
+            <div className='alert alert-info w-50 mx-auto fs-6 test__name'>
+                <Mail /> : une liste d'invitations est associée au test.<br/>
+                <User /> : un compte "visiteur" est associé au test.
             </div>
         </>
     )
