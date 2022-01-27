@@ -54,7 +54,7 @@ function TestTable(props) {
                         {name}
                         <div>
                         {email && <User />}
-                        {(invitations > 0) && <Mail title="Coucou!" />}
+                        {(invitations > 0) && <Mail />}
                         </div>
                     </div>
                 </td>
@@ -125,7 +125,7 @@ function TestTable(props) {
                             className={`clickable ${(props.testsOrderBy === 'created_at') ? 'table-info col-3' : 'col-3'}`}
                             title={props.testsOrderByDateAsc ? "Date, par ordre croissant" : "Date, par ordre décroissant"}
                         >
-                            Date
+                            Date de création
                             {(props.testsOrderBy === 'created_at') && (props.testsOrderByDateAsc) && <ChevronDown />}
                             {(props.testsOrderBy === 'created_at') && (!props.testsOrderByDateAsc) && <ChevronUp />}
                         </th>
@@ -139,7 +139,7 @@ function TestTable(props) {
                 </tbody>
             </table>
 
-            <div className="d-flex justify-content-around">
+            <div className="d-flex justify-content-around mb-3">
                 <button
                     onClick={exportTests}
                     className='btn btn-outline-primary'
@@ -152,6 +152,10 @@ function TestTable(props) {
                 <NavLink to="/admin/edit-test">
                     <button className='btn btn-primary'>Nouveau test</button>
                 </NavLink>
+            </div>
+            <div className='alert alert-info w-50 mx-auto fs-6 test__name'>
+                <Mail /> : une liste d'invitations est associée au test.<br/>
+                <User /> : un compte "visiteur" est associé au test.
             </div>
         </>
     )

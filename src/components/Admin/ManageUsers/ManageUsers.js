@@ -9,6 +9,7 @@ import { Eye, EyeOff } from 'react-feather';
 import AlertMesg from '../../Utils/AlertMesg/AlertMesg';
 import { generatePassword } from '../../Utils/helperFunctions';
 import UsersTable from '../UsersTable/UsersTable';
+import { LogIn } from 'react-feather';
 
 const ManageUsers = function () {
 
@@ -26,7 +27,7 @@ const ManageUsers = function () {
                 setLoadingResults(true);
                 const { data, error } = await supabase
                     .from('users')
-                    .select('id, email, is_admin');
+                    .select('id, email, is_admin, test_id');
                 if (error) {
                     throw new Error(error.message);
                 }
@@ -282,6 +283,7 @@ const ManageUsers = function () {
                             usersList={usersList}
                             userAdmin={false}
                         />
+                        <p className='alert alert-info'><LogIn className='text-primary' /> Lien vers le test associé.</p>
                     </div>
                 </div>
             )}

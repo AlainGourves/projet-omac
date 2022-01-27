@@ -37,7 +37,6 @@ function Home() {
             if (data) {
                 // transforme les strings `created_at` en Date
                 // et récupère le test actif
-                console.log(data)
                 data.forEach((d) => {
                     d.created_at = new Date(d.created_at);
                     if (d.is_current) {

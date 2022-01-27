@@ -44,7 +44,7 @@ function App() {
         }
 
         if (user) {
-            console.log("l'user:", user)
+            // console.log("l'user:", user)
             getUser(user)
         };
     }, [user]);
