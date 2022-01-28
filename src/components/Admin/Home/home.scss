@@ -1,21 +1,19 @@
 .table-tests tr td:nth-child(1),
 .table-tests tr td:nth-child(4),
 .table-tests tr td:nth-child(5),
-.table-tests tr td:nth-child(6),
-.table-tests tr th:nth-child(5) {
-    text-align: center
+.table-tests tr td:nth-child(6) {
+    text-align: center;
+    margin-inline: auto;
 }
 
 .table-quizs tr td:nth-child(3),
 .table-quizs tr td:nth-child(4) {
-    text-align: center
+    text-align: center;
 }
 
-table span.material-icons {
-    // TODO: sans doute bon à supprimer
-    vertical-align: middle;
-    cursor: pointer;
-    color: red !important;
+.table-tests tr td:nth-child(6) button,
+.table-quizs tr td:nth-child(4) button {
+    color: var(--bs-danger);
 }
 
 th.clickable {
@@ -29,7 +27,7 @@ button.icon {
 }
 
 th.col-icon {
-    width: 3rem;
+    width: 2.5rem;
 }
 
 .test__name svg {

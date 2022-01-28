@@ -278,7 +278,7 @@ const ManageUsers = function () {
                             userAdmin={true}
                         />
                     </div>
-                    <div className='col-10 col-lg-5 mb-3'>
+                    <div className='col-10 col-lg-5 mb-5'>
                         <UsersTable
                             usersList={usersList}
                             userAdmin={false}

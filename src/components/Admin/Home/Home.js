@@ -334,7 +334,7 @@ function Home() {
                 />
             </section>
 
-            <section>
+            <section className='mb-5'>
                 <h2>Quizs</h2>
                 <QuizTable
                     allQuizs={allQuizs}

@@ -15,9 +15,12 @@ function UsersTable({ usersList, userAdmin }) {
                                 className="list-group-item d-flex justify-content-between">
                                 <span><em>{email}</em></span>
 
-                                {(test_id) && <span>
-                                    <NavLink to={`edit-test/${test_id}`}>
-                                        Test<LogIn />
+                                {(test_id) && <span className='d-flex align-items-center'>
+                                    <NavLink to={`edit-test/${test_id}`} className="text-decoration-none pe-1" >
+                                        Test
+                                    </NavLink>
+                                    <NavLink to={`edit-test/${test_id}`} className="text-decoration-none" >
+                                        <LogIn />
                                     </NavLink>
                                 </span>}
                             </li>

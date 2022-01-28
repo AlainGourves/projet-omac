@@ -1,3 +1,8 @@
+.nav {
+    // Bootstrap .nav (_nav.scss:6) le met à 0
+    padding-left: var(--bs-gutter-x, 0.75rem);
+}
+
 .quit {
     border: 1px solid #fff;
     border-radius: .25em;

@@ -23,3 +23,34 @@
         cursor: pointer;
     }
 }
+
+a.icon,
+a.icon svg,
+button.icon svg {
+    display: block;
+}
+
+a.icon,
+button.icon {
+    position: relative;
+    z-index: 1;
+
+    &::after {
+        position: absolute;
+        content: '';
+        top: 50%;
+        left: 50%;
+        width: 2.5em;
+        height: 2.5em;
+        background-color: var(--bs-gray-400);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: opacity .125s ease-in-out;
+        opacity: 0;
+        z-index: -1;
+    }
+    
+    &:hover::after {
+        opacity: 1;
+    }
+}

@@ -15,7 +15,7 @@ function Verbatim(props) {
                 <span className="input-group-text">
                     <button
                         type="button"
-                        className="btn"
+                        className="btn icon"
                         onClick={() => {
                             props.removeVerbatim(props.count)
                         }}
@@ -30,7 +30,7 @@ function Verbatim(props) {
                     <button
                         onClick={props.addVerbatim}
                         type="button"
-                        className="btn"
+                        className="btn icon"
                         title="Ajouter un nouveau verbatim"
                     >
                         <PlusCircle className='fs-1 text-primary' />

@@ -358,7 +358,7 @@ function ExportResults() {
                     }
                 </section>
             }
-            <section className='export'>
+            <section className='export mb-5'>
                 {
                     // Export Quiz Results
                     (quizId !== 0 && quizTitle) &&

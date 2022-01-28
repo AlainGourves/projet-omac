@@ -268,7 +268,7 @@ function Quiz(props) {
                     </div>
                 </div>
 
-                <div className="d-flex justify-content-end">
+                <div className="d-flex justify-content-end mb-5">
                     <NavLink to="/admin">
                         <button
                             type="button"

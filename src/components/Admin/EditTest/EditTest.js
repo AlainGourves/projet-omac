@@ -574,7 +574,7 @@ function EditTest({ allQuizs }) {
                             </div>
                         </div>
                     </article>
-                    <div className="d-flex justify-content-end pb-3">
+                    <div className="d-flex justify-content-end mb-5">
                         <NavLink to="/admin">
                             <button
                                 type="button"
