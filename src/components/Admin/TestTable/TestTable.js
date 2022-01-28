@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { useModal } from '../../../contexts/ModalContext';
 import { ChevronDown, ChevronUp, Edit, Trash, Copy, Mail, User } from 'react-feather';
+import Legende from './Legende/Legende';
 
 function TestTable(props) {
     const [modal, setModal] = useModal();
@@ -53,8 +54,8 @@ function TestTable(props) {
                     <div className='d-flex justify-content-between test__name'>
                         {name}
                         <div>
-                        {email && <User />}
-                        {(invitations > 0) && <Mail />}
+                            {email && <User />}
+                            {(invitations > 0) && <Mail />}
                         </div>
                     </div>
                 </td>
@@ -153,9 +154,10 @@ function TestTable(props) {
                     <button className='btn btn-primary'>Nouveau test</button>
                 </NavLink>
             </div>
-            <div className='alert alert-info w-50 mx-auto fs-6 test__name'>
-                <Mail /> : une liste d'invitations est associée au test.<br/>
-                <User /> : un compte "visiteur" est associé au test.
+            <div className='position-relative'>
+            <div className='position-absolute end-0'>
+                <Legende />
+            </div>
             </div>
         </>
     )

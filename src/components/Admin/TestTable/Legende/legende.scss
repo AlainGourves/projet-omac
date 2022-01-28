@@ -1,0 +1,50 @@
+.aide__bubble {
+    width: 6rem;
+    padding: .75em;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    &.opened {
+        width: max-content;
+        flex-direction: column;
+        align-items: end;
+        box-shadow: 0 0 .5em rgba(108,117,125,.5);
+
+        & dd {
+            display: block;
+        }
+
+        & dt svg {
+            margin-right: .5em;
+        }
+    }
+
+    & div {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+    }
+
+    & dt svg {
+        color: var(--bs-info);
+        width: 1rem;
+    }
+
+    & dd {
+        display: none;
+        margin: 0;
+    }
+
+    & button {
+        appearance: none;
+        border: none;
+        background: transparent;
+        padding: 0;
+        color: var(--bs-orange);
+    }
+}
