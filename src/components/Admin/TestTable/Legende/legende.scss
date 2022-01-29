@@ -9,7 +9,7 @@
     &.opened {
         width: max-content;
         flex-direction: column;
-        align-items: end;
+        align-items: flex-end;
         box-shadow: 0 0 .5em rgba(108,117,125,.5);
 
         & dd {
