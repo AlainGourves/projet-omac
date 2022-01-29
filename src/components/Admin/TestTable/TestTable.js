@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { useModal } from '../../../contexts/ModalContext';
 import { ChevronDown, ChevronUp, Edit, Trash, Copy, Mail, User } from 'react-feather';
-import Legende from './Legende/Legende';
+import Legende from '../../Utils/Legende/Legende';
 
 function TestTable(props) {
     const [modal, setModal] = useModal();
@@ -155,9 +155,14 @@ function TestTable(props) {
                 </NavLink>
             </div>
             <div className='position-relative'>
-            <div className='position-absolute end-0'>
-                <Legende />
-            </div>
+                <div className='position-absolute end-0'>
+                    <Legende
+                        legendeContent={[
+                            { icon: <Mail />, text: "une liste d'invitations est associée au test." },
+                            { icon: <User />, text: "un compte &quot;visiteur&quot; est associé au test." }
+                        ]}
+                    />
+                </div>
             </div>
         </>
     )

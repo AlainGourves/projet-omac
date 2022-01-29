@@ -180,7 +180,7 @@ function Quiz(props) {
                 </h2>
 
                 <div className="row mb-3">
-                    <label className="form-label col-md-4 text-end" htmlFor="quizTitle">Titre :</label>
+                    <label className="form-label col-md-4 text-md-end" htmlFor="quizTitle">Titre :</label>
                     <div className="col-md-7">
                         <input type="text"
                             {...register("quizTitle", { required: true })}
@@ -194,7 +194,7 @@ function Quiz(props) {
                 </div>
 
                 <div className="row mb-3">
-                    <label className="form-label col-md-4 text-end" htmlFor="quizDescription">Consigne :</label>
+                    <label className="form-label col-md-4 text-md-end" htmlFor="quizDescription">Consigne :</label>
                     <div className="col-md-7">
                         <textarea
                             {...register("quizDescription", { required: true })}
@@ -209,7 +209,7 @@ function Quiz(props) {
 
                 <h3>Liste</h3>
                 <div className="row">
-                    <div className="col col-7">
+                    <div className="col-md-7 mb-4">
                         <p>Un item par ligne.<br />
                             L'ordre de saisie ne compte pas, la liste est stockée par ordre alphabétique et l'affichage final se fait en fonction du choix ci-contre.</p>
                         <textarea
@@ -234,7 +234,7 @@ function Quiz(props) {
                         </div>
                     </div>
 
-                    <div className="col col-4">
+                    <div className="col-md-4 mb-4">
                         <h5>Ordre d'affichage :</h5>
                         <div role="group" className="form-check mb-3 border-bottom">
                             <label className="form-label d-block">

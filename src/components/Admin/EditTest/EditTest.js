@@ -359,7 +359,7 @@ function EditTest({ allQuizs }) {
                         </h2>
                         <p>Le nom est une référence interne pour identifier le test, il n'apparaît nulle part dans la partie publique et doit de préférence être unique.</p>
                         <div className="row mb-3">
-                            <div className="col-md-4 text-end">Nom :</div>
+                            <div className="col-md-4 text-md-end">Nom :</div>
                             <div className="col-md-7">
                                 <input
                                     {...register("name", { required: true })}
@@ -379,7 +379,7 @@ function EditTest({ allQuizs }) {
                             Écran d'accueil
                         </h2>
                         <div className="row mb-3">
-                            <div className="col-md-4 text-end">Titre :</div>
+                            <div className="col-md-4 text-md-end">Titre :</div>
                             <div className="col-md-7">
                                 <input
                                     {...register("homeTitle", { required: true })}
@@ -393,7 +393,7 @@ function EditTest({ allQuizs }) {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <div className="col-md-4 text-end">Consigne :</div>
+                            <div className="col-md-4 text-md-end">Consigne :</div>
                             <div className="col-md-7">
                                 <textarea
                                     {...register("homeDescription", { required: true })}
@@ -489,7 +489,7 @@ function EditTest({ allQuizs }) {
                             </ul>
                         </div>
                         <div className="row mb-3">
-                            <div className="col col-5">
+                            <div className="col-md-5">
                                 <h3>Invitations par mail</h3>
                                 <textarea
                                     {...register("emailsList", {
@@ -519,8 +519,8 @@ function EditTest({ allQuizs }) {
                                     <AlertMesg message={errors.emailsList?.map((m, idx) => (<div key={idx}><strong>{m.message}</strong> n'est pas une adresse valide.</div>))} />
                                 }
                             </div>
-                            <div className='col col-2 display-6 text-center text-primary'>ET / OU</div>
-                            <div className="col col-5">
+                            <div className='col-md-2 display-6 text-center text-primary my-4'>ET / OU</div>
+                            <div className="col-md-5">
                                 <h3>Utiliser un compte "visiteur"</h3>
                                 {visitorAccount ?
                                     (

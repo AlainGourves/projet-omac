@@ -1,8 +1,8 @@
 import './legende.scss';
 import { useState, useRef } from 'react';
-import { Mail, User, HelpCircle, ArrowUpLeft } from 'react-feather';
+import { HelpCircle, ArrowUpLeft } from 'react-feather';
 
-const Legende = () => {
+const Legende = (props) => {
     const aideRef = useRef();
     const [aideOpen, setAideOpen] = useState(false);
 
@@ -11,16 +11,18 @@ const Legende = () => {
         setAideOpen(aideRef.current.classList.contains('opened'))
     }
 
+    console.log("props",props.legendeContent)
+
     return (
         <dl className="aide__bubble alert alert-info" ref={aideRef}>
-            <div>
-                <dt><Mail /></dt>
-                <dd>une liste d'invitations est associée au test.</dd>
-            </div>
-            <div>
-                <dt><User /></dt>
-                <dd>un compte "visiteur" est associé au test.</dd>
-            </div>
+            {
+                props.legendeContent.map((li, idx) => (
+                    <div key={idx}>
+                    <dt>{li.icon}</dt>
+                <dd>{li.text}</dd>
+                    </div>
+                ))
+            }
             <button
                 className='icon'
                 onClick={clickBtn}>{aideOpen ? <ArrowUpLeft /> : <HelpCircle />}</button>

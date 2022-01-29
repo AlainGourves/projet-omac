@@ -10,6 +10,7 @@ import AlertMesg from '../../Utils/AlertMesg/AlertMesg';
 import { generatePassword } from '../../Utils/helperFunctions';
 import UsersTable from '../UsersTable/UsersTable';
 import { LogIn } from 'react-feather';
+import Legende from '../../Utils/Legende/Legende';
 
 const ManageUsers = function () {
 
@@ -136,7 +137,7 @@ const ManageUsers = function () {
 
             <h2 className='mb-3'>Ajouter un utilisateur</h2>
             <p>Une fois le nouveau compte créé, <strong>vous êtes automatiquement reconnecté au site avec celui-ci</strong>. <br />
-            En cas d'échec, veus êtes aussi déconnecté du site, et renvoyé vers la page d'accueil.</p>
+                En cas d'échec, veus êtes aussi déconnecté du site, et renvoyé vers la page d'accueil.</p>
 
             <p>Pour les comptes <strong>visiteurs</strong>, une fausse adresse mail suffit, l'adresse sert juste d'identifiant pour se connecter. Comme ça, on peut en créer autant que nécessaire.</p>
             <div className='d-flex justify-content-center mb-5'>
@@ -283,7 +284,9 @@ const ManageUsers = function () {
                             usersList={usersList}
                             userAdmin={false}
                         />
-                        <p className='alert alert-info'><LogIn className='text-primary' /> Lien vers le test associé.</p>
+                        <div className='d-flex justify-content-end'>
+                            <Legende legendeContent={[{ icon: <LogIn />, text: "Lien vers le test associé." }]} />
+                        </div>
                     </div>
                 </div>
             )}
