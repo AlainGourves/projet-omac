@@ -44,9 +44,9 @@ function ExportForm(props) {
     return (
         <div className={`card my-3 ${props.alert ? 'beware' : ''}`}>
             <h4 className="card-header">
-                {props.alert && <AlertTriangle />}
-                {props.title}
-                {props.alert && <AlertTriangle />}
+                {props.alert && <span><AlertTriangle /></span>}
+                <span>{props.title}</span>
+                {props.alert && <span><AlertTriangle /></span>}
             </h4>
             <div className='card-body'>
                 <form onSubmit={handleSubmit(props.submitFn)}>
@@ -57,7 +57,7 @@ function ExportForm(props) {
                                 <strong>Sélection de l'intervalle :</strong>
                             </div>
                             <div className='row'>
-                                <div className="col-md-5 mb-3">
+                                <div className="col-md-6 col-lg-5 mb-3">
                                     <div className='input-group'>
                                         <span className='input-group-text'>Début:</span>
                                         <input
@@ -69,7 +69,7 @@ function ExportForm(props) {
                                         />
                                     </div>
                                 </div>
-                                <div className="col-md-5 mb-3">
+                                <div className="col-md-6 col-lg-5 mb-3">
                                     <div className='input-group'>
                                         <span className='input-group-text'>Fin:</span>
                                         <input

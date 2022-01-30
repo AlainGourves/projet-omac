@@ -11,8 +11,6 @@ const Legende = (props) => {
         setAideOpen(aideRef.current.classList.contains('opened'))
     }
 
-    console.log("props",props.legendeContent)
-
     return (
         <dl className="aide__bubble alert alert-info" ref={aideRef}>
             {

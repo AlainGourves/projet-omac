@@ -1,3 +1,6 @@
+// Include Bootstrap to load mixins
+@import 'bootstrap/scss/bootstrap';
+
 $bs-primary: #0d6efd;
 
 .badge{
@@ -8,6 +11,15 @@ $bs-primary: #0d6efd;
     display: grid;
     place-content: center;
     user-select: none;
+    & svg {
+        transform: rotate(90deg);
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .arrow svg {
+        transform: rotate(0deg);
+    }
 }
 
 .ul-quizs  ul {

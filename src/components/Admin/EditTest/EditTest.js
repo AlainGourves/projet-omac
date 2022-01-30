@@ -428,7 +428,7 @@ function EditTest({ allQuizs }) {
                                         <AlertMesg message={errors.quizs_ids?.message} />
                                     }
                                 </div>
-                                <div className="col-md-1 arrow">
+                                <div className="col-md-1 arrow mb-3 mb-md-0">
                                     <ArrowLeft className="fs-1 text-primary" />
                                 </div>
                                 <div className="col-md-5 ul-quizs">

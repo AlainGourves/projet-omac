@@ -15,11 +15,11 @@ section {
             color: #fff;
         }
 
-        & .input-group:first-of-type:not(:last-of-type) .input-group-text{
+        & .input-group:first-of-type:not(:last-of-type) .input-group-text {
 
             z-index: 10;
 
-            &::after{
+            &::after {
                 position: absolute;
                 content: '';
                 background: var(--bs-primary);
@@ -29,18 +29,18 @@ section {
                 transform: rotate(45deg);
                 border-radius: 0 .25rem;
             }
-            
-            & .form-select{
+
+            & .form-select {
                 z-index: 10;
             }
         }
 
-        & .input-group:last-of-type:not(:first-of-type) .input-group-text{
+        & .input-group:last-of-type:not(:first-of-type) .input-group-text {
             border-radius: 0 .25rem .25rem 0;
             background-color: $blue-300 !important;
             padding-left: 2rem;
 
-            &::after{
+            &::after {
                 position: absolute;
                 content: '';
                 background: #fff;
@@ -53,8 +53,17 @@ section {
         }
     }
 
-    &.export>* {
-        margin: auto;
+    &.export {
+        // centrer les cards
+        &>* {
+            margin: auto;
+        }
+
+        // égaliser la taille des "Débute & "Fin" pour les choix de dates
+        & .input-group-text{
+            min-width: 8ch;
+            justify-content: flex-end;
+        }
     }
 
     .form-select {
@@ -66,7 +75,7 @@ section {
     max-width: min(40rem, 65vw);
     box-shadow: 0 0 0.65em rgba(0, 0, 0, .25);
 
-    &:not(.beware) .card-header{
+    &:not(.beware) .card-header {
         color: var(--bs-primary);
     }
 
@@ -90,6 +99,7 @@ section {
             display: flex;
             justify-content: space-around;
             align-items: center;
+            gap: .5em;
             background-color: var(--bs-danger) !important;
             color: #fff;
         }
