@@ -44,10 +44,11 @@ function App() {
         }
 
         if (user) {
-            // console.log("l'user:", user)
-            getUser(user)
+            console.log("l'user:", user)
+            getUser(user);
         };
     }, [user]);
+
 
     return (
         <ModalProvider>
@@ -57,15 +58,13 @@ function App() {
                     <Route path="/inscription" component={SignUp} />
                     <Route path="/connexion" component={Login} />
                     <Route exact path="/" component={Home} />
-                    {/* <PrivateRoute exact path="/" component={Test} /> */}
                     <PrivateRoute path="/test" component={Test} />
                     {isAdmin ?
                         (<PrivateRoute path="/admin" component={Admin} />) : (<Redirect to="/" />)
                     }
-                    <Route path='*'>
-                    {/* TODO: ça n'a pas l'air de fonctionner !! */}
+                    <Route path="*">
                         <Page404 />
-                    </Route>    
+                    </Route>
                 </Switch>
             </div>
         </ModalProvider>

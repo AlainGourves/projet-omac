@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react';
 import {
     Switch,
     Route,
+    useRouteMatch
 } from 'react-router-dom';
+import { useAuth } from '../../contexts/Auth';
 import Home from './Home/Home';
 import User from './User/User';
 import Quiz from './Quiz/Quiz';
@@ -14,6 +16,10 @@ import { supabase } from '../../supabaseClient';
 import { useModal } from '../../contexts/ModalContext';
 
 function Test() {
+
+    const { path } = useRouteMatch();
+
+    const { user } = useAuth();
     // Chercher le test courant
     const [theTest, setTheTest] = useState(null);
     const [theQuizs, setTheQuizs] = useState(null);
@@ -27,10 +33,7 @@ function Test() {
         const getTest = async () => {
             try {
                 const { data, error } = await supabase
-                    .from('tests')
-                    .select()
-                    .eq('is_current', true)
-                    .limit(1)
+                    .rpc('get_test_for_user', { 'input_email': `${user.email}` })
                     .single()
                 if (error) {
                     throw new Error(error.message);
@@ -53,7 +56,7 @@ function Test() {
         if (!theTest) {
             getTest();
         }
-    }, [theTest, setLoadingError]);
+    }, [user, theTest, setLoadingError]);
 
     // Chargement des infos des quizs
     useEffect(() => {
@@ -171,7 +174,7 @@ function Test() {
     return (
         <>
             <Switch>
-                <Route path='/test/quiz/:id'>
+                <Route path={`${path}/quiz/:id`}>
                     {/* `id` correspond à l'index du quiz dans le array quizs_ids */}
                     <Quiz
                         quizs={theQuizs}
@@ -179,13 +182,13 @@ function Test() {
                     />
                 </Route>
 
-                <Route path='/test/verbatim/:id'>
+                <Route path={`${path}/verbatim/:id`}>
                     <Verbatim
                         verbatim={theTest.verbatim}
                     />
                 </Route>
 
-                <Route path='/test/fin'>
+                <Route path={`${path}/fin`}>
                     <Greetings
                         greetings={theTest.greetings}
                         isSavedToDB={isSavedToDB}
@@ -193,17 +196,17 @@ function Test() {
                     />
                 </Route>
 
-                <Route path='/test/user'>
+                <Route path={`${path}/user`}>
                     <User />
                 </Route>
 
-                <Route exact path='/test'>
+                <Route exact path={`${path}`}>
                     <Home
                         title={theTest.home.title}
                         description={theTest.home.description} />
                 </Route>
 
-                <Route path='/test/*'>
+                <Route path={`${path}/*`}>
                     <Page404 />
                 </Route>
 
