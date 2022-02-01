@@ -1,10 +1,37 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import { useAuth } from '../../contexts/Auth';
+import { useModal } from "../../contexts/ModalContext";
 import { AlertTriangle } from "react-feather";
 
 const Home = (props) => {
 
     const { user } = useAuth();
+
+    const [,setModal] = useModal();
+
+    useEffect(() => {
+        // Savoir si le visiteur utilise une souris ou un écran tactile
+        const touchScreen = window.matchMedia('(pointer: coarse)');
+        if (touchScreen.matches) {
+            // utilise un écran tactile => le drag&drop ne fonctionne pas
+            const msg = (<div>
+                <p>Pour le moment, l'application fonctionne mal sur un écran tactile&nbsp;!<br/>
+                Merci de réessayer sur un ordinateur, avec une souris.</p>
+            </div>);
+            setModal({
+                show: true,
+                title: "Alerte",
+                message: msg,
+                btnOk: 'Fermer',
+                fn: () => {
+                    setModal({
+                        show: false,
+                    });
+                }
+            });
+        }
+    }, [setModal]);
 
     return (
         <main>

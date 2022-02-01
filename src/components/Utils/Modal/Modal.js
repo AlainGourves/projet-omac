@@ -26,7 +26,7 @@ const Modal = (props) => {
                         </button>
                     </div>
                     <div className="modal-body">
-                        <p>{props.children}</p>
+                        {props.children}
                     </div>
                     <div className="modal-footer">
                         {props.btnCancel &&
