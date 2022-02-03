@@ -33,13 +33,13 @@ function App() {
                     throw error;
                 }
 
-                if (data) {
+                if (data && data.is_admin) {
                     setPrenom(data.prenom)
                     setNom(data.nom)
                     setIsAdmin(data.is_admin)
                 }
             } catch (error) {
-                console.warn("Erreur getUser: ", error)
+                console.warn("Erreur getUser: ", error.message)
             }
         }
 
