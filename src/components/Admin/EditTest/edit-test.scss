@@ -3,8 +3,15 @@
 
 $bs-primary: #0d6efd;
 
-.badge{
-    margin-right: .5em;
+.numero{
+    display: inline-grid;
+    place-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: .25rem;
+    margin-right: .25em;
+    color: #fff;
+    border-radius: 50%;
 }
 
 .arrow {

@@ -84,11 +84,11 @@ function ExportForm(props) {
                             </div>
                         </>
                     }
-                    <div className="d-flex justify-content-between align-items-center pb-3">
+                    <div className="d-flex  flex-column flex-lg-row justify-content-between align-items-center pb-3 gap-3">
                         <div>
                             {(props.diff && props.diff > 1) &&
                                 <span className='alert alert-info'>
-                                    <strong>{resultsInInterval} enregistrement{resultsInInterval > 1 ? 's' : ''}</strong>
+                                    <strong>{resultsInInterval}&nbsp;enregistrement{resultsInInterval > 1 ? 's' : ''}</strong>
                                 </span>
                             }
                         </div>

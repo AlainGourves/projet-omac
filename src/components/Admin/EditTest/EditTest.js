@@ -354,7 +354,7 @@ function EditTest({ allQuizs }) {
                 <form onSubmit={methods.handleSubmit(onSubmit)}>
                     <article>
                         <h2>
-                            <span className="badge rounded-pill bg-primary">1</span>
+                            <span className="numero bg-primary">1</span>
                             Nom du test
                         </h2>
                         <p>Le nom est une référence interne pour identifier le test, il n'apparaît nulle part dans la partie publique et doit de préférence être unique.</p>
@@ -375,7 +375,7 @@ function EditTest({ allQuizs }) {
                     </article>
                     <article>
                         <h2>
-                            <span className="badge rounded-pill bg-primary">2</span>
+                            <span className="numero bg-primary">2</span>
                             Écran d'accueil
                         </h2>
                         <div className="row mb-3">
@@ -409,7 +409,7 @@ function EditTest({ allQuizs }) {
                     <article>
                         <DndProvider backend={HTML5Backend}>
                             <h2>
-                                <span className="badge rounded-pill bg-primary">3</span>
+                                <span className="numero bg-primary">3</span>
                                 Sélection des quizs du test
                             </h2>
                             <div className="row mb-3">
@@ -441,7 +441,7 @@ function EditTest({ allQuizs }) {
                     </article>
                     <article>
                         <h2>
-                            <span className="badge rounded-pill bg-primary">4</span>
+                            <span className="numero bg-primary">4</span>
                             Verbatim
                         </h2>
                         <p>Saisir le(s) texte(s) qui apparaitra(ont) au-dessus d'une zone de texte à remplir par le cobaye à la fin du test. <br />Ce champ n'est pas obligatoire.</p>
@@ -460,7 +460,7 @@ function EditTest({ allQuizs }) {
                     </article>
                     <article>
                         <h2>
-                            <span className="badge rounded-pill bg-primary">5</span>
+                            <span className="numero bg-primary">5</span>
                             Remerciements/Écran de fin
                         </h2>
                         <div className="row mb-3">
@@ -478,7 +478,7 @@ function EditTest({ allQuizs }) {
                     </article>
                     <article>
                         <h2>
-                            <span className="badge rounded-pill bg-primary">6</span>
+                            <span className="numero bg-primary">6</span>
                             Gestion des utilisateurs pour l'accès au test
                         </h2>
                         <div className="row mb-3">

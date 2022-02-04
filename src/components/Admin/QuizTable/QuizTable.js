@@ -106,7 +106,7 @@ function QuizTable(props) {
                     {quizsList}
                 </tbody>
             </table>
-            <div className="d-flex justify-content-around">
+            <div className="d-flex justify-content-around gap-3">
                 <button
                     onClick={exportQuizs}
                     className='btn btn-outline-primary'
