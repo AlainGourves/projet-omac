@@ -16,8 +16,8 @@ const Legende = (props) => {
             {
                 props.legendeContent.map((li, idx) => (
                     <div key={idx}>
-                    <dt>{li.icon}</dt>
-                <dd>{li.text}</dd>
+                        <dt>{li.icon}</dt>
+                        <dd>{li.text}</dd>
                     </div>
                 ))
             }

@@ -140,7 +140,7 @@ function TestTable(props) {
                 </tbody>
             </table>
 
-            <div className="d-flex justify-content-around mb-3">
+            <div className="d-flex justify-content-around gap-3 mb-3">
                 <button
                     onClick={exportTests}
                     className='btn btn-outline-primary'
@@ -159,7 +159,7 @@ function TestTable(props) {
                     <Legende
                         legendeContent={[
                             { icon: <Mail />, text: "une liste d'invitations est associée au test." },
-                            { icon: <User />, text: "un compte &quot;visiteur&quot; est associé au test." }
+                            { icon: <User />, text: <>un compte "visiteur" est associé au test.</> }
                         ]}
                     />
                 </div>

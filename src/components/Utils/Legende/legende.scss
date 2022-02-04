@@ -7,7 +7,8 @@
     justify-content: space-between;
 
     &.opened {
-        width: max-content;
+        width: auto;
+        max-width: max-content;
         flex-direction: column;
         align-items: flex-end;
         box-shadow: 0 0 .5em rgba(108,117,125,.5);

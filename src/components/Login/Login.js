@@ -1,117 +1,85 @@
 import './login.scss';
 import { useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/Auth';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import AlertMesg from '../Utils/AlertMesg/AlertMesg';
-import { Eye, EyeOff } from 'react-feather';
+import { ChevronLeft } from 'react-feather';
 import { supabase } from '../../supabaseClient';
+import FormConnect from './FormConnect/FormConnect';
+import FormMagic from './FormMagic/FormMagic';
+import Confirmation from './Confirmation/Confirmation';
 
 const Login = function () {
-    const [error, setError] = useState(null);
-
-    const [eyeIcon, setEyeIcon] = useState(true); // true -> Eye, false -> EyeOff
+    const [isPassword, setIsPassword] = useState(true); // Basculer entre email/password et magic link
+    const [isSend, setIsSend] = useState(false); // Savoir si le magic link est envoyé
+    const [magicLinkAddress, setMagicLinkAddress] = useState('');
+    const [tooManyRequests, setTooManyRequests] = useState(false); // Afficher message si plus d'une demande de magic link en une minute
 
     // Get connexion function from the Auth context
     const { signIn } = useAuth();
 
-    const history = useHistory();
+    const changePasswordState = () => {
+        setIsPassword(!isPassword);
+    }
 
-    const schema = yup.object().shape({
-        email: yup.string().email("Vérifier l'adresse mail, elle ne semble pas correcte.").required("Merci de renseigner votre adresse mail."),
-        password: yup.string().required("Merci de saisir votre mot de passe."),
-    });
-
-    const { register, handleSubmit, formState: { errors } } = useForm({
-        defaultValues: {
-            'email': '',
-            'password': '',
-        },
-        resolver: yupResolver(schema),
-    });
-
-    const onSubmit = async (values) => {
-        // Get input values
-        const email = values.email;
-        const password = values.password;
-        // Calls signIn function from the context
-        const { user, error } = await signIn({ email, password });
-
-        if (error) {
-            console.log("Erreur signIn(): ", error);
-            setError("Les informations fournies ne sont pas reconnues, vérifiez votre saisie.");
-        } else {
-            const getUser = async (user) => {
+    const sendMagicLink = async (email) => {
+        // Vérifie si l'adresse est dans annuaire
+        try {
+            const { data, error } = await supabase
+                .from('annuaire')
+                .select('email')
+                .eq('email', email)
+                .order('created_at', { ascending: false })
+            // renvoit un array vide si pas de correspondance
+            if (error) throw new Error(error.message);
+            if (data.length) {
+                // Envoi magic link
                 try {
-                    const { error } = await supabase
-                        .from('users')
-                        .select()
-                        .eq('id', user.id)
-                        .single()
-
-                    if (error) {
-                        throw error;
-                    }
+                    const { error } = await signIn({ email: email });
+                    if (error) throw error;
                 } catch (error) {
-                    console.warn("Erreur getUser: ", error)
+                    // sans doute erreur 429: 'Too Many Requests'
+                    // une seule demande de magic link par minute autorisée
+                    setTooManyRequests(true);
                 }
             }
-
-            getUser(user);
-            history.push('/test');
+        } catch (error) {
+        } finally {
+            // Erreur silencieuse : même si l'adresse soumise n'est pas enregistrée dans `annuaire`, on fait comme si l'email était parti (Sécurité !)
+            setIsSend(true);
+            setMagicLinkAddress(email);
         }
-    }
-    const onError = (errors) => {
-        console.log("erreur onSubmit(): ", errors);
-    }
-
-    const showPassword = () => {
-        setEyeIcon(!eyeIcon);
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit, onError)}>
-
-            {error &&
-                <AlertMesg message={error} />
-            }
-            <div className="col mb-3">
-                <label className="form-label" htmlFor="email">Email</label>
-                <input
-                    {...register("email")}
-                    className={`form-control ${error ? 'is-invalid' : ''}`}
-                    type="email"
-                />
-                {errors.email &&
-                    <AlertMesg message={errors.email?.message} />
-                }
-            </div>
-
-            <div className="col mb-3">
-                <label className="form-label" htmlFor="password">Mot de passe</label>
-                <div className="input-group">
-                    <input
-                        {...register("password")}
-                        className={`form-control ${error ? 'is-invalid' : ''}`}
-                        type={eyeIcon ? "password" : "text"}
+        <>
+            <div className='login__container'>
+                {isPassword &&
+                    <FormConnect
+                        changePasswordState={changePasswordState}
                     />
-                    <span className="eye input-group-text" onClick={showPassword}>
-                        {eyeIcon ? <Eye size={18} /> : <EyeOff size={18} />}
-                    </span>
-                </div>
-                {errors.password &&
-                    <AlertMesg message={errors.password?.message} />
+                }
+
+                {(!isPassword && !isSend) &&
+                    <FormMagic
+                        changePasswordState={changePasswordState}
+                        sendMagicLink={sendMagicLink}
+                    />
+                }
+
+                {(!isPassword && isSend) &&
+                    <Confirmation
+                        email={magicLinkAddress}
+                        tooManyRequests={tooManyRequests}
+                    />
                 }
             </div>
 
-            <div className="d-flex flex-column justify-content-center align-items-center">
-                <button className="btn btn-primary mb-2" type="submit">Connexion</button>
-                <p><Link to='/'>Retour à l'accueil</Link></p>
+            {/* ------- Lien Retour à l'accueil -------------- */}
+            <div className="login__home">
+                <Link to='/' className='text-decoration-none'><ChevronLeft /></Link>
+                <Link to='/' className='text-decoration-none'>Retour à l'accueil</Link>
             </div>
-
-        </form>
+        </>
     )
 }
 

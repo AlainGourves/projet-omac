@@ -1,0 +1,69 @@
+.login__container{
+    width: 340px;
+}
+
+.login__card {
+    padding: 1rem;
+    font-size: .875rem;;
+    border: 1px solid var(--bs-gray-300);
+    border-radius: .25rem;
+    
+    &-bg{
+        background-color: var(--bs-gray-100);
+    }
+
+    &-confirm{
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+
+        & .nota{
+            font-size: .75rem;
+            font-style: oblique;
+            color: var(--bs-gray-600);
+        }
+
+        & figure {
+            margin: 0 auto inherit auto;
+
+            & svg {
+                width: 2.5rem;
+                height: auto;
+            }
+        }
+    }
+
+    &-title{
+        text-align: center;
+        font-size: 1.5em;
+        font-weight: 300;
+        color: var(--bs-primary);
+    }
+}
+
+.login__submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login__home {
+    margin-top: 6rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+.faux-link{
+    display: inline-block;
+    padding: 0;
+    text-decoration: none;
+    appearance: none;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    background-color: transparent;
+    color: var(--bs-primary);
+
+    &:hover{
+        text-decoration: underline;
+    }
+}

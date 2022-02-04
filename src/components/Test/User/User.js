@@ -96,12 +96,12 @@ function User() {
     }
     return (
         <div className="carte">
-            <h1 className="text-center">Bienvenue dans Bidule !</h1>
+            <h1 className="text-center">Bienvenue dans Bidule&nbsp;!</h1>
             <p className="text-center">Commence par donner quelques informations sur toi.</p>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="my-4">
                     <div className="row align-items-center mb-3">
-                        <label htmlFor="age" className="form-label col-md-4 text-end">Tes initiales:</label>
+                        <label htmlFor="age" className="form-label col-md-4 text-md-end">Tes initiales:</label>
                         <div className="col-md-8">
                             <input
                                 {...register("initials")}
@@ -113,7 +113,7 @@ function User() {
                         </div>
                     </div>
                     <div className="row align-items-center mb-3">
-                        <label htmlFor="age" className="form-label col-md-4 text-end">Ta date de naissance:</label>
+                        <label htmlFor="age" className="form-label col-md-4 text-md-end">Ta date de naissance:</label>
                         <div className="col-md-8">
                             <input
                                 {...register("birthDate")}
@@ -125,7 +125,7 @@ function User() {
                         </div>
                     </div>
                     <div className="row align-items-center mb-3">
-                        <label htmlFor="age" className="form-label col-md-4 text-end">Ton âge:</label>
+                        <label htmlFor="age" className="form-label col-md-4 text-md-end">Ton âge:</label>
                         <div className="col-md-8">
                             <input
                                 {...register("age")}
@@ -138,7 +138,7 @@ function User() {
                         </div>
                     </div>
                     <div className="row mb-3">
-                        <div className="col-md-4 text-end">Ton genre:</div>
+                        <div className="col-md-4 text-md-end">Ton genre:</div>
                         <div role="group" className="form-check col-md-8">
                             <label className="form-label d-block">
                                 <input type='radio' {...register("gender")} value='M' className="form-check-input" />
@@ -156,7 +156,7 @@ function User() {
                     </div>
 
                     <div className="row align-items-center mb-3">
-                        <label className="form-label col-md-4 text-end" htmlFor="institution">Ton établissement:</label>
+                        <label className="form-label col-md-4 text-md-end" htmlFor="institution">Ton établissement:</label>
                         <div className="col-md-8">
                             <input
                                 {...register("institution")}

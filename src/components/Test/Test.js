@@ -12,6 +12,7 @@ import Quiz from './Quiz/Quiz';
 import Verbatim from './Verbatim/Verbatim';
 import Greetings from './Greetings/Greetings';
 import Page404 from '../Page404/Page404';
+import NoTest from './NoTest/NoTest';
 import { supabase } from '../../supabaseClient';
 import { useModal } from '../../contexts/ModalContext';
 
@@ -23,6 +24,9 @@ function Test() {
     // Chercher le test courant
     const [theTest, setTheTest] = useState(null);
     const [theQuizs, setTheQuizs] = useState(null);
+    const [isNoTest, setIsNoTest] = useState(false);
+    
+    const [isLoading, setIsLoading] = useState(true);
 
     const [, setModal] = useModal(); // Laisser la virgule ! (on utilise pas `modal` dans le script => si on l'ajoute ici, il y aura une erreur "unused")
     const [loadingError, setLoadingError] = useState(false);
@@ -34,19 +38,24 @@ function Test() {
             try {
                 const { data, error } = await supabase
                     .rpc('get_test_for_user', { 'input_email': `${user.email}` })
-                    .single()
                 if (error) {
                     throw new Error(error.message);
                 }
                 if (data) {
-                    setTheTest({
-                        id: data.id,
-                        home: data.home,
-                        quizs_ids: data.quizs_ids,
-                        isVerbatim: (data.verbatim.length > 0 && data.verbatim[0] !== ''),
-                        verbatim: data.verbatim,
-                        greetings: data.greetings,
-                    })
+                    if (data.length === 0) {
+                        // Il n'y a plus de test à faire pour l'invité
+                        setIsNoTest(true);
+                        setIsLoading(false);
+                    } else {
+                        setTheTest({
+                            id: data[0].id,
+                            home: data[0].home,
+                            quizs_ids: data[0].quizs_ids,
+                            isVerbatim: (data[0].verbatim.length > 0 && data[0].verbatim[0] !== ''),
+                            verbatim: data[0].verbatim,
+                            greetings: data[0].greetings,
+                        });
+                    }
                 }
             } catch (error) {
                 console.error("getTest error:", error)
@@ -79,6 +88,7 @@ function Test() {
         }
         if (theTest && !theQuizs) {
             getQuizs(theTest.quizs_ids);
+            setIsLoading(false);
         }
     }, [theTest, theQuizs, setLoadingError])
 
@@ -156,6 +166,12 @@ function Test() {
                     throw new Error(error.message);
                 }
             }
+            // MàJ de 'annuaire' pour les invités
+            // NB: On fait la requête pour tout le monde plutôt que de distinguer en tre invités et les autres
+            await supabase
+                .from('annuaire')
+                .update({is_done: true, done_at: new Date()})
+                .match({email: user.email, test_id: theTest.id});
         } catch (error) {
             console.log("Erreur enregistrement DB:", error.message);
         } finally {
@@ -163,12 +179,16 @@ function Test() {
         }
     }
 
-    if (!theTest || !theQuizs) {
+    if (isLoading) {
         return (
             <>
                 <h1>Chargement...</h1>
             </>
         )
+    }
+
+    if (isNoTest) {
+        return <NoTest />
     }
 
     return (
