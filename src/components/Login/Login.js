@@ -15,7 +15,7 @@ const Login = function () {
     const [tooManyRequests, setTooManyRequests] = useState(false); // Afficher message si plus d'une demande de magic link en une minute
 
     // Get connexion function from the Auth context
-    const { signIn, signOut } = useAuth();
+    const { signIn } = useAuth();
 
     const changePasswordState = () => {
         setIsPassword(!isPassword);
@@ -76,8 +76,8 @@ const Login = function () {
 
             {/* ------- Lien Retour à l'accueil -------------- */}
             <div className="login__home">
-            <Link to='/' className='text-decoration-none'><ChevronLeft /></Link>
-            <Link to='/' className='text-decoration-none'>Retour à l'accueil</Link>
+                <Link to='/' className='text-decoration-none'><ChevronLeft /></Link>
+                <Link to='/' className='text-decoration-none'>Retour à l'accueil</Link>
             </div>
         </>
     )
