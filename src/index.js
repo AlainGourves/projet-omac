@@ -7,12 +7,14 @@ import {
 import './index.scss';
 import { AuthProvider } from './contexts/Auth';
 import App from './components/App/App';
+import ScrollToTop from './components/Utils/ScrollToTop';
 
 
 ReactDOM.render(
     <React.StrictMode>
         <Router>
             <AuthProvider>
+                <ScrollToTop />
                 <App />
             </AuthProvider>
         </Router>
