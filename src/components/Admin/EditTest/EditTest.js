@@ -447,7 +447,7 @@ function EditTest({ allQuizs }) {
                         <p>Saisir le(s) texte(s) qui apparaitra(ont) au-dessus d'une zone de texte à remplir par le cobaye à la fin du test. <br />Ce champ n'est pas obligatoire.</p>
                         {
                             fields.map((item, index) => (
-                                <div key={item.id} className="d-flex mb-3">
+                                <div key={item.id} className="d-flex flex-column flex-md-row mb-3 add-verbatim">
                                     <Verbatim
                                         count={index}
                                         isLast={(index === (fields.length - 1))}
@@ -463,7 +463,7 @@ function EditTest({ allQuizs }) {
                             <span className="numero bg-primary">5</span>
                             Remerciements/Écran de fin
                         </h2>
-                        <div className="row mb-3">
+                        <div className="row flex-column flex-md-row mb-3 greetings">
                             <div className="input-group">
                                 <span className="input-group-text text-end">Texte :</span>
                                 <textarea

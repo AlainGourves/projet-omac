@@ -6,7 +6,7 @@ function Verbatim(props) {
 
     return (
         <>
-            <div className="input-group">
+            <div className="input-group flex-column flex-md-row">
                 <span className="input-group-text text-end">Texte de l'intitulé :</span>
                 <input
                     {...register(`verbatim.${props.count}.val`)}
@@ -25,7 +25,7 @@ function Verbatim(props) {
                     </button>
                 </span>
             </div>
-            <div className="col-1 d-flex justify-content-center align-items-center">
+            <div className="col-md-1 d-flex justify-content-center align-items-center">
                 {props.isLast &&
                     <button
                         onClick={props.addVerbatim}

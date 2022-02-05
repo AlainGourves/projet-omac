@@ -283,7 +283,7 @@ function ExportResults() {
 
             {allTests &&
                 <section className='config'>
-                    <div className='d-flex flex-sm-column flex-md-row mb-3'>
+                    <div className='d-flex flex-column flex-md-row mb-3'>
                         <div className='input-group'>
                             <label className='input-group-text w-100'>Sélectionner un test:
                                 <select

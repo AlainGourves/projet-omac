@@ -12,7 +12,7 @@ export const supportsLocalStorage = () => {
 }
 
 // Fonction pour le stockage d'array d'obj !!!
-export const addToLocalStorage = (key, val) => {
+export const addToLocalStorage = (key, val, inArray = true) => {
     try {
         if (localStorage.getItem(key)) {
             // La clé existe déjà -> mise à jour de la valeur
@@ -22,7 +22,11 @@ export const addToLocalStorage = (key, val) => {
             localStorage.setItem(key, JSON.stringify(saved));
         } else {
             // La clé n'existait pas, on la crée et on place val dans un array
-            localStorage.setItem(key, JSON.stringify([val]));
+            if (inArray) {
+                localStorage.setItem(key, JSON.stringify([val]));
+            }else{
+                localStorage.setItem(key, JSON.stringify(val));
+            }
         }
     } catch (err) {
         console.warn("Erreur enregistrement localStorage", err);

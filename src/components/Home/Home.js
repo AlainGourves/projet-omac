@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from '../../contexts/Auth';
 import { useModal } from "../../contexts/ModalContext";
+import {addToLocalStorage } from "../Utils/helperFunctions";
 // import { AlertTriangle } from "react-feather";
 
 const Home = (props) => {
@@ -13,7 +14,8 @@ const Home = (props) => {
     useEffect(() => {
         // Savoir si le visiteur utilise une souris ou un écran tactile
         const touchScreen = window.matchMedia('(pointer: coarse)');
-        if (touchScreen.matches) {
+        // Affiche l'alerte une fois puis stocke en localStorage le fait qu'elle a déjà été affichée (`touchScreenAlert`)
+        if (touchScreen.matches && !localStorage.getItem('touchScreenAlert')) {
             // utilise un écran tactile => le drag&drop ne fonctionne pas
             const msg = (<div>
                 <p>Pour le moment, l'application fonctionne mal sur un écran tactile&nbsp;!<br/>
@@ -30,6 +32,7 @@ const Home = (props) => {
                     });
                 }
             });
+            addToLocalStorage('touchScreenAlert', true, false);
         }
     }, [setModal]);
 

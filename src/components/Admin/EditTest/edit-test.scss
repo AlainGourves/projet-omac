@@ -3,7 +3,7 @@
 
 $bs-primary: #0d6efd;
 
-.numero{
+.numero {
     display: inline-grid;
     place-content: center;
     width: 2rem;
@@ -18,6 +18,7 @@ $bs-primary: #0d6efd;
     display: grid;
     place-content: center;
     user-select: none;
+
     & svg {
         transform: rotate(90deg);
     }
@@ -29,7 +30,7 @@ $bs-primary: #0d6efd;
     }
 }
 
-.ul-quizs  ul {
+.ul-quizs ul {
     width: 100%;
     min-height: 10em;
     max-height: 12em;
@@ -37,8 +38,8 @@ $bs-primary: #0d6efd;
     overflow: clip auto;
     background-color: lighten($bs-primary, 60%);
     border-radius: .25em;
-    border: 1px solid rgba(0,0,0,.25);
-    box-shadow: 0 0 0.25em rgba(0,0,0,.25) inset;
+    border: 1px solid rgba(0, 0, 0, .25);
+    box-shadow: 0 0 0.25em rgba(0, 0, 0, .25) inset;
 }
 
 .list-group-item {
@@ -56,5 +57,33 @@ $bs-primary: #0d6efd;
         &.grab:hover {
             cursor: grab;
         }
+    }
+}
+
+// input groups Verbatims
+@include media-breakpoint-down(sm) {
+
+    .add-verbatim .input-group-text:not(:last-of-type),
+    .greetings .input-group-text {
+        width: 100%;
+        border-radius: .25rem .25rem 0 0 !important;
+        margin-bottom: -1px !important;
+    }
+
+    .add-verbatim .input-group-text:last-of-type {
+        border-radius: 0 0 .25rem .25rem !important;
+        justify-content: center;
+        margin-left: 0 !important;
+        margin-top: -1px !important;
+        padding-block: 0 !important;
+    }
+
+    .add-verbatim .input-group>.form-control {
+        width: 100%;
+        margin-left: 0 !important;
+    }
+
+    .greetings textarea {
+        border-radius: 0 0 .25rem .25rem !important;
     }
 }
