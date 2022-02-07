@@ -11,6 +11,7 @@ import Confirmation from './Confirmation/Confirmation';
 const Login = function () {
     const [isPassword, setIsPassword] = useState(true); // Basculer entre email/password et magic link
     const [isSend, setIsSend] = useState(false); // Savoir si le magic link est envoyé
+    const [isSending, setIsSending] = useState(false); // Le temps d'envoyer le mail
     const [magicLinkAddress, setMagicLinkAddress] = useState('');
     const [tooManyRequests, setTooManyRequests] = useState(false); // Afficher message si plus d'une demande de magic link en une minute
 
@@ -24,6 +25,7 @@ const Login = function () {
     const sendMagicLink = async (email) => {
         // Vérifie si l'adresse est dans annuaire
         try {
+            setIsSending(true);
             const { data, error } = await supabase
                 .from('annuaire')
                 .select('email')
@@ -45,6 +47,7 @@ const Login = function () {
         } catch (error) {
         } finally {
             // Erreur silencieuse : même si l'adresse soumise n'est pas enregistrée dans `annuaire`, on fait comme si l'email était parti (Sécurité !)
+            setIsSending(false);
             setIsSend(true);
             setMagicLinkAddress(email);
         }
@@ -63,6 +66,7 @@ const Login = function () {
                     <FormMagic
                         changePasswordState={changePasswordState}
                         sendMagicLink={sendMagicLink}
+                        isSending={isSending}
                     />
                 }
 

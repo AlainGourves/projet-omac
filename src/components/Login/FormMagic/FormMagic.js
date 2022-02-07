@@ -3,7 +3,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import AlertMesg from '../../Utils/AlertMesg/AlertMesg';
 
-const FormMagic = function (props) {
+const FormMagic = function ({ sendMagicLink, changePasswordState, isSending }) {
 
 
     const schema = yup.object().shape({
@@ -18,14 +18,14 @@ const FormMagic = function (props) {
     });
 
     const onSubmit = async (values) => {
-        props.sendMagicLink(values.email);
+        sendMagicLink(values.email);
     }
 
     return (
         <>
             {/* ------- FORMULAIRE CONNECTION -------------- */}
             <div className='login__card login__card-bg mb-4'>
-            <p className='login__card-title'>Saisissez votre adresse mail pour créer un compte</p>
+                <p className='login__card-title'>Saisissez votre adresse mail pour créer un compte</p>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="col mb-3">
                         <label className="form-label" htmlFor="email">Email</label>
@@ -40,7 +40,14 @@ const FormMagic = function (props) {
                     </div>
 
                     <div className="login__submit">
-                        <button className="btn btn-primary" type="submit">Continuer</button>
+                        {(!isSending) ?
+                            (<button className="btn btn-primary" type="submit">Continuer</button>) :
+                            (
+                                <button className="btn btn-primary" type="submit" disabled>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Traitement
+                                </button>
+                            )
+                        }
                     </div>
 
                 </form>
@@ -49,7 +56,7 @@ const FormMagic = function (props) {
             <div className='login__card'>
                 Vous avez déjà un mot de passe&nbsp;? <button
                     className='faux-link'
-                    onClick={props.changePasswordState}>Connectez-vous</button>.
+                    onClick={changePasswordState}>Connectez-vous</button>.
             </div>
         </>
     )

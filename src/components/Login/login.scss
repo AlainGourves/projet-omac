@@ -45,6 +45,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    & button span {
+        margin-right: .5rem;
+    }
 }
 
 .login__home {
