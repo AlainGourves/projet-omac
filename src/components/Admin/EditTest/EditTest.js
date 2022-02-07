@@ -525,9 +525,9 @@ function EditTest({ allQuizs }) {
                                 {visitorAccount ?
                                     (
                                         <div className='rounded-1 border border-gray-400 p-3'>
-                                            <div className='row align-items-center'>
-                                                <div className='col-5 text-end'>Compte lié :</div>
-                                                <div className='col-7 d-flex justify-content-between align-items-center'>
+                                            <div className='row flex-md-column flex-lg-row align-items-center'>
+                                                <div className='col-5 col-md-12 col-lg-5 text-end text-md-start text-lg-end'>Compte lié&nbsp;:</div>
+                                                <div className='col d-flex justify-content-between align-items-center'>
                                                     <span><em>{visitorAccount}</em></span>
                                                     <button
                                                         onClick={removeLinkedAccount}
@@ -538,9 +538,9 @@ function EditTest({ allQuizs }) {
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div className='row align-items-center'>
-                                                <div className='col-5 text-end'>Mot de passe :</div>
-                                                <div className='col-7'><em>{visitorPassword}</em></div>
+                                            <div className='row flex-md-column flex-lg-row align-items-center'>
+                                                <div className='col-5 col-md-12 col-lg-5 text-end text-md-start text-lg-end'>Mot de passe&nbsp;:</div>
+                                                <div className='col'><em>{visitorPassword}</em></div>
                                             </div>
                                         </div>
                                     ) : (

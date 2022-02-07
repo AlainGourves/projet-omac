@@ -61,7 +61,8 @@ $bs-primary: #0d6efd;
 }
 
 // input groups Verbatims
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
+    // s'applique aux breakpoints < md
 
     .add-verbatim .input-group-text:not(:last-of-type),
     .greetings .input-group-text {
