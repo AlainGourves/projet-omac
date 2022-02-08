@@ -25,7 +25,7 @@ function Test() {
     const [theTest, setTheTest] = useState(null);
     const [theQuizs, setTheQuizs] = useState(null);
     const [isNoTest, setIsNoTest] = useState(false);
-    
+
     const [isLoading, setIsLoading] = useState(true);
 
     const [, setModal] = useModal(); // Laisser la virgule ! (on utilise pas `modal` dans le script => si on l'ajoute ici, il y aura une erreur "unused")
@@ -123,55 +123,68 @@ function Test() {
             });
         }
         // Met en forme les résultats pour la requète d'insertion dans DB
-        const reqResults = results.map((q) => {
+        let reqResults = results.map((q) => {
             return {
-                client_id: persona.uniqueId,
+                uniqueId: persona.uniqueId,
                 test_id: theTest.id,
                 quiz_id: q.quizId,
                 responses: q.results,
                 duration: q.duration,
             }
         });
-        const reqVerbatim = (theTest.isVerbatim) ? {
-            client_id: persona.uniqueId,
+        let reqVerbatim = (theTest.isVerbatim) ? {
+            uniqueId: persona.uniqueId,
             test_id: theTest.id,
             responses: verbatim,
         } : null;
 
+        let client_id = null;
+
         try {
             // enregitrement dans 'clients'
+            // NB: on doit récupérer l'id généré par la base pour la suite
             {
-                const { error } = await supabase
+                const { data, error } = await supabase
                     .from('clients')
-                    .insert(persona, { returning: 'minimal' })
+                    .insert(persona);
                 if (error) {
                     throw new Error(error.message);
                 }
+                if (data) {
+                    client_id = data[0].id;
+                }
             }
-            {
+            if (client_id) {
                 // enregitrement dans 'results'
+
+                // MàJ de reqResults pour que chaque item contienne l'id de la table`clients`
+                reqResults.forEach(res => res.client_id = client_id);
                 const { error } = await supabase
                     .from('results')
                     .insert(reqResults, { returning: 'minimal' })
                 if (error) {
                     throw new Error(error.message);
                 }
-            }
-            if (verbatim) {
-                // enregitrement dans 'verbatim'
-                const { error } = await supabase
-                    .from('verbatim')
-                    .insert(reqVerbatim, { returning: 'minimal' })
-                if (error) {
-                    throw new Error(error.message);
+                if (verbatim) {
+                    // enregitrement dans 'verbatim'
+                    reqVerbatim.client_id = client_id;
+                    const { error } = await supabase
+                        .from('verbatim')
+                        .insert(reqVerbatim, { returning: 'minimal' })
+                    if (error) {
+                        throw new Error(error.message);
+                    }
                 }
+                // MàJ de 'annuaire' pour les invités
+                // NB: On fait la requête pour tout le monde plutôt que de distinguer en tre invités et les autres
+                await supabase
+                    .from('annuaire')
+                    .update({ is_done: true, done_at: new Date() })
+                    .match({ email: user.email, test_id: theTest.id });
+
+            } else {
+                throw new Error("Pas de client_id généré !");
             }
-            // MàJ de 'annuaire' pour les invités
-            // NB: On fait la requête pour tout le monde plutôt que de distinguer en tre invités et les autres
-            await supabase
-                .from('annuaire')
-                .update({is_done: true, done_at: new Date()})
-                .match({email: user.email, test_id: theTest.id});
         } catch (error) {
             console.log("Erreur enregistrement DB:", error.message);
         } finally {

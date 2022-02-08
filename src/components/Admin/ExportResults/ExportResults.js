@@ -191,22 +191,21 @@ function ExportResults() {
                 .eq('quiz_id', quizId)
                 .gte('created_at', start)
                 .lt('created_at', end)
-                .order('client_id');
+                .order('uniqueId');
             if (error) {
                 throw new Error(error.message);
             }
             if (data) {
                 let content = '';
-                let durations = [];
+                let clientsIds = []; // stocke les id pour pouvoir récupérer les infos dans `clients`
                 data.forEach((record) => {
-                    durations.push([record.client_id, record.duration]);
-                    content += `${record.client_id}\t${record.responses
+                    clientsIds.push(record.client_id);
+                    content += `${record.duration}\t${record.responses
                         .map(obj => Object.values(obj).join('\t'))
                         .join('\t')}\n`;
                 });
-                exportCSV(`results_quiz_${quizTitle}`, content);
-                // console.log(content)
-                console.log(durations)
+                exportCSV(`results_quiz_${quizTitle.split(/\s|'/).join("_")}`, content);
+                exportClientsInfos(clientsIds);
             }
         } catch (error) {
             console.warn(error)
@@ -224,23 +223,50 @@ function ExportResults() {
                 .eq('test_id', testId)
                 .gte('created_at', start)
                 .lt('created_at', end)
-                .order('client_id');
+                .order('uniqueId');
             if (error) {
                 throw new Error(error.message);
             }
             if (data) {
                 let content = '';
+                let clientsIds = []; // stocke les id pour pouvoir récupérer les infos dans `clients`
                 data.forEach((record) => {
                     // Chaque réponse est entourée de double quotes pour prévenir les problèmes liés aux retours à la ligne dans les fichier CSV
                     // cf. https://stackoverflow.com/questions/566052/can-you-encode-cr-lf-in-into-csv-files
-                    content += `${record.client_id}\t${record.responses
+                    clientsIds.push(record.client_id);
+                    content += `${record.responses
                         .map(str => `"${str}"`)
                         .join('\t')}\n`;
                 });
-                exportCSV(`verbatim_${testName}`, content);
+                exportCSV(`verbatim_${testName.split(/\s|'/).join("_")}`, content);
+                exportClientsInfos(clientsIds);
             }
         } catch (error) {
             console.warn(error)
+        }
+    }
+
+    // Pour exporter les infos sur les cobayes
+    // `clientsIds` : array de id de la table `clients`
+    const exportClientsInfos = async function (clientsIds) {
+        try {
+            const { error, data } = await supabase
+                .from('clients')
+                .select('uniqueId, age, gender, institution')
+                .in('id', clientsIds)
+                .order('uniqueId');
+            if (error) {
+                throw new Error(error.message);
+            }
+            if (data) {
+                let content = `Id\tAge\tSexe\tInstitution\n`;
+                data.forEach((record) => {
+                    content += `${record.uniqueId}\t${record.age}\t${record.gender}\t"${record.institution}"\n`;
+                })
+                exportCSV(`participants_${testName.split(/\s|'/).join("_")}`, content);
+            }
+        } catch (error) {
+            console.warn(error);
         }
     }
 
@@ -368,9 +394,9 @@ function ExportResults() {
                         body={<div className="fs-6">
                             <p>Export en fichier CSV (avec TAB comme séparateur), sous la forme :</p>
                             <pre className='text-info bg-dark'>
-                                [identifiant utilisateur][<em>x</em> item 1][<em>y</em> item 1]...[<em>x</em> item <em>n</em>][<em>y</em> item <em>n</em>](fin de ligne)
+                                [durée du quiz][<em>x<sub>1</sub></em>][<em>y<sub>1</sub></em>][<em>x<sub>2</sub></em>][<em>y<sub>2</sub></em>]...[<em>x<sub>n</sub></em>][<em>y<sub>n</sub></em>](fin de ligne)
                             </pre>
-                            <p>Les positions (<em>x</em>, <em>y</em>) sont exprimées en % des dimensions de la carte, avec 3 décimales.</p>
+                            <p>Les positions (<em>x</em>, <em>y</em>) sont exprimées en % des dimensions de la carte, avec 3 décimales.<br/>Un fichier de données et un autre sur les participants.</p>
                         </div>}
                         resultsDates={resultsDates}
                         startDate={resultsStartDate}
@@ -386,7 +412,10 @@ function ExportResults() {
                         <ExportForm
                             submitFn={submitVerbatim}
                             title={"Exporter les verbatim du test."}
-                            body={<p>Export en fichier CSV (avec TAB comme séparateur).</p>}
+                            body={<div className="fs-6">
+                                <p>Export en fichier CSV (avec TAB comme séparateur).<br/>
+                                Un fichier de données et un autre sur les participants.</p>
+                            </div>}
                             resultsDates={resultsDates}
                             startDate={resultsStartDate}
                             endDate={resultsEndDate}
