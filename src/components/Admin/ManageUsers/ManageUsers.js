@@ -136,7 +136,7 @@ const ManageUsers = function () {
             <h1 className='mb-5'>Gestion des utilisateurs</h1>
 
             <h2 className='mb-3'>Ajouter un utilisateur</h2>
-            <p>Une fois le nouveau compte créé, <strong>vous êtes automatiquement reconnecté au site avec celui-ci</strong>. <br />
+            <p>Une fois le nouveau compte créé, <span className='text-danger fw-bolder'>vous êtes automatiquement reconnecté au site avec celui-ci</span>. <br />
                 En cas d'échec, veus êtes aussi déconnecté du site, et renvoyé vers la page d'accueil.</p>
 
             <p>Pour les comptes <strong>visiteurs</strong>, une fausse adresse mail suffit, l'adresse sert juste d'identifiant pour se connecter. Comme ça, on peut en créer autant que nécessaire.</p>
@@ -244,11 +244,11 @@ const ManageUsers = function () {
                     </div>
 
                     <div className="d-flex flex-column flex-lg-row justify-content-between">
-                        <button type="button"
+                        <span className='text-center'><button type="button"
                             className="btn btn-outline-secondary mb-2"
                             onClick={setNewPassword}
                         >
-                            Générer un mot de passe</button>
+                            Générer un mot de passe</button></span>
                         <div className='d-flex justify-content-center justify-content-lg-end'>
                             <button type="button"
                                 className="btn btn-outline-primary mb-2 me-1"

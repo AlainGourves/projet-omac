@@ -547,7 +547,7 @@ function EditTest({ allQuizs }) {
                                         (visitorsList.length > 0) ? (
                                             <div className='rounded-1 border border-gray-400 p-3'>
                                                 <div className='d-flex justify-content-between align-items-center'>
-                                                    <label>Compte <strong>Visiteur</strong></label>
+                                                    <label>Compte&nbsp;<strong>Visiteur</strong></label>
                                                     <select
                                                         className="form-select"
                                                         {...register('selectVisitorAccount')}
