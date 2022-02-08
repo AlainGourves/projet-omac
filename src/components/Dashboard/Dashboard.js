@@ -21,17 +21,17 @@ const Dashboard = function ({ prenom, nom }) {
     }
 
     return user && (
-            <div className="dashboard fixed-top d-flex align-items-baseline justify-content-end">
-                <p>Coucou, <strong>{prenom} {nom}</strong> !</p>
-                <button
-                    type="button"
-                    className="btn btn-sm btn-primary"
-                    onClick={goAdmin}>Admin</button>
-                <button
-                    type="button"
-                    className="btn btn-sm btn-danger"
-                    onClick={handleSignOut}>Déconnexion</button>
-            </div>
+        <div className="dashboard fixed-top d-flex align-items-baseline justify-content-end">
+            <p>Coucou, <strong>{prenom} {nom}</strong> !</p>
+            <button
+                type="button"
+                className="btn btn-sm btn-primary"
+                onClick={goAdmin}>Admin</button>
+            <button
+                type="button"
+                className="btn btn-sm btn-danger"
+                onClick={handleSignOut}>Déconnexion</button>
+        </div>
     )
 }
 

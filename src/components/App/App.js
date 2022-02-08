@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/Auth';
 import { ModalProvider } from '../../contexts/ModalContext';
 import PrivateRoute from '../PrivateRoute/PrivateRoute';
 import Login from '../Login/Login';
-import SignUp from '../SignUp/SignUp';
+// import SignUp from '../SignUp/SignUp';
 import Test from '../Test/Test';
 import Page404 from '../Page404/Page404';
 import Admin from '../Admin/Admin';
@@ -23,20 +23,19 @@ function App() {
     useEffect(() => {
         const getUser = async (user) => {
             try {
-                const { data, error } = await supabase
+                // Erreur silencieuse ! Ça n'est réellement utile que pour les admins
+                const { data } = await supabase
                     .from('users')
                     .select()
                     .eq('id', user.id)
                     .single()
 
-                if (error) {
-                    throw error;
-                }
-
                 if (data && data.is_admin) {
                     setPrenom(data.prenom)
                     setNom(data.nom)
                     setIsAdmin(data.is_admin)
+                } else {
+                    setIsAdmin(false);
                 }
             } catch (error) {
                 console.warn("Erreur getUser: ", error.message)
@@ -44,18 +43,17 @@ function App() {
         }
 
         if (user) {
-            console.log("l'user:", user)
             getUser(user);
-        };
+        }
     }, [user]);
 
 
     return (
         <ModalProvider>
             <div className="container-md min-vh-100 d-flex flex-column justify-content-center align-items-center">
-                {isAdmin && <Dashboard prenom={prenom} nom={nom} />}
+                {(user && isAdmin) && <Dashboard prenom={prenom} nom={nom} />}
                 <Switch>
-                    <Route path="/inscription" component={SignUp} />
+                    {/* <Route path="/inscription" component={SignUp} /> */}
                     <Route path="/connexion" component={Login} />
                     <Route exact path="/" component={Home} />
                     <PrivateRoute path="/test" component={Test} />

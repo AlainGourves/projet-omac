@@ -74,7 +74,7 @@ const ManageUsers = function () {
     }
 
     const onSubmit = async (values) => {
-        console.log("submit", values)
+        // console.log("submit", values)
         // Get input values
         const firstName = values.firstName;
         const lastName = values.lastName;
@@ -104,10 +104,8 @@ const ManageUsers = function () {
                 if (error) {
                     throw new Error(error.message);
                 } else {
-                    // TODO: Si c'est un compte visiteur qui vient d'être crée, rediriger sur la page d'accueil (un visiteur n'a pas accès à /admin)
                     // RàZ du formulaire
                     reset();
-                    console.log("Succès !")
                 }
             }
         } catch (error) {
