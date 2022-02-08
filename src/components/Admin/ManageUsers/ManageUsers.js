@@ -135,7 +135,7 @@ const ManageUsers = function () {
 
             <h2 className='mb-3'>Ajouter un utilisateur</h2>
             <p>Une fois le nouveau compte créé, <span className='text-danger fw-bolder'>vous êtes automatiquement reconnecté au site avec celui-ci</span>. <br />
-                En cas d'échec, veus êtes aussi déconnecté du site, et renvoyé vers la page d'accueil.</p>
+                En cas d'échec, vous êtes aussi déconnecté du site, et renvoyé vers la page d'accueil.</p>
 
             <p>Pour les comptes <strong>visiteurs</strong>, une fausse adresse mail suffit, l'adresse sert juste d'identifiant pour se connecter. Comme ça, on peut en créer autant que nécessaire.</p>
             <div className='d-flex justify-content-center mb-5'>
