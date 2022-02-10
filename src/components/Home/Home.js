@@ -1,15 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from '../../contexts/Auth';
 import { useModal } from "../../contexts/ModalContext";
 import { addToLocalStorage } from "../Utils/helperFunctions";
-// import { AlertTriangle } from "react-feather";
+import { ShieldOff } from "react-feather";
 
 const Home = (props) => {
 
-    const { user } = useAuth();
+    const { user, signOut } = useAuth();
+
+    const history = useHistory();
 
     const [, setModal] = useModal();
+
+    const handleSignOut = async () => {
+        // Ends session
+        await signOut()
+        // Redirect to Login page
+        history.push('/');
+    }
 
     useEffect(() => {
         // Savoir si le visiteur utilise une souris ou un écran tactile
@@ -49,7 +58,15 @@ const Home = (props) => {
             <p className="alert alert-warning">Contenu à voir.</p>
 
             {user &&
-                <p><Link to='/test'>Test</Link></p>
+                <>
+                    <p><Link to='/test'>Test</Link></p>
+
+                    
+                    {/* ------- Lien déconnexion -------------- */}
+                    <div className="login__home">
+                        <button className='faux-link d-inline-flex align-items-center' onClick={handleSignOut}><ShieldOff /><span>Déconnexion</span></button>
+                    </div>
+                </>
             }
             {!user &&
                 <p><Link to="/connexion">connexion</Link></p>
