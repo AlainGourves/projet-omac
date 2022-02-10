@@ -2,37 +2,43 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from '../../contexts/Auth';
 import { useModal } from "../../contexts/ModalContext";
-import {addToLocalStorage } from "../Utils/helperFunctions";
+import { addToLocalStorage } from "../Utils/helperFunctions";
 // import { AlertTriangle } from "react-feather";
 
 const Home = (props) => {
 
     const { user } = useAuth();
 
-    const [,setModal] = useModal();
+    const [, setModal] = useModal();
 
     useEffect(() => {
         // Savoir si le visiteur utilise une souris ou un écran tactile
         const touchScreen = window.matchMedia('(pointer: coarse)');
         // Affiche l'alerte une fois puis stocke en localStorage le fait qu'elle a déjà été affichée (`touchScreenAlert`)
-        if (touchScreen.matches && !localStorage.getItem('touchScreenAlert')) {
+        if (touchScreen.matches) {
             // utilise un écran tactile => le drag&drop ne fonctionne pas
-            const msg = (<div>
-                <p>Pour le moment, l'application fonctionne mal sur un écran tactile&nbsp;!<br/>
-                Merci de réessayer sur un ordinateur, avec une souris.</p>
-            </div>);
-            setModal({
-                show: true,
-                title: "Alerte",
-                message: msg,
-                btnOk: 'Fermer',
-                fn: () => {
-                    setModal({
-                        show: false,
-                    });
-                }
-            });
-            addToLocalStorage('touchScreenAlert', true, false);
+            const now = Date.now();
+            const oneDay = 1000 * 60 * 60 * 24; // 1 jour en ms
+            if (!localStorage.getItem('touchScreenAlert') || (localStorage.getItem('touchScreenAlertDate') && now - localStorage.getItem('touchScreenAlertDate') > oneDay)) {
+                // Le modal avec message d'alerte n'est affiché qu'une fois par jour
+                const msg = (<div>
+                    <p>Pour le moment, l'application fonctionne mal sur un écran tactile&nbsp;!<br />
+                        Merci de réessayer sur un ordinateur, avec une souris.</p>
+                </div>);
+                setModal({
+                    show: true,
+                    title: "Alerte",
+                    message: msg,
+                    btnOk: 'Fermer',
+                    fn: () => {
+                        setModal({
+                            show: false,
+                        });
+                    }
+                });
+                addToLocalStorage('touchScreenAlert', true, false);
+                addToLocalStorage('touchScreenAlertDate', Date.now(), false);
+            }
         }
     }, [setModal]);
 
