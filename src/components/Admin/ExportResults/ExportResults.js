@@ -305,7 +305,7 @@ function ExportResults() {
 
     return (
         <main>
-            <h2>Gestion des résultats</h2>
+            <h2 className='mb-5'>Gestion des résultats</h2>
 
             {allTests &&
                 <section className='config'>

@@ -1,6 +1,6 @@
 #root{
     min-height: 100vh;
-    background-color: antiquewhite;
+    background-color: #aaaabc;
 }
 
 .container-md {
@@ -9,7 +9,7 @@
 
 // réserver de l'espace pour le dashboard quand il est présent
 .dashboard + * {
-    margin-top: 3rem;
+    margin-top: 2.4375rem;
 }
 
 .eye {
@@ -28,6 +28,12 @@ a.icon,
 a.icon svg,
 button.icon svg {
     display: inline-block;
+}
+
+button.icon {
+    appearance: none;
+    border: 0;
+    background: transparent;
 }
 
 a.icon,

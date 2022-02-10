@@ -7,7 +7,7 @@ function AdminMenu({url}) {
 
 
     return (
-        <nav className="navbar navbar-expand-md navbar-dark bg-dark mb-3">
+        <nav className="navbar navbar-expand-md navbar-dark mb-5">
             <ul className="nav nav-pills container-fluid flex-column flex-md-row">
                 <li className="nav-item">
                     <NavLink exact to={`${url}/`} className="nav-link" activeClassName="active">Accueil Admin</NavLink>
