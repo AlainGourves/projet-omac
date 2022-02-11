@@ -13,9 +13,11 @@ function Greetings({ greetings, isSavedToDB, save2Supabase }) {
 
     const onSubmit = (ev) => {
         ev.preventDefault();
-        // Vide localStorage
+        // Nettoyage localStorage
         if (localStorage.getItem('user')) {
-            localStorage.clear();
+            localStorage.removeItem('verbatim');
+            localStorage.removeItem('quizs');
+            localStorage.removeItem('user');
         }
         setRedirect('/');
     }
