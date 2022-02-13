@@ -21,6 +21,17 @@ function Quiz({ quizs, isVerbatim, ...props }) {
     // Stockage des item placés sur la carte
     const [answers, setAnswers] = useState([]);
 
+    const [modal, setModal] = useModal();
+
+    const history = useHistory();
+
+    // référence au DIV qui englobe Map pour pouvoir récupérer ses dimensions
+    const mapRef = useRef();
+
+    // Décalages à appliquer pour placer les items sur la Map
+    const [wOffset, setWOffset] = useState(null);
+    const [hOffset, setHOffset] = useState(null);
+
     useEffect(() => {
         const shuffleArray = (arr) => {
             // Fisher–Yates shuffle (plus efficace que d'utiliser simplement la fonction random())
@@ -33,47 +44,39 @@ function Quiz({ quizs, isVerbatim, ...props }) {
             return arr;
         }
 
-        if (quizs[id]) {
-            setAnswers([]);
-            // randomize la liste si besoin
-            let items = (!quizs[id].is_alpha) ? shuffleArray(quizs[id].items.slice()) : quizs[id].items;
-            // Ajoute une propriété pour savoir si l'item a été déposé sur la carte (false par défaut)
-            items.forEach(item => item.isUsed = false)
-            setQuiz({
-                ...quizs[id],
-                items
-            });
-            setCountItems(items.length);
-            setQuizStartTime(Date.now())
+        if (quizs) {
+            if (quizs[id]) {
+                setAnswers([]);
+                // randomize la liste si besoin
+                let items = (!quizs[id].is_alpha) ? shuffleArray(quizs[id].items.slice()) : quizs[id].items;
+                // Ajoute une propriété pour savoir si l'item a été déposé sur la carte (false par défaut)
+                items.forEach(item => item.isUsed = false)
+                setQuiz({
+                    ...quizs[id],
+                    items
+                });
+                setCountItems(items.length);
+                setQuizStartTime(Date.now())
 
-            // Routage :
-            if (parseInt(id) !== quizs.length - 1) {
-                // quiz[id] n'est pas la dernière valeur du array
-                nextStep.current = '/test/quiz/' + (parseInt(id) + 1);
-            } else {
-                if (isVerbatim) {
-                    nextStep.current = '/test/verbatim/0';
+                // Routage :
+                if (parseInt(id) !== quizs.length - 1) {
+                    // quiz[id] n'est pas la dernière valeur du array
+                    nextStep.current = '/test/quiz/' + (parseInt(id) + 1);
                 } else {
-                    nextStep.current = '/test/fin'
+                    if (isVerbatim) {
+                        nextStep.current = '/test/verbatim/0';
+                    } else {
+                        nextStep.current = '/test/fin'
+                    }
                 }
+            }else{
+                // Le paramètre de l'URL ne correspond à rien d'attendu
+                // => on redirige
+                history.push(nextStep.current);
             }
-        }else{
-            // TODO: traiter l'erreur 'pas de quiz correspondant au param id'
-            // Rediriger vers /test/ ?
-            console.log("Problème avec :", id)
         }
-    }, [id, quizs, isVerbatim]);
+    }, [id, quizs, isVerbatim, history]);
 
-    const [modal, setModal] = useModal();
-
-    const history = useHistory();
-
-    // référence au DIV qui englobe Map pour pouvoir récupérer ses dimensions
-    const mapRef = useRef();
-
-    // Décalages à appliquer pour placer les items sur la Map
-    const [wOffset, setWOffset] = useState(null);
-    const [hOffset, setHOffset] = useState(null);
     useEffect(() => {
         // Fixe la valeur de `--mapItem-width` (utilisée pour les calculs de placement et des résultats)
         const mapItemWidth = 6; // valeur en `rem`
@@ -166,9 +169,9 @@ function Quiz({ quizs, isVerbatim, ...props }) {
                 // On en garde que les valeurs de `x` & `y`
                 const quizResult = sortedAnswers.map(item => {
                     // Il peut y avoir des cas limite où x et/ou y sont négatifs, comme c'est toujours très proche de 0, on arrondit à 0
-                    return { 
-                        'x': (item.registeredX > 0) ? item.registeredX.toFixed(3) : 0, 
-                        'y': (item.registeredY > 0) ? item.registeredY.toFixed(3) : 0 
+                    return {
+                        'x': (item.registeredX > 0) ? item.registeredX.toFixed(3) : 0,
+                        'y': (item.registeredY > 0) ? item.registeredY.toFixed(3) : 0
                     }
                 });
                 // Enregistrement des résultats en localStorage
