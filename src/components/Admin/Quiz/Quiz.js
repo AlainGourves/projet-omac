@@ -118,7 +118,7 @@ function Quiz(props) {
             items: [],
             modified_at: new Date(),
         };
-        let items = values.itemsList.trim().split('\n').sort();
+        let items = values.itemsList.trim().split('\n').sort((a,b) => a.localeCompare(b));
         items.forEach((val, idx) => {
             result.items.push({ 'id': idx, 'label': val });
         })
@@ -154,7 +154,7 @@ function Quiz(props) {
         items = items
             .split('\n')
             .filter(item => item.trim()) // remove empty elements
-            .sort()
+            .sort((a,b) => a.localeCompare(b)) // tient compte des accents
             .join('\n');
         setValue('itemsList', items)
     }
