@@ -6,6 +6,10 @@ $clr-label: hsl(66, 75%, 45%);
     padding: 0
 }
 
+.quiz-item{
+    break-inside: avoid;
+}
+
 .quiz-item__label {
     // border: 1px solid rgba(#fff, 50%);
     width: max-content;

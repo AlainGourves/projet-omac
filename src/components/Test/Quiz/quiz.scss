@@ -12,6 +12,7 @@ $clr-label: hsl(66, 75%, 45%);
 .listItems {
     @include media-breakpoint-up(sm) {
         columns: 3;
+        margin-top: .5rem !important;
     }
 
     @include media-breakpoint-up(lg) {
