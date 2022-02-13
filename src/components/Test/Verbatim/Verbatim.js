@@ -29,7 +29,7 @@ function Verbatim({verbatim, ...props}) {
                 nextStep.current = '/test/fin'
             }
         }
-    }, [id, verbatim]);
+    }, [id, verbatim, setValue]);
 
     const onSubmit = (values, ev) => {
         addToLocalStorage('verbatim', values.response, id);
