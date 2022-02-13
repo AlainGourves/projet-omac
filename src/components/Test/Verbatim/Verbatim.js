@@ -9,15 +9,18 @@ function Verbatim({verbatim, ...props}) {
     
     const { id } = useParams();
     
-    const { register, handleSubmit } = useForm({
+    const { register, handleSubmit, setValue } = useForm({
         defaultValues: {
             response: ''
         }
     })
     
-    // Routage :
     const nextStep = useRef('/test');
     useEffect(() => {
+        if (localStorage.getItem('verbatim') && JSON.parse(localStorage.getItem('verbatim'))[id]) {
+            setValue('response', JSON.parse(localStorage.getItem('verbatim'))[id])
+        }
+        // Routage :
         if (id !== undefined) {
             if (parseInt(id) !== verbatim.length - 1) {
                 // verbatim[id] n'est pas la dernière valeur du array
@@ -29,7 +32,7 @@ function Verbatim({verbatim, ...props}) {
     }, [id, verbatim]);
 
     const onSubmit = (values, ev) => {
-        addToLocalStorage('verbatim', values.response);
+        addToLocalStorage('verbatim', values.response, id);
         ev.target[0].value = ''; // vide le champ
         ev.target[0].focus(); // remet le focus dessus
         history.push(nextStep.current)

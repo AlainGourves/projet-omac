@@ -2,7 +2,6 @@ import { Link, useHistory } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from '../../contexts/Auth';
 import { useModal } from "../../contexts/ModalContext";
-import { addToLocalStorage } from "../Utils/helperFunctions";
 import { ShieldOff } from "react-feather";
 
 const Home = (props) => {
@@ -45,8 +44,8 @@ const Home = (props) => {
                         });
                     }
                 });
-                addToLocalStorage('touchScreenAlert', true, false);
-                addToLocalStorage('touchScreenAlertDate', Date.now(), false);
+                localStorage.setItem('touchScreenAlert', true);
+                localStorage.setItem('touchScreenAlertDate', Date.now());
             }
         }
     }, [setModal]);
