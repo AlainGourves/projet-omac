@@ -31,7 +31,7 @@ function Quiz(props) {
         defaultValues: {
             'quizTitle': '',
             'quizDescription': '',
-            'is_alpha': false,
+            'is_alpha': '0',
             'is_trash': false,
             'trash_text': "Met dans la corbeille quand tu ne sais pas.",
             'itemsList': ''
@@ -61,7 +61,7 @@ function Quiz(props) {
                     }
                     const quizItems = data.items.reduce(reducer, data.items[0].label);
                     setValue('itemsList', quizItems.trim());
-                    setValue('is_alpha', Boolean(data.is_alpha));
+                    setValue('is_alpha', (Boolean(data.is_alpha) ? '1' : '0'));
                     setValue('is_trash', Boolean(data.is_trash));
                     if (data.is_trash) {
                         setValue('trash_text', data.trash_text);
@@ -239,11 +239,11 @@ function Quiz(props) {
                         <h5>Ordre d'affichage :</h5>
                         <div role="group" className="form-check mb-3 border-bottom">
                             <label className="form-label d-block">
-                                <input type='radio' {...register("is_alpha", { required: true })} value='1' className="form-check-input" checked={Boolean('is_alpha')} />
-                                Alphabétique</label>
-                            <label className="form-label d-block">
-                                <input type='radio' {...register("is_alpha", { required: true })} value='0' className="form-check-input" checked={Boolean('is_alpha')} />
+                                <input type='radio' {...register("is_alpha", { required: true })} value='0' className="form-check-input" />
                                 Aléatoire</label>
+                            <label className="form-label d-block">
+                                <input type='radio' {...register("is_alpha", { required: true })} value='1' className="form-check-input" />
+                                Alphabétique</label>
                         </div>
 
                         <div role="group">
