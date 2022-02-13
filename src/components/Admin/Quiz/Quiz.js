@@ -175,7 +175,7 @@ function Quiz(props) {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <section className="config-list">
-                <h2>
+                <h2 className='mb-5'>
                     {quizId ? `Modifier le quiz "${watchTitle}"` : "Créer un quiz"}
                 </h2>
 
@@ -200,6 +200,7 @@ function Quiz(props) {
                             {...register("quizDescription", { required: true })}
                             className="form-control"
                             placeholder="Consignes pour le quiz"
+                            rows={4}
                         />
                         {errors.quizDescription &&
                             <AlertMesg message={errors.quizDescription?.message} />
@@ -211,7 +212,7 @@ function Quiz(props) {
                 <div className="row">
                     <div className="col-md-7 mb-4">
                         <p>Un item par ligne.<br />
-                            L'ordre de saisie ne compte pas, la liste est stockée par ordre alphabétique et l'affichage final se fait en fonction du choix ci-contre.</p>
+                            L'ordre de saisie ne compte pas, la liste est stockée par ordre alphabétique et l'affichage final se fait en fonction de l'ordre choisi.</p>
                         <textarea
                             {...register("itemsList", { required: true })}
                             className="form-control"

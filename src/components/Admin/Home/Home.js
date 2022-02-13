@@ -314,8 +314,12 @@ function Home() {
 
     return (
         <div>
-            <h1 className='mb-5'>Gestion des tests et quizs</h1>
-            <section className='mb-5'>
+        <header className='mb-5'>
+            <h1>Gestion des tests et quizs</h1>
+            <p>Un <strong>test</strong> est composé d'un ou plusieurs <strong>quizs</strong>.</p>
+        </header>
+
+            <section className='tests__section'>
                 <h2>Tests</h2>
                 <p>Sélectionner le test à activer, en modifier un ou en créer un nouveau.</p>
                 <TestTable

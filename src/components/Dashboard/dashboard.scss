@@ -2,8 +2,11 @@
     padding: .25rem;
     background-color: hsl(0, 0%, 80%);
 
-    & > * {
-        margin: 0;
-        margin-left: .25rem;
+    & p {
+        margin-bottom: 0 !important;
     }
+    // & > * {
+    //     margin: 0;
+    //     margin-left: .25rem;
+    // }
 }

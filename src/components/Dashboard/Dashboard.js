@@ -21,8 +21,8 @@ const Dashboard = function ({ prenom, nom }) {
     }
 
     return user && (
-        <div className="dashboard fixed-top d-flex align-items-baseline justify-content-end">
-            <p>Coucou, <strong>{prenom} {nom}</strong> !</p>
+        <div className="dashboard fixed-top d-flex align-items-baseline justify-content-end gap-1">
+            <p>Coucou, <strong>{prenom} {nom}</strong>&nbsp;!</p>
             <button
                 type="button"
                 className="btn btn-sm btn-primary"

@@ -178,7 +178,7 @@ function Quiz({ quizs, isVerbatim, ...props }) {
                     'results': quizResult,
                     'duration': quizDuration,
                 }
-                addToLocalStorage('quizs', finalResult);
+                addToLocalStorage('quizs', finalResult, id);
                 setModal({
                     ...modal,
                     show: false

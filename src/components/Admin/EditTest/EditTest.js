@@ -348,7 +348,7 @@ function EditTest({ allQuizs }) {
     }
     return (
         <section>
-            <h1>{testId ? "Modifier le" : "Créer un"} test {(testId !== 0) && <em>{testName}</em>}</h1>
+            <h1 className='mb-5'>{testId ? "Modifier le" : "Créer un"} test {(testId !== 0) && <em>{testName}</em>}</h1>
             <FormProvider {...methods} >
                 {/* pass all methods into the context */}
                 <form onSubmit={methods.handleSubmit(onSubmit)}>
@@ -399,6 +399,7 @@ function EditTest({ allQuizs }) {
                                     {...register("homeDescription", { required: true })}
                                     className="form-control"
                                     placeholder="Consigne pour l'écran d'accueil"
+                                    rows={4}
                                 />
                                 {errors.homeDescription &&
                                     <AlertMesg message={errors.homeDescription?.message} />
@@ -464,16 +465,19 @@ function EditTest({ allQuizs }) {
                             Remerciements/Écran de fin
                         </h2>
                         <div className="row flex-column flex-md-row mb-3 greetings">
-                            <div className="input-group">
-                                <span className="input-group-text text-end">Texte :</span>
-                                <textarea
-                                    {...register("greetings", { required: true })}
-                                    className="form-control"
-                                />
+                            <div className='col-11'>
+                                <div className="input-group">
+                                    <span className="input-group-text text-end">Texte :</span>
+                                    <textarea
+                                        {...register("greetings", { required: true })}
+                                        className="form-control"
+                                        rows={3}
+                                    />
+                                </div>
+                                {errors.greetings &&
+                                    <AlertMesg message={errors.greetings?.message} />
+                                }
                             </div>
-                            {errors.greetings &&
-                                <AlertMesg message={errors.greetings?.message} />
-                            }
                         </div>
                     </article>
                     <article>

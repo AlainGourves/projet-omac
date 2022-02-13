@@ -1,6 +1,12 @@
+.navbar{
+    background-color: #ffc459 !important;
+    margin-inline: -1.5rem !important;
+    padding-inline: .5rem !important;
+}
+
 .nav {
     // Bootstrap .nav (_nav.scss:6) le met à 0
-    padding-left: var(--bs-gutter-x, 0.75rem);
+    padding-left: var(--bs-gutter-x, 0.75rem) !important;
 }
 
 .quit {

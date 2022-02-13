@@ -17,6 +17,7 @@ $clr-label: hsl(66, 75%, 45%);
 
     @include media-breakpoint-up(lg) {
         columns: 1;
+        padding-top: 1.75em;
     }
 }
 

@@ -70,4 +70,10 @@
     &:hover{
         text-decoration: underline;
     }
+
+    & svg{
+        width: 1.2em;
+        height: auto;
+        margin-right: .25rem;
+    }
 }
