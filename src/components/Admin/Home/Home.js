@@ -30,7 +30,7 @@ function Home() {
     const fetchTestsList = useCallback(async () => {
         try {
             const { data, error } = await supabase
-                    .rpc('get_tests_list_with_accounts', {col_name: testsOrderBy, is_asc: (testsOrderBy === 'name') ? testsOrderByNameAsc : testsOrderByDateAsc});
+                .rpc('get_tests_list_with_accounts', { col_name: testsOrderBy, is_asc: (testsOrderBy === 'name') ? testsOrderByNameAsc : testsOrderByDateAsc });
             if (error) {
                 throw new Error(error.message);
             }
@@ -250,7 +250,7 @@ function Home() {
             }
             const data = JSON.stringify(jsonExport, null, 2); // 2: number of spaces used as white space for indenting
             const fileDowloadUrl = URL.createObjectURL(
-                new Blob([data])
+                new Blob([data], { type: 'application/json;charset=utf-8;' })
             );
             // nom du fichier de la forme : '{table}_JJ-MM-AAAA.json'
             const d = Date.now();
@@ -314,10 +314,10 @@ function Home() {
 
     return (
         <div>
-        <header className='mb-5'>
-            <h1>Gestion des tests et quizs</h1>
-            <p>Un <strong>test</strong> est composé d'un ou plusieurs <strong>quizs</strong>.</p>
-        </header>
+            <header className='mb-5'>
+                <h1>Gestion des tests et quizs</h1>
+                <p>Un <strong>test</strong> est composé d'un ou plusieurs <strong>quizs</strong>.</p>
+            </header>
 
             <section className='tests__section'>
                 <h2>Tests</h2>

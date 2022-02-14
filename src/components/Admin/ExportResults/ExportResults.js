@@ -20,6 +20,8 @@ function ExportResults() {
     const [diffBetweenResults, setDiffBetweenResults] = useState(null); // Différence en jours entre les 2 précédents (pour afficher ou nom la sélection d'intervalle)
     const [resultsDates, setResultsDates] = useState([]); // Stocke les DateTimes des résultats pour pouvoir afficher le nombre de résultats quand on modifie l'intervalle de temps
 
+    const [isIOS, setIsIOS] = useState(false);
+
     // Récupère les infos sur les tests
     const fetchTestsList = useCallback(async () => {
         try {
@@ -46,6 +48,14 @@ function ExportResults() {
     useEffect(() => {
         fetchTestsList();
     }, [fetchTestsList]);
+
+    // Détecter Safari IOS, cf. https://stackoverflow.com/questions/3007480/determine-if-user-navigated-from-mobile-safari/29696509#29696509
+    useEffect(() => {
+        const ua = window.navigator.userAgent;
+        if (!!ua.match(/iP(ad|hone)/i) && !!ua.match(/Mobile/i) && !!ua.match(/Webkit/i) && !ua.match(/(CriOS|FxiOS|OPiOS|mercury)/i)) {
+            setIsIOS(true);
+        }
+    }, []);
 
     // Récupère les infos sur les quizs
     const fetchQuizsList = useCallback(async () => {
@@ -179,6 +189,13 @@ function ExportResults() {
         return [start, end];
     }
 
+    // Pour ajouter un délai d'une seconde avant de déclencher le 2nd téléchargement, sinon ça ne marche pas avec Safari IOS
+    // cf. https://stackoverflow.com/questions/61961488/allow-multiple-file-downloads-in-safari
+    // timeout : https://stackoverflow.com/questions/33289726/combination-of-async-function-await-settimeout
+    const timeout = () => {
+        return new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
     const exportQuizResults = async function (date1, date2) {
         let dates = sortDates(date1, date2);
         let start = dates[0];
@@ -205,6 +222,12 @@ function ExportResults() {
                         .join('\t')}\n`;
                 });
                 exportCSV(`results_quiz_${quizTitle.split(/\s|'/).join("_")}`, content);
+                if (isIOS) {
+                    await timeout()
+                    exportClientsInfos(clientsIds);
+                } else {
+                    exportClientsInfos(clientsIds);
+                }
                 exportClientsInfos(clientsIds);
             }
         } catch (error) {
@@ -239,7 +262,12 @@ function ExportResults() {
                         .join('\t')}\n`;
                 });
                 exportCSV(`verbatim_${testName.split(/\s|'/).join("_")}`, content);
-                exportClientsInfos(clientsIds);
+                if (isIOS) {
+                    await timeout()
+                    exportClientsInfos(clientsIds);
+                } else {
+                    exportClientsInfos(clientsIds);
+                }
             }
         } catch (error) {
             console.warn(error)
@@ -273,7 +301,7 @@ function ExportResults() {
     // Export CSV -------------------------------
     const exportCSV = function (name, content) {
         const fileDowloadUrl = URL.createObjectURL(
-            new Blob([content])
+            new Blob([content], { type: 'text/csv;charset=utf-8;' })
         );
         const link = document.createElement('a');
         link.href = fileDowloadUrl;
@@ -396,7 +424,7 @@ function ExportResults() {
                             <pre className='text-info bg-dark'>
                                 [durée du quiz][<em>x<sub>1</sub></em>][<em>y<sub>1</sub></em>][<em>x<sub>2</sub></em>][<em>y<sub>2</sub></em>]...[<em>x<sub>n</sub></em>][<em>y<sub>n</sub></em>](fin de ligne)
                             </pre>
-                            <p>Les positions (<em>x</em>, <em>y</em>) sont exprimées en % des dimensions de la carte, avec 3 décimales.<br/>Un fichier de données et un autre sur les participants.</p>
+                            <p>Les positions (<em>x</em>, <em>y</em>) sont exprimées en % des dimensions de la carte, avec 3 décimales.<br />Un fichier de données et un autre sur les participants.</p>
                         </div>}
                         resultsDates={resultsDates}
                         startDate={resultsStartDate}
@@ -413,8 +441,8 @@ function ExportResults() {
                             submitFn={submitVerbatim}
                             title={"Exporter les verbatim du test."}
                             body={<div className="fs-6">
-                                <p>Export en fichier CSV (avec TAB comme séparateur).<br/>
-                                Un fichier de données et un autre sur les participants.</p>
+                                <p>Export en fichier CSV (avec TAB comme séparateur).<br />
+                                    Un fichier de données et un autre sur les participants.</p>
                             </div>}
                             resultsDates={resultsDates}
                             startDate={resultsStartDate}
