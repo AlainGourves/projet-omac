@@ -1,7 +1,13 @@
-.navbar{
-    background-color: #ffc459 !important;
+// Include Bootstrap to load mixins
+@import 'bootstrap/scss/bootstrap';
+$orange_menu: #ffc459;
+$white_alpha: rgba(255, 255, 255, .35);
+$label-width: 3.2rem;
+
+.navbar {
+    position: relative;
+    background-color: $orange_menu !important;
     margin-inline: -1.5rem !important;
-    padding-inline: .5rem !important;
 }
 
 .nav {
@@ -9,14 +15,102 @@
     padding-left: var(--bs-gutter-x, 0.75rem) !important;
 }
 
-.quit {
+
+.nav-toggle {
+    position: absolute;
+    top: 0;
+    left: -100vw;
+}
+
+nav .nav-toggle:checked~.nav {
+    display: flex !important;
+}
+
+nav .nav-toggle~.nav {
+    display: none;
+}
+
+.nav-toggle-label {
+    position: absolute;
+    display: grid;
+    place-content: center;
+    top: 0;
+    right: 0;
+    width: $label-width;
+    height: $label-width;
+    margin: .5rem .5rem 0 0;
     border: 1px solid #fff;
-    border-radius: .25em;
-    & a {
-        color: #fff;
+    border-radius: #{$label-width * .5};
+    background: $orange_menu;
+
+    & svg {
+        stroke: #fff;
     }
-    
+
     &:hover {
-        background-color: var(--bs-orange);
+        cursor: pointer;
+    }
+}
+
+@include media-breakpoint-down(md) {
+    // Mobile menu
+    .navbar {
+        padding-block: 0 !important;
+
+        & .nav {
+            align-items: flex-start !important;
+        }
+    }
+
+    .nav-item {
+        width: calc(100% - #{$label-width});
+        border-bottom: 1px solid $white_alpha;
+        transition: background-color .25s ease-in-out;
+        position: relative;
+
+        &:hover {
+            background-color: $white_alpha;
+        }
+    }
+
+    .nav-pills .nav-link.active {
+        color: var(--bs-primary) !important;
+        font-weight: 700;
+        padding-left: 1.5rem;
+        background-color: transparent !important;
+
+        &::before {
+            position: absolute;
+            content: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgb(13 110 253)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='9 18 15 12 9 6'></polyline></svg>");
+            left: 0;
+        }
+    }
+}
+
+@include media-breakpoint-up(md) {
+    // Large & up display menu
+    .nav-toggle-label {
+        display: none !important;
+    }
+
+    nav>.nav {
+        display: flex !important;
+    }
+
+    .navbar {
+        padding-inline: .5rem !important;
+    }
+
+    .quit {
+        border: 1px solid #fff;
+        border-radius: .25em;
+
+        & a {
+            color: #fff;
+        }
+
+        &:hover {
+            background-color: var(--bs-orange);
+        }
     }
 }

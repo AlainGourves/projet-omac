@@ -2,12 +2,15 @@ import './admin-menu.scss';
 import {
     NavLink
 } from 'react-router-dom';
+import { Menu } from 'react-feather';
 
-function AdminMenu({url}) {
+
+function AdminMenu({ url }) {
 
 
     return (
         <nav className="navbar navbar-expand-md navbar-dark mb-5">
+            <input type="checkbox" id="nav-toggle" className="nav-toggle"></input>
             <ul className="nav nav-pills container-fluid flex-column flex-md-row">
                 <li className="nav-item">
                     <NavLink exact to={`${url}/`} className="nav-link" activeClassName="active">Accueil Admin</NavLink>
@@ -28,6 +31,9 @@ function AdminMenu({url}) {
                     <NavLink exact to="/" className="nav-link">Quitter Admin</NavLink>
                 </li>
             </ul>
+            <label htmlFor="nav-toggle" className="nav-toggle-label">
+                <span><Menu /></span>
+            </label>
         </nav>
     )
 }

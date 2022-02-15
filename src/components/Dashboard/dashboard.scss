@@ -1,6 +1,7 @@
 .dashboard {
     padding: .25rem;
     background-color: hsl(0, 0%, 80%);
+    box-shadow: 0 0 .5em rgb(0, 0, 0, .25);
 
     & p {
         margin-bottom: 0 !important;
