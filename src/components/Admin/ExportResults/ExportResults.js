@@ -213,21 +213,29 @@ function ExportResults() {
                 throw new Error(error.message);
             }
             if (data) {
-                let content = '';
+                let content = [];
+                // préparation array multidimentionnel (1 ligne par item de quiz, 1 colonne par client)
+                data[0].responses.forEach(r => content.push([]));
                 let clientsIds = []; // stocke les id pour pouvoir récupérer les infos dans `clients`
-                data.forEach((record) => {
+                data.forEach((record, clientIdx) => {
                     clientsIds.push(record.client_id);
-                    content += `${record.duration}\t${record.responses
-                        .map(obj => Object.values(obj).join('\t'))
-                        .join('\t')}\n`;
+                    // boucle sur responses
+                    record.responses.forEach((res, idx) => {
+                        console.log(res, idx, clientIdx)
+                        content[idx][clientIdx] = res;
+                    });
+                    // content += `${record.duration}\t${record.responses
+                    //     .map(obj => Object.values(obj).join('\t'))
+                    //     .join('\t')}\n`;
                 });
-                exportCSV(`results_quiz_${quizTitle.split(/\s|'/).join("_")}`, content);
-                if (isIOS) {
-                    await timeout()
-                    exportClientsInfos(clientsIds);
-                } else {
-                    exportClientsInfos(clientsIds);
-                }
+                console.log(content);
+                // exportCSV(`results_quiz_${quizTitle.split(/\s|'/).join("_")}`, content);
+                // if (isIOS) {
+                //     await timeout()
+                //     exportClientsInfos(clientsIds);
+                // } else {
+                //     exportClientsInfos(clientsIds);
+                // }
             }
         } catch (error) {
             console.warn(error)
