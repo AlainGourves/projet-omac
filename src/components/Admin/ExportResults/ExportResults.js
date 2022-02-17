@@ -228,7 +228,6 @@ function ExportResults() {
                 } else {
                     exportClientsInfos(clientsIds);
                 }
-                exportClientsInfos(clientsIds);
             }
         } catch (error) {
             console.warn(error)

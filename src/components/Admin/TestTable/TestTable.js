@@ -28,7 +28,6 @@ function TestTable(props) {
     const importTests = (ev) => {
         ev.preventDefault();
         props.importJSON('tests');
-        // TODO: rafraichir l'affichage
     }
 
     const exportTests = (ev) => {
