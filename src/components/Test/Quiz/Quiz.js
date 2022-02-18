@@ -170,8 +170,8 @@ function Quiz({ quizs, isVerbatim, ...props }) {
                 const quizResult = sortedAnswers.map(item => {
                     // Il peut y avoir des cas limite où x et/ou y sont négatifs, comme c'est toujours très proche de 0, on arrondit à 0
                     return {
-                        'x': (item.registeredX > 0) ? item.registeredX.toFixed(3) : 0,
-                        'y': (item.registeredY > 0) ? item.registeredY.toFixed(3) : 0
+                        'x': (item.registeredX > 0) ? item.registeredX.toFixed(2) : 0,
+                        'y': (item.registeredY > 0) ? item.registeredY.toFixed(2) : 0
                     }
                 });
                 // Enregistrement des résultats en localStorage
