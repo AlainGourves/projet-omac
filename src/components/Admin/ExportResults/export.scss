@@ -79,12 +79,43 @@ section {
         color: var(--bs-primary);
     }
 
-    & pre {
+    & .sample {
+        display: grid;
+        place-content: center;
         font-family: monospace;
         font-size: .875em;
-        padding: .5em .5em;
+        padding: 1em 1em;
         border-radius: .25em;
         background-color: $gray-700;
+
+        th,
+        td {
+            text-align: center;
+            font-size: .75em;
+            padding: .25em;
+        }
+        th:not(:last-of-type) {
+            border-right: 1px solid var(--bs-info);
+        }
+
+        tr td:not(:first-of-type) {
+            font-style: italic;
+            border-left: 1px solid var(--bs-info);
+            width: 2rem;
+        }
+
+        tr th:not(:last-of-type),
+        tr td:nth-of-type(2n + 1):not(:last-of-type) {
+            border-right: 2px solid var(--bs-info);
+        }
+
+        tr {
+            border-bottom: 1px solid var(--bs-info);
+        }
+
+        thead tr {
+            border-bottom: 2px solid var(--bs-info);
+        }
     }
 
     & .alert {
