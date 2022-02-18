@@ -3,6 +3,7 @@ import { supabase } from '../../../supabaseClient';
 import { useEffect, useState, useCallback } from 'react';
 import { DateTime } from 'luxon';
 import ExportForm from '../ExportForm/ExportForm';
+import SampleTable from './SampleTable';
 
 function ExportResults() {
 
@@ -213,14 +214,29 @@ function ExportResults() {
                 throw new Error(error.message);
             }
             if (data) {
-                let content = '';
+                let temp = [];
+                // préparation array multidimentionnel (1 ligne par item de quiz, 1 colonne par client)
+                data[0].responses.forEach(r => temp.push([]));
                 let clientsIds = []; // stocke les id pour pouvoir récupérer les infos dans `clients`
-                data.forEach((record) => {
+                let durations = [];
+                data.forEach((record, clientIdx) => {
                     clientsIds.push(record.client_id);
-                    content += `${record.duration}\t${record.responses
-                        .map(obj => Object.values(obj).join('\t'))
-                        .join('\t')}\n`;
+                    durations.push([record.duration, '']); // 2e item vide, les durées seront dans la colonne des x
+                    // boucle sur responses
+                    record.responses.forEach((res, idx) => {
+                        temp[idx][clientIdx] = Object.values(res); // objet {x, y} en array [x, y]
+                    });
                 });
+                // à ce stade on a un array à 3 dimensions, qu'on va réduire à 2
+                let arr = temp.map(v => {
+                    let a = v.flat();
+                    let b = a.map(x => Number(x)); // c'était un array de strings
+                    return b;
+                });
+                // Ajoute les durées au tableau
+                arr[arr.length] = durations.flat();
+                let content = '';
+                arr.forEach(li => content += `${li.join('\t')}\n`);
                 exportCSV(`results_quiz_${quizTitle.split(/\s|'/).join("_")}`, content);
                 if (isIOS) {
                     await timeout()
@@ -420,9 +436,9 @@ function ExportResults() {
                         title={"Exporter les résultats du quiz."}
                         body={<div className="fs-6">
                             <p>Export en fichier CSV (avec TAB comme séparateur), sous la forme :</p>
-                            <pre className='text-info bg-dark'>
-                                [durée du quiz][<em>x<sub>1</sub></em>][<em>y<sub>1</sub></em>][<em>x<sub>2</sub></em>][<em>y<sub>2</sub></em>]...[<em>x<sub>n</sub></em>][<em>y<sub>n</sub></em>](fin de ligne)
-                            </pre>
+                            <div className='sample text-info bg-dark'>
+                                <SampleTable />
+                            </div>
                             <p>Les positions (<em>x</em>, <em>y</em>) sont exprimées en % des dimensions de la carte, avec 3 décimales.<br />Un fichier de données et un autre sur les participants.</p>
                         </div>}
                         resultsDates={resultsDates}
